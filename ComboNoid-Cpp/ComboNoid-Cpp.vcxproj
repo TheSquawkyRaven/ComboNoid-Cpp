@@ -71,12 +71,12 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(ProjectDir)SDL2-2.32.8\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(ProjectDir)SDL2-2.32.8\lib\x64;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(ProjectDir)SDL2-2.32.8\include;$(ProjectDir)SDL2_image-2.8.8\include;$(ProjectDir)SDL2_mixer-2.8.1\include;$(ProjectDir)SDL2_ttf-2.24.0\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(ProjectDir)SDL2-2.32.8\lib\x64;$(ProjectDir)SDL2_image-2.8.8\lib\x64;$(ProjectDir)SDL2_mixer-2.8.1\lib\x64;$(ProjectDir)SDL2_ttf-2.24.0\lib\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(ProjectDir)SDL2-2.32.8\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(ProjectDir)SDL2-2.32.8\lib\x64;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(ProjectDir)SDL2-2.32.8\include;$(ProjectDir)SDL2_image-2.8.8\include;$(ProjectDir)SDL2_mixer-2.8.1\include;$(ProjectDir)SDL2_ttf-2.24.0\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(ProjectDir)SDL2-2.32.8\lib\x64;$(ProjectDir)SDL2_image-2.8.8\lib\x64;$(ProjectDir)SDL2_mixer-2.8.1\lib\x64;$(ProjectDir)SDL2_ttf-2.24.0\lib\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -114,10 +114,13 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_mixer.lib;SDL2_ttf.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>copy /Y "$(ProjectDir)SDL2-2.32.8\lib\x64\SDL2.dll" "$(OutDir)"</Command>
+      <Command>copy /Y "$(ProjectDir)SDL2-2.32.8\lib\x64\SDL2.dll" "$(OutDir)"
+copy /Y "$(ProjectDir)SDL2_image-2.8.8\lib\x64\SDL2_image.dll" "$(OutDir)"
+copy /Y "$(ProjectDir)SDL2_mixer-2.8.1\lib\x64\SDL2_mixer.dll" "$(OutDir)"
+copy /Y "$(ProjectDir)SDL2_ttf-2.24.0\lib\x64\SDL2_ttf.dll" "$(OutDir)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -132,14 +135,23 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_mixer.lib;SDL2_ttf.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>copy /Y "$(ProjectDir)SDL2-2.32.8\lib\x64\SDL2.dll" "$(OutDir)"</Command>
+      <Command>copy /Y "$(ProjectDir)SDL2-2.32.8\lib\x64\SDL2.dll" "$(OutDir)"
+copy /Y "$(ProjectDir)SDL2_image-2.8.8\lib\x64\SDL2_image.dll" "$(OutDir)"
+copy /Y "$(ProjectDir)SDL2_mixer-2.8.1\lib\x64\SDL2_mixer.dll" "$(OutDir)"
+copy /Y "$(ProjectDir)SDL2_ttf-2.24.0\lib\x64\SDL2_ttf.dll" "$(OutDir)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Game.cpp" />
+    <ClCompile Include="src\LevelManager.cpp" />
     <ClCompile Include="src\main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\Game.h" />
+    <ClInclude Include="src\LevelManager.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

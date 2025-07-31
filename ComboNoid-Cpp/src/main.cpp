@@ -1,6 +1,15 @@
 //Using SDL and standard IO
 #include <SDL.h>
+#include <SDL_image.h>
+#include <SDL_ttf.h>
+#include <SDL_mixer.h>
+
 #include <stdio.h>
+
+#include "Game.h"
+#include <memory>
+
+using namespace std;
 
 //Screen dimension constants
 const int SCREEN_WIDTH = 1280;
@@ -31,6 +40,42 @@ int main(int argc, char* args[])
 		return 0;
 	}
 
+	// Hardware Accelerated renderer with VSync
+	SDL_Renderer* sdlRenderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+
+	if (sdlRenderer == nullptr)
+	{
+		printf("SDL Renderer cannot be created! SDL_Error: %s\n", SDL_GetError());
+		SDL_Quit();
+		return 0;
+	}
+
+	SDL_SetRenderDrawBlendMode(sdlRenderer, SDL_BLENDMODE_BLEND);
+
+
+	// PNG Loading
+	// Attempt to initialize the PNG Loader
+	int imageFlags = IMG_INIT_PNG;
+	if (!(IMG_Init(imageFlags) & imageFlags))
+	{
+		printf("SDL_image cannot initialize! SDL_IMAGE_ERROR: %s", IMG_GetError());
+		return false;
+	}
+
+	// Mixer (Audio) Loading
+	if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0)
+	{
+		printf("SDL_mixer cannot initialize! SDL_MIXER_ERROR: %s", Mix_GetError());
+		return false;
+	}
+
+	// TTF Loading
+	if (TTF_Init() == -1)
+	{
+		printf("SDL_TTF cannot initialize! SDL_TTF_ERROR: %s", TTF_GetError());
+		return false;
+	}
+
 	//Get window surface
 	screenSurface = SDL_GetWindowSurface(window);
 
@@ -40,20 +85,21 @@ int main(int argc, char* args[])
 	//Update the surface
 	SDL_UpdateWindowSurface(window);
 
-    //Hack to get window to stay up
-    SDL_Event e; bool quit = false;
+    SDL_Event e;
+	bool quit = false;
+
+	// Initialization
+    std::unique_ptr<Game> game = std::make_unique<Game>();
+	game->Init();
 	
 	while(quit == false)
 	{
-		while(SDL_PollEvent(&e))
-		{
-			if(e.type == SDL_QUIT)
-				quit = true;
-		}
+		quit = game->UpdateInput();
+		game->Update();
 	}
 
 	//Destroy window
-	SDL_DestroyWindow( window );
+	SDL_DestroyWindow(window);
 
 	//Quit SDL subsystems
 	SDL_Quit();
