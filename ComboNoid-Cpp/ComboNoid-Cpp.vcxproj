@@ -145,13 +145,21 @@ copy /Y "$(ProjectDir)SDL2_ttf-2.24.0\lib\x64\SDL2_ttf.dll" "$(OutDir)"</Command
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Components.cpp" />
     <ClCompile Include="src\Game.cpp" />
+    <ClCompile Include="src\Gameplay\Gameplay.cpp" />
+    <ClCompile Include="src\Gameplay\Paddle.cpp" />
     <ClCompile Include="src\LevelManager.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\Renderer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Components.h" />
     <ClInclude Include="src\Game.h" />
+    <ClInclude Include="src\Gameplay\Gameplay.h" />
+    <ClInclude Include="src\Gameplay\Paddle.h" />
     <ClInclude Include="src\LevelManager.h" />
+    <ClInclude Include="src\Renderer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

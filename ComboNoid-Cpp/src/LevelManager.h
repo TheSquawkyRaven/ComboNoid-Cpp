@@ -10,6 +10,7 @@
 class LevelManager
 {
 
+
 public:
 	LevelManager();
 	void Init();

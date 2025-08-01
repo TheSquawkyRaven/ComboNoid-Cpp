@@ -12,7 +12,7 @@
 using namespace std;
 
 //Screen dimension constants
-const int SCREEN_WIDTH = 1280;
+const int SCREEN_WIDTH = 960;
 const int SCREEN_HEIGHT = 720;
 
 int main(int argc, char* args[])
@@ -32,7 +32,7 @@ int main(int argc, char* args[])
 	}
 
 	//Create window
-	window = SDL_CreateWindow("ComboNoid", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+	window = SDL_CreateWindow("ComboNoid", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
 	if (window == NULL)
 	{
 		printf("Window could not be created! SDL_Error: %s\n", SDL_GetError());
@@ -89,7 +89,7 @@ int main(int argc, char* args[])
 	bool quit = false;
 
 	// Initialization
-    std::unique_ptr<Game> game = std::make_unique<Game>();
+    unique_ptr<Game> game = make_unique<Game>(window, sdlRenderer);
 	game->Init();
 	
 	while(quit == false)
