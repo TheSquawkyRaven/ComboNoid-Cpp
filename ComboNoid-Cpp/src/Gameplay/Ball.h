@@ -31,6 +31,8 @@ private:
 	SDL_Rect* currentRect = nullptr;
 
 	float bLimit;
+	float paddleCollisionCooldownTime = 0.01f;
+	float paddleCollisionCooldown = 0;
 
 public:
 	bool isAttached = false;

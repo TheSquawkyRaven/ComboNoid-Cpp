@@ -1,7 +1,8 @@
 #include "Gameplay.h"
 #include "../Game.h"
-#include "BallManager.h"
 #include "Paddle.h"
+#include "BallManager.h"
+#include "BlockManager.h"
 #include "Wall.h"
 
 
@@ -13,6 +14,7 @@ Gameplay::Gameplay(Game* game) : IUpdatable(game), game(game)
 	{
 		this->OnBallManagerDoAttach(ball);
 	};
+	blockManager = new BlockManager(game);
 
 	topWall = new Wall(game);
 	leftWall = new Wall(game);
@@ -21,13 +23,15 @@ Gameplay::Gameplay(Game* game) : IUpdatable(game), game(game)
 
 void Gameplay::Init()
 {
-	printf("Gameplay Initialized\n");
-	ballManager->Init();
 	paddle->Init();
+	ballManager->Init();
+	blockManager->Init();
 
 	topWall->Init(Wall::TOP);
 	leftWall->Init(Wall::LEFT);
 	rightWall->Init(Wall::RIGHT);
+
+	printf("Gameplay Initialized\n");
 }
 
 void Gameplay::Update()

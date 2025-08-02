@@ -7,6 +7,8 @@
 
 #include <stdio.h>
 #include <string>
+#include <map>
+#include <memory>
 
 using namespace std;
 
@@ -18,11 +20,13 @@ public:
 	SDL_Window* window;
 	SDL_Renderer* renderer;
 
+	map<string, weak_ptr<SDL_Texture>> textureMap;
+
 	Renderer(SDL_Window* window, SDL_Renderer* renderer, int renderX, int renderY);
 
 	void Clear();
 	void Draw(SDL_Texture* texture, SDL_Rect* srcRect, SDL_Rect* destRect);
 	void Flush();
 
-	SDL_Texture* LoadTexture(string path);
+	shared_ptr<SDL_Texture> LoadTexture(string path);
 };

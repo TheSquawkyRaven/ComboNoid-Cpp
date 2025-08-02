@@ -9,11 +9,10 @@ Paddle::Paddle(Game* game) : IUpdatable(game), IInput(game), IDrawable(game), IR
 
 void Paddle::Init()
 {
-	static SDL_Texture* texture = game->renderer->LoadTexture("./assets/paddle.png");
-
 	IDrawable::Init(this);
 	IRectCollidable::Init(this);
 
+	shared_ptr<SDL_Texture> texture = game->renderer->LoadTexture("./assets/paddle.png");
 	SetTexture(texture);
 
 	SetSize(NORMAL);
@@ -59,7 +58,9 @@ void Paddle::Update()
 	if (attachedBall != nullptr)
 	{
 		attachedBall->pos.x = pos.x + (destRect.w - attachedBall->destRect.w) / 2;
-		attachedBall->pos.y = pos.y - attachedBall->destRect.h;
+		attachedBall->pos.y = pos.y + rectOffset.y -
+			attachedBall->destRect.h + // Offset the ball to its size so it aligns on top of the paddle
+			attachedBall->destRect.h - attachedBall->radius * 2; // Considers the size (NORMAL or LARGE) of the ball
 
 		if (spaceInput)
 		{
@@ -72,16 +73,20 @@ void Paddle::Update()
 void Paddle::SetSize(PaddleSize size)
 {
 	SDL_Rect* lastRect = currentRect;
+	Vector2 rectSize;
 	switch (size)
 	{
 		case SHORT:
 			currentRect = &rectShort;
+			rectSize = rectSizeShort;
 			break;
 		case NORMAL:
 			currentRect = &rectNormal;
+			rectSize = rectSizeNormal;
 			break;
 		case LONG:
 			currentRect = &rectLong;
+			rectSize = rectSizeLong;
 			break;
 		default:
 			printf("Unknown Paddle Size of %d\n", size);
@@ -90,8 +95,8 @@ void Paddle::SetSize(PaddleSize size)
 	CropTexture(*currentRect);
 
 	// Collision size
-	this->size.x = currentRect->w;
-	this->size.y = currentRect->h;
+	offset = rectOffset;
+	this->size = rectSize;
 
 	// Expand or contract from the center of the paddle
 	int w = 0;
@@ -115,4 +120,11 @@ void Paddle::AttachBall(Ball* ball)
 	attachedBall = ball;
 	ball->isAttached = true;
 	ball->UpdateDestRect();
+}
+
+float Paddle::GetHorizontalHitOffset(Vector2 hit)
+{
+	float centerX = pos.x + size.x / 2;
+	float offset = (hit.x - centerX) / (size.x / 2);
+	return clamp(offset, -1.0f, 1.0f);
 }

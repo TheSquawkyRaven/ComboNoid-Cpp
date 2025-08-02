@@ -32,7 +32,7 @@ void BallManager::CreateBall(bool fromStock)
 
 void BallManager::OnBallDestroyed(Ball* ball)
 {
-	// remove from balls vector (destrctor)
+	// Remove from balls vector (destrctor)
 	balls.erase(remove_if(balls.begin(), balls.end(), [ball](const unique_ptr<Ball>& b)
 	{
 		return b.get() == ball;

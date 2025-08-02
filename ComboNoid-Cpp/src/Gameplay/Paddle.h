@@ -32,6 +32,11 @@ private:
 	SDL_Rect rectLong{ 0, 32, 64, 16 };
 	SDL_Rect* currentRect = nullptr;
 
+	Vector2 rectOffset{ 0, 3 };
+	Vector2 rectSizeShort{ 32, 10 };
+	Vector2 rectSizeNormal{ 48, 10 };
+	Vector2 rectSizeLong{ 64, 10 };
+
 	bool leftInput = false;
 	bool rightInput = false;
 	bool spaceInput = false;
@@ -52,6 +57,9 @@ public:
 	void SetSize(PaddleSize size);
 
 	void AttachBall(Ball* ball);
+
+	// Returns a -1 to 1 offset based on the hit point on the paddle's center
+	float GetHorizontalHitOffset(Vector2 hitPoint);
 
 };
 

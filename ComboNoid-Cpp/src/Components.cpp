@@ -29,7 +29,6 @@ IDrawable::IDrawable(Game* game) : game(game), renderer(game->renderer)
 IDrawable::~IDrawable()
 {
 	game->Unregister(this);
-	SDL_DestroyTexture(texture);
 }
 
 void IDrawable::Init(ITransform* transform)
@@ -37,11 +36,11 @@ void IDrawable::Init(ITransform* transform)
 	this->transform = transform;
 }
 
-void IDrawable::SetTexture(SDL_Texture* texture)
+void IDrawable::SetTexture(shared_ptr<SDL_Texture> texture)
 {
 	this->texture = texture;
 	// Default source and destination rectangles (Draw whole texture)
-	SDL_QueryTexture(texture, nullptr, nullptr, &srcRect.w, &srcRect.h);
+	SDL_QueryTexture(texture.get(), nullptr, nullptr, &srcRect.w, &srcRect.h);
 	srcRect.x = 0;
 	srcRect.y = 0;
 }
@@ -79,7 +78,7 @@ void IDrawable::Draw()
 	}
 
 	UpdateDestRect();
-	renderer->Draw(texture, &srcRect, &destRect);
+	renderer->Draw(texture.get(), &srcRect, &destRect);
 }
 
 void ICollidable::Init(ITransform* transform)
@@ -98,6 +97,11 @@ IRectCollidable::~IRectCollidable()
 	game->Unregister(this);
 }
 
+Vector2 IRectCollidable::GetPos()
+{
+	return transform->pos + offset;
+}
+
 ICircleCollidable::ICircleCollidable(Game* game)
 {
 	this->game = game;
@@ -111,15 +115,13 @@ ICircleCollidable::~ICircleCollidable()
 
 bool ICircleCollidable::CheckCollision(IRectCollidable* colRect)
 {
-	float x = transform->pos.x + offset.x;
-	float y = transform->pos.y + offset.y;
-	float rectX = colRect->transform->pos.x;
-	float rectY = colRect->transform->pos.y;
-	float closestX = clamp(x, rectX, rectX + colRect->size.x);
-	float closestY = clamp(y, rectY, rectY + colRect->size.y);
+	Vector2 thisPos = transform->pos + offset;
+	Vector2 rectPos = colRect->GetPos();
+	float closestX = clamp(thisPos.x, rectPos.x, rectPos.x + colRect->size.x);
+	float closestY = clamp(thisPos.y, rectPos.y, rectPos.y + colRect->size.y);
 
-	float dx = x - closestX;
-	float dy = y - closestY;
+	float dx = thisPos.x - closestX;
+	float dy = thisPos.y - closestY;
 
 	return (dx * dx + dy * dy) < (radius * radius);
 }

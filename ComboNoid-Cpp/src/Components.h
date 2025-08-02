@@ -7,6 +7,7 @@
 
 #include <stdio.h>
 #include <algorithm>
+#include <memory>
 
 #include "Renderer.h"
 #include "Vector2.h"
@@ -57,7 +58,7 @@ private:
 	ITransform* transform = nullptr;
 
 public:
-	SDL_Texture* texture = nullptr;
+	shared_ptr<SDL_Texture> texture = nullptr;
 	SDL_Rect srcRect{};
 	SDL_Rect destRect{};
 
@@ -72,7 +73,7 @@ public:
 	// Can be called to update instantly to get the latest destination rect
 	void UpdateDestRect();
 
-	void SetTexture(SDL_Texture* texture);
+	void SetTexture(shared_ptr<SDL_Texture> texture);
 	virtual void Draw();
 
 };
@@ -95,10 +96,13 @@ class ICircleCollidable;
 class IRectCollidable : public ICollidable
 {
 public:
+	Vector2 offset{ 0, 0 };
+	Vector2 size{ 0, 0 };
+
 	IRectCollidable(Game* game);
 	~IRectCollidable();
 
-	Vector2 size{ 0, 0 };
+	Vector2 GetPos();
 
 	// Callback when a collision with a circle is detected
 	virtual void OnCollision(ICircleCollidable* circle) {};

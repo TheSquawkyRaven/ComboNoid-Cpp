@@ -41,7 +41,9 @@ int main(int argc, char* args[])
 	}
 
 	// Hardware Accelerated renderer with VSync
-	SDL_Renderer* sdlRenderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+	Uint32 rendererFlags = SDL_RENDERER_ACCELERATED;
+	rendererFlags |= SDL_RENDERER_PRESENTVSYNC; // Uncomment to enable VSync
+	SDL_Renderer* sdlRenderer = SDL_CreateRenderer(window, -1, rendererFlags);
 
 	if (sdlRenderer == nullptr)
 	{

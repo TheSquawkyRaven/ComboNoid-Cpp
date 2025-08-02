@@ -12,6 +12,7 @@
 class Game;
 
 class BallManager;
+class BlockManager;
 class Paddle;
 class Ball;
 class Wall;
@@ -20,8 +21,11 @@ class Gameplay : public IUpdatable
 {
 private:
 	Game* game;
-	BallManager* ballManager;
+
 	Paddle* paddle;
+	BallManager* ballManager;
+	BlockManager* blockManager;
+
 	Wall* topWall;
 	Wall* leftWall;
 	Wall* rightWall;

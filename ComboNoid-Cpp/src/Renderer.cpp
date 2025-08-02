@@ -56,13 +56,29 @@ void Renderer::Flush()
     SDL_RenderPresent(renderer);
 }
 
-SDL_Texture* Renderer::LoadTexture(string path)
+shared_ptr<SDL_Texture> Renderer::LoadTexture(string path)
 {
-	SDL_Texture* texture = IMG_LoadTexture(renderer, path.c_str());
-    if (texture == NULL)
+    if (textureMap.contains(path))
+    {
+        shared_ptr<SDL_Texture> loadedTexture = textureMap[path].lock();
+        if (loadedTexture)
+        {
+			printf("Already loaded texture from %s\n", path.c_str());
+            return loadedTexture;
+        }
+		printf("Texture %s was destroyed, reloading...\n", path.c_str());
+        textureMap.erase(path);
+    }
+	SDL_Texture* texture_ = IMG_LoadTexture(renderer, path.c_str());
+    if (texture_ == NULL)
     {
         printf("Unable to load image %s! SDL_image Error: %s\n", path.c_str(), IMG_GetError());
         return nullptr;
     }
+
+    // Destruction uses SDL_DestroyTexture
+    shared_ptr<SDL_Texture> texture = shared_ptr<SDL_Texture>(texture_, SDL_DestroyTexture);
+    textureMap[path] = texture;
+
 	return texture;
 }

@@ -71,11 +71,15 @@ bool Game::UpdateInput()
 
 void Game::UpdateTime()
 {
+	const float deltaTimeLimit = 0.02f; // If can't reach 50fps, the game will slow down
 	Uint64 currentTicks = SDL_GetTicks64();
 	Uint64 elapsedTicks = currentTicks - lastUpdateTicks;
 
 	realDeltaTime = elapsedTicks / 1000.0f;
 	realTotalTime = currentTicks / 1000.0f;
+
+	float expectedDeltaTime = clamp(realDeltaTime, 0.0f, deltaTimeLimit);
+	deltaTime = expectedDeltaTime * timeScale;
 
 	deltaTime = realDeltaTime * timeScale;
 	totalTime += deltaTime;

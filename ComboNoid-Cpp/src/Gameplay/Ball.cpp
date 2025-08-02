@@ -1,5 +1,6 @@
 #include "Ball.h"
 #include "../Game.h"
+#include "Paddle.h"
 
 Ball::Ball(Game* game) : IUpdatable(game), IDrawable(game), ICircleCollidable(game), game(game)
 {
@@ -9,15 +10,14 @@ Ball::Ball(Game* game) : IUpdatable(game), IDrawable(game), ICircleCollidable(ga
 
 void Ball::Init()
 {
-	static SDL_Texture* texture = game->renderer->LoadTexture("./assets/ball.png");
-
 	IDrawable::Init(this);
 	ICircleCollidable::Init(this);
 
+	shared_ptr<SDL_Texture> texture = game->renderer->LoadTexture("./assets/ball.png");
+	SetTexture(texture);
+
 	offset.x = 8;
 	offset.y = 8;
-
-	SetTexture(texture);
 
 	SetSize(NORMAL);
 }
@@ -26,9 +26,11 @@ void Ball::Update()
 {
 	if (isAttached)
 	{
-		UpdateDestRect();
 		return;
 	}
+
+	paddleCollisionCooldown -= game->GetDeltaTime();
+
 	Vector2 velocity = direction * speed * game->deltaTime;
 	pos = pos + velocity;
 	UpdateDestRect();
@@ -60,31 +62,68 @@ void Ball::SetSize(BallSize size)
 	CropTexture(*currentRect);
 }
 
+static Vector2 GetAABBNormal(Ball& ball, IRectCollidable* colRect)
+{
+	Vector2 thisPos = ball.pos + ball.offset;
+	Vector2 rectPos = colRect->GetPos();
+	Vector2 rectSize = colRect->size;
+	float rectCenterX = rectPos.x + rectSize.x / 2.0f;
+	float rectCenterY = rectPos.y + rectSize.y / 2.0f;
+	float dx = thisPos.x - rectCenterX;
+	float dy = thisPos.y - rectCenterY;
+
+	float overlapX = (rectSize.x / 2 + ball.radius) - abs(dx);
+	float overlapY = (rectSize.y / 2 + ball.radius) - abs(dy);
+
+	if (overlapX < overlapY)
+	{
+		return { dx < 0 ? -1.0f : 1.0f, 0.0f }; // Horizontal bounce
+	}
+	else
+	{
+		return { 0.0f, dy < 0 ? -1.0f : 1.0f }; // Vertical bounce
+	}
+}
+
 void Ball::OnCollision(IRectCollidable* rect)
 {
-	float x = pos.x + offset.x;
-	float y = pos.y + offset.y;
-	float rectX = rect->transform->pos.x;
-	float rectY = rect->transform->pos.y;
+	Vector2 thisPos = pos + offset;
+	Vector2 rectPos = rect->GetPos();
+	float closestX = clamp(thisPos.x, rectPos.x, rectPos.x + rect->size.x);
+	float closestY = clamp(thisPos.y, rectPos.y, rectPos.y + rect->size.y);
 
-	float closestX = clamp(x, rectX, rectX + rect->size.x);
-	float closestY = clamp(y, rectY, rectY + rect->size.y);
 	Vector2 closestPoint{ closestX, closestY };
 
-	// Step 2: Vector from closest point to ball center
-	Vector2 difference = pos + offset - closestPoint;
+	// Vector from closest point to ball center
+	Vector2 difference = thisPos - closestPoint;
 	float distance = difference.Magnitude();
 
-	if (distance < radius && distance > 0.0f)
-	{
-		Vector2 normal = difference.Normalized();
 
-		// Step 3: Reflect velocity using normal
+	if (distance < radius)
+	{
+		Vector2 normal = GetAABBNormal(*this, rect);
+
+		// Reflect velocity using normal
 		direction = direction.Reflect(normal);
 
-		// Step 4: Push the ball out of the block
+		// Push the ball out of the rect
 		float penetration = radius - distance;
 		pos = pos + normal * penetration;
+
+		// Prevent continuous collision which can cause some glitches
+		//if (paddleCollisionCooldown < 0)
+		{
+			Paddle* paddle = dynamic_cast<Paddle*>(rect);
+			if (paddle)
+			{
+				paddleCollisionCooldown = paddleCollisionCooldownTime;
+				float hitOffset = paddle->GetHorizontalHitOffset(thisPos);
+
+				// Modify the direction.x based on offset (e.g., curve ball more the farther from center)
+				direction.x += hitOffset;
+				direction.Normalize();
+			}
+		}
 	}
 
 	UpdateDestRect();
