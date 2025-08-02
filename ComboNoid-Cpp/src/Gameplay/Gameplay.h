@@ -8,21 +8,31 @@
 #include <stdio.h>
 
 #include "../Components.h"
-#include "Paddle.h"
 
 class Game;
+
+class BallManager;
+class Paddle;
+class Ball;
+class Wall;
 
 class Gameplay : public IUpdatable
 {
 private:
 	Game* game;
+	BallManager* ballManager;
 	Paddle* paddle;
+	Wall* topWall;
+	Wall* leftWall;
+	Wall* rightWall;
 
 public:
 	Gameplay(Game* game);
 	void Init();
 
 	void Update() override;
+
+	void OnBallManagerDoAttach(Ball* ball);
 
 };
 

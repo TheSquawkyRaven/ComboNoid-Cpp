@@ -11,7 +11,9 @@
 
 class Game;
 
-class Paddle : public ITransform, public IInput, public IUpdatable, public IDrawable
+class Ball;
+
+class Paddle : public ITransform, public IInput, public IUpdatable, public IDrawable, public IRectCollidable
 {
 private:
 	enum PaddleSize
@@ -23,6 +25,8 @@ private:
 
 	Game* game;
 
+	Ball* attachedBall = nullptr;
+
 	SDL_Rect rectShort{ 0, 0, 32, 16 };
 	SDL_Rect rectNormal{ 0, 16, 48, 16 };
 	SDL_Rect rectLong{ 0, 32, 64, 16 };
@@ -30,6 +34,7 @@ private:
 
 	bool leftInput = false;
 	bool rightInput = false;
+	bool spaceInput = false;
 
 	float lLimit = 0;
 	float rLimit = 1280;
@@ -45,6 +50,8 @@ public:
 	void Update() override;
 
 	void SetSize(PaddleSize size);
+
+	void AttachBall(Ball* ball);
 
 };
 

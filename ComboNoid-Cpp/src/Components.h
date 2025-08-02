@@ -6,8 +6,10 @@
 #include <SDL_mixer.h>
 
 #include <stdio.h>
+#include <algorithm>
 
 #include "Renderer.h"
+#include "Vector2.h"
 
 using namespace std;
 
@@ -16,10 +18,8 @@ class Game;
 class ITransform
 {
 public:
-	float x = 0;
-	float y = 0;
-	float scaleX = 1;
-	float scaleY = 1;
+	Vector2 pos{ 0, 0 };
+	Vector2 scale{ 1, 1 };
 };
 
 class IInput
@@ -74,5 +74,53 @@ public:
 
 	void SetTexture(SDL_Texture* texture);
 	virtual void Draw();
+
+};
+
+class ICollidable
+{
+protected:
+	Game* game;
+public:
+	ITransform* transform = nullptr;
+
+	void Init(ITransform* transform);
+
+};
+
+class IRectCollidable;
+class ICircleCollidable;
+
+// Note: Ignores scale!
+class IRectCollidable : public ICollidable
+{
+public:
+	IRectCollidable(Game* game);
+	~IRectCollidable();
+
+	Vector2 size{ 0, 0 };
+
+	// Callback when a collision with a circle is detected
+	virtual void OnCollision(ICircleCollidable* circle) {};
+
+};
+
+// Note: Ignores scale!
+// Also, we only support circle to rect collision ONLY
+class ICircleCollidable : public ICollidable
+{
+public:
+	// Offset from the pos of transform. Used to determine the center of the circle
+	Vector2 offset{ 0, 0 };
+	float radius = 0;
+
+	ICircleCollidable(Game* game);
+	~ICircleCollidable();
+
+	// Circle to Rect collision
+	bool CheckCollision(IRectCollidable* rect);
+
+	// Callback when a collision with a rect is detected
+	virtual void OnCollision(IRectCollidable* rect) {};
 
 };

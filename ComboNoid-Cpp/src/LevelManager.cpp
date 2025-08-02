@@ -3,12 +3,12 @@
 
 LevelManager::LevelManager()
 {
-	printf("Level Manager Created");
+	printf("Level Manager Created\n");
 }
 
 void LevelManager::Init()
 {
-	printf("Level Manager Initialized");
+	printf("Level Manager Initialized\n");
 
 }
 

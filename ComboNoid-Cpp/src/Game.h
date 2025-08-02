@@ -30,6 +30,10 @@ private:
 	vector<IDrawable*> drawables;
 	vector<IInput*> inputs;
 
+	// Only support circle to rect collisions for now
+	vector<ICircleCollidable*> circleCollidables;
+	vector<IRectCollidable*> rectCollidables;
+
 	shared_ptr<Gameplay> gameplay;
 
 	template<typename ContainerType, typename ElementType>
@@ -65,6 +69,10 @@ public:
 	inline void Unregister(IDrawable* drawable) { UnregisterVector(drawables, drawable); }
 	inline void Register(IInput* input) { inputs.push_back(input); }
 	inline void Unregister(IInput* input) { UnregisterVector(inputs, input); }
+	inline void Register(ICircleCollidable* circle) { circleCollidables.push_back(circle); }
+	inline void Unregister(ICircleCollidable* circle) { UnregisterVector(circleCollidables, circle); }
+	inline void Register(IRectCollidable* rect) { rectCollidables.push_back(rect); }
+	inline void Unregister(IRectCollidable* rect) { UnregisterVector(rectCollidables, rect); }
 
 	Game(SDL_Window* window, SDL_Renderer* renderer);
 	void Init();

@@ -26,6 +26,20 @@ void Game::Update()
 		updatable->Update();
 	}
 
+	// Collisions (We check Circle to Rect only)
+	for (auto& circle : circleCollidables)
+	{
+		for (auto& rect : rectCollidables)
+		{
+			if (circle->CheckCollision(rect))
+			{
+				// Callbacks
+				circle->OnCollision(rect);
+				rect->OnCollision(circle);
+			}
+		}
+	}
+
 	// Rendering
 	renderer->Clear();
 	for (auto& drawable : drawables)

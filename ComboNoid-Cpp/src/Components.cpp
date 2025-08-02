@@ -56,7 +56,6 @@ void IDrawable::CropTexture(int x, int y, int w, int h)
 
 void IDrawable::CropTexture(SDL_Rect& rect)
 {
-	printf("Cropping texture to (%d, %d, %d, %d)\n", rect.x, rect.y, rect.w, rect.h);
 	srcRect.x = rect.x;
 	srcRect.y = rect.y;
 	srcRect.w = rect.w;
@@ -65,10 +64,10 @@ void IDrawable::CropTexture(SDL_Rect& rect)
 
 void IDrawable::UpdateDestRect()
 {
-	destRect.x = transform->x;
-	destRect.y = transform->y;
-	destRect.w = srcRect.w * transform->scaleX;
-	destRect.h = srcRect.h * transform->scaleY;
+	destRect.x = transform->pos.x;
+	destRect.y = transform->pos.y;
+	destRect.w = srcRect.w * transform->scale.x;
+	destRect.h = srcRect.h * transform->scale.y;
 }
 
 void IDrawable::Draw()
@@ -81,4 +80,46 @@ void IDrawable::Draw()
 
 	UpdateDestRect();
 	renderer->Draw(texture, &srcRect, &destRect);
+}
+
+void ICollidable::Init(ITransform* transform)
+{
+	this->transform = transform;
+}
+
+IRectCollidable::IRectCollidable(Game* game)
+{
+	this->game = game;
+	game->Register(this);
+}
+
+IRectCollidable::~IRectCollidable()
+{
+	game->Unregister(this);
+}
+
+ICircleCollidable::ICircleCollidable(Game* game)
+{
+	this->game = game;
+	game->Register(this);
+}
+
+ICircleCollidable::~ICircleCollidable()
+{
+	game->Unregister(this);
+}
+
+bool ICircleCollidable::CheckCollision(IRectCollidable* colRect)
+{
+	float x = transform->pos.x + offset.x;
+	float y = transform->pos.y + offset.y;
+	float rectX = colRect->transform->pos.x;
+	float rectY = colRect->transform->pos.y;
+	float closestX = clamp(x, rectX, rectX + colRect->size.x);
+	float closestY = clamp(y, rectY, rectY + colRect->size.y);
+
+	float dx = x - closestX;
+	float dy = y - closestY;
+
+	return (dx * dx + dy * dy) < (radius * radius);
 }
