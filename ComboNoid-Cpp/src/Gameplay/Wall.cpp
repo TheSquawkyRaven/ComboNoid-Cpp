@@ -1,13 +1,16 @@
 #include "Wall.h"
 #include "../Game.h"
+#include "Gameplay.h"
 
-Wall::Wall(Game* game) : IRectCollidable(game), game(game)
+Wall::Wall(Game* game, Gameplay* gameplay) : game(game), gameplay(gameplay)
 {
 }
 
 void Wall::Init(Side side)
 {
-	IRectCollidable::Init(this);
+	gameplay->RegisterWall(this);
+
+	Vector2 pos;
 
 	switch (side)
 	{
@@ -27,4 +30,11 @@ void Wall::Init(Side side)
 			printf("Unknown Wall Side %d\n", side);
 			return;
 	}
+
+	IRectCollidable::PlaceCol(pos.x, pos.y);
+}
+
+void Wall::OnDestroy()
+{
+	gameplay->UnregisterWall(this);
 }

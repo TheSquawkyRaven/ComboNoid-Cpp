@@ -8,10 +8,12 @@
 #include <stdio.h>
 #include <memory>
 #include <vector>
+#include <queue>
 
 #include "Renderer.h"
 #include "LevelManager.h"
 #include "Gameplay/Gameplay.h"
+#include "Gameplay/Block.h"
 
 using namespace std;
 
@@ -23,6 +25,7 @@ class Game
 private:
 	SDL_Event event{};
 	shared_ptr<LevelManager> levelManager;
+	shared_ptr<Gameplay> gameplay;
 
 	Uint64 lastUpdateTicks = 0;
 
@@ -30,12 +33,23 @@ private:
 	vector<IDrawable*> drawables;
 	vector<IInput*> inputs;
 
-	// Only support circle to rect collisions for now
-	vector<ICircleCollidable*> circleCollidables;
-	vector<IRectCollidable*> rectCollidables;
+	queue<IDestroyable*> destructionQueue;
 
-	shared_ptr<Gameplay> gameplay;
+	float deltaTime = 0.0f;
+	float totalTime = 0.0f;
+	float realDeltaTime = 0.0f;
+	float realTotalTime = 0.0f;
 
+public:
+	Renderer* renderer;
+
+	float timeScale = 1.0f;
+
+	// Rendered screen dimensions
+	float renderX = 480;
+	float renderY = 360;
+
+private:
 	template<typename ContainerType, typename ElementType>
 	inline void UnregisterVector(ContainerType& container, const ElementType& element)
 	{
@@ -45,18 +59,14 @@ private:
 
 	void UpdateTime();
 
+	void HandleDestructions();
+
 public:
-	Renderer* renderer;
+	// Returns -1 if loop is false and the animation exceeds the frame count
+	static int AnimateFrame(int frameCount, float time, float frameTime, bool loop);
 
-	float deltaTime = 0.0f;
-	float totalTime = 0.0f;
-	float realDeltaTime = 0.0f;
-	float realTotalTime = 0.0f;
-	float timeScale = 1.0f;
-
-	// Rendered screen dimensions
-	float renderX = 480;
-	float renderY = 360;
+	static int RandomIntRange(int min, int max);
+	static float RandomFloatRange(float min, float max);
 
 	inline float GetDeltaTime() const { return deltaTime; }
 	inline float GetTotalTime() const { return totalTime; }
@@ -69,16 +79,13 @@ public:
 	inline void Unregister(IDrawable* drawable) { UnregisterVector(drawables, drawable); }
 	inline void Register(IInput* input) { inputs.push_back(input); }
 	inline void Unregister(IInput* input) { UnregisterVector(inputs, input); }
-	inline void Register(ICircleCollidable* circle) { circleCollidables.push_back(circle); }
-	inline void Unregister(ICircleCollidable* circle) { UnregisterVector(circleCollidables, circle); }
-	inline void Register(IRectCollidable* rect) { rectCollidables.push_back(rect); }
-	inline void Unregister(IRectCollidable* rect) { UnregisterVector(rectCollidables, rect); }
+
+	void RegisterDestruction(IDestroyable* obj);
 
 	Game(SDL_Window* window, SDL_Renderer* renderer);
 	void Init();
-	
-	void Update();
 
+	void Update();
 	// Returns true if quit is requested
 	bool UpdateInput();
 

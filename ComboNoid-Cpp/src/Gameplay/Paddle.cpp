@@ -1,21 +1,36 @@
 #include "Paddle.h"
 #include "../Game.h"
+#include "Gameplay.h"
 #include "Ball.h"
+#include "Powerup.h"
+#include "Combo.h"
 
-Paddle::Paddle(Game* game) : IUpdatable(game), IInput(game), IDrawable(game), IRectCollidable(game), game(game)
+Paddle::Paddle(Game* game, Gameplay* gameplay) : game(game), gameplay(gameplay)
 {
 	rLimit = game->renderX;
 }
 
 void Paddle::Init()
 {
-	IDrawable::Init(this);
-	IRectCollidable::Init(this);
+	IInput::Register(game);
+	IUpdatable::Register(game);
+	IDrawable::Register(game);
+
+	gameplay->RegisterPaddle(this);
 
 	shared_ptr<SDL_Texture> texture = game->renderer->LoadTexture("./assets/paddle.png");
 	SetTexture(texture);
 
 	SetSize(NORMAL);
+}
+
+void Paddle::OnDestroy()
+{
+	IInput::Unregister(game);
+	IUpdatable::Unregister(game);
+	IDrawable::Unregister(game);
+
+	gameplay->UnregisterPaddle(this);
 }
 
 void Paddle::Input(SDL_Event& event)
@@ -40,34 +55,76 @@ void Paddle::Input(SDL_Event& event)
 
 void Paddle::Update()
 {
+	UpdateTimer();
+	UpdateFlash();
+
 	int xInput = 0;
 	xInput += leftInput ? -1 : 0;
 	xInput += rightInput ? 1 : 0;
 
-	pos.x += game->deltaTime * xInput * speed;
-	UpdateDestRect();
+	pos.x += game->GetDeltaTime() * xInput * speed;
 
 	if (pos.x < lLimit)
 	{
 		pos.x = lLimit;
 	}
-	else if (destRect.x + destRect.w > rLimit)
+	else if (pos.x + destRect.w > rLimit)
 	{
 		pos.x = rLimit - destRect.w;
 	}
-	if (attachedBall != nullptr)
-	{
-		attachedBall->pos.x = pos.x + (destRect.w - attachedBall->destRect.w) / 2;
-		attachedBall->pos.y = pos.y + rectOffset.y -
-			attachedBall->destRect.h + // Offset the ball to its size so it aligns on top of the paddle
-			attachedBall->destRect.h - attachedBall->radius * 2; // Considers the size (NORMAL or LARGE) of the ball
+	UpdateBall();
 
-		if (spaceInput)
+	PostUpdate();
+}
+
+void Paddle::UpdateTimer()
+{
+	if (!sizeChanged)
+	{
+		return;
+	}
+	sizeChangedTimer -= game->GetDeltaTime();
+	if (sizeChangedTimer < 0)
+	{
+		sizeChanged = false;
+		SetSize(NORMAL);
+	}
+}
+
+void Paddle::UpdateFlash()
+{
+	spaceJustPressed = spaceInput && !spaceWasHeld;
+	spaceWasHeld = spaceInput;
+
+	if (!isFlashing)
+	{
+		if (spaceJustPressed)
 		{
-			attachedBall->isAttached = false;
-			attachedBall = nullptr;
+			isFlashing = true;
+			flashTimer = flashTime;
 		}
 	}
+
+	if (!isFlashing)
+	{
+		return;
+	}
+	flashTimer -= game->GetDeltaTime();
+	if (flashTimer < 0)
+	{
+		if (!flashHit)
+		{
+			gameplay->combo->PaddleMiss();
+		}
+		isFlashing = false;
+		flashHit = false;
+	}
+}
+
+void Paddle::PostUpdate()
+{
+	PlaceTexture(this);
+	PlaceCol(this);
 }
 
 void Paddle::SetSize(PaddleSize size)
@@ -95,8 +152,8 @@ void Paddle::SetSize(PaddleSize size)
 	CropTexture(*currentRect);
 
 	// Collision size
-	offset = rectOffset;
-	this->size = rectSize;
+	IRectCollidable::SetOffset(rectOffset.x, rectOffset.y);
+	IRectCollidable::SetSize(rectSize.x, rectSize.y);
 
 	// Expand or contract from the center of the paddle
 	int w = 0;
@@ -119,7 +176,62 @@ void Paddle::AttachBall(Ball* ball)
 {
 	attachedBall = ball;
 	ball->isAttached = true;
-	ball->UpdateDestRect();
+	UpdateBall();
+}
+
+void Paddle::UpdateBall()
+{
+	if (attachedBall == nullptr)
+	{
+		return;
+	}
+
+	attachedBall->pos.x = pos.x + (destRect.w - attachedBall->destRect.w) / 2;
+	attachedBall->pos.y = pos.y + rectOffset.y -
+		attachedBall->destRect.h + // Offset the ball to its size so it aligns on top of the paddle
+		attachedBall->destRect.h - attachedBall->radius * 2; // Considers the size (NORMAL or LARGE) of the ball
+
+	attachedBall->PostUpdate();
+
+	if (spaceInput)
+	{
+		// Launch ball
+		attachedBall->isAttached = false;
+		attachedBall = nullptr;
+	}
+}
+
+void Paddle::Draw()
+{
+	IDrawable::Draw();
+	if (isFlashing)
+	{
+		float percentage = flashTimer / flashTime;
+		int alpha = static_cast<int>(255 * percentage);
+		SDL_SetRenderDrawColor(game->renderer->renderer, 255, 255, 255, alpha);
+		SDL_Rect dest = destRect; // Copy
+		dest.x -= flashSizeIncrease.x * percentage / 2;
+		dest.y -= flashSizeIncrease.y * percentage / 2;
+		dest.w += flashSizeIncrease.x * percentage;
+		dest.h += flashSizeIncrease.y * percentage;
+		SDL_RenderCopy(game->renderer->renderer, texture.get(), &srcRect, &dest);
+		SDL_RenderFillRect(game->renderer->renderer, &destRect);
+		SDL_SetRenderDrawColor(game->renderer->renderer, 255, 255, 255, 255);
+	}
+}
+
+void Paddle::BallHitPaddle(Ball* ball)
+{
+	if (isFlashing)
+	{
+		gameplay->combo->PaddleHit();
+		flashHit = true;
+		ball->SetComboDamage(gameplay->combo->GetCombo());
+	}
+	else
+	{
+		gameplay->combo->PaddleMissBall();
+	}
 }
 
 float Paddle::GetHorizontalHitOffset(Vector2 hit)
@@ -128,3 +240,18 @@ float Paddle::GetHorizontalHitOffset(Vector2 hit)
 	float offset = (hit.x - centerX) / (size.x / 2);
 	return clamp(offset, -1.0f, 1.0f);
 }
+
+void Paddle::EnlargePaddle()
+{
+	SetSize(LONG);
+	sizeChanged = true;
+	sizeChangedTimer = enlargeTime;
+}
+
+void Paddle::ShrinkPaddle()
+{
+	SetSize(SHORT);
+	sizeChanged = true;
+	sizeChangedTimer = shrinkTime;
+}
+

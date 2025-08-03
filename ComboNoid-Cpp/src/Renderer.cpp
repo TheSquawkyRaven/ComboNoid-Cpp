@@ -2,6 +2,9 @@
 
 Renderer::Renderer(SDL_Window* window, SDL_Renderer* renderer, int renderX, int renderY) : window(window), renderer(renderer)
 {
+    this->renderX = renderX;
+    this->renderY = renderY;
+
 	// Render Target - No matter what the window size is, we will always render to this target to make the world screen size consistent
     renderTarget = SDL_CreateTexture(
         renderer,
@@ -36,10 +39,10 @@ void Renderer::Flush()
     int winW, winH;
     SDL_GetWindowSize(window, &winW, &winH);
 
-    float scale = min(winW / 800.0f, winH / 600.0f);
+    float scale = min(winW / renderX, winH / renderY);
 
-    int drawW = static_cast<int>(800 * scale);
-    int drawH = static_cast<int>(600 * scale);
+    int drawW = static_cast<int>(renderX * scale);
+    int drawH = static_cast<int>(renderY * scale);
 
     int offsetX = (winW - drawW) / 2;
     int offsetY = (winH - drawH) / 2;
@@ -63,10 +66,8 @@ shared_ptr<SDL_Texture> Renderer::LoadTexture(string path)
         shared_ptr<SDL_Texture> loadedTexture = textureMap[path].lock();
         if (loadedTexture)
         {
-			printf("Already loaded texture from %s\n", path.c_str());
             return loadedTexture;
         }
-		printf("Texture %s was destroyed, reloading...\n", path.c_str());
         textureMap.erase(path);
     }
 	SDL_Texture* texture_ = IMG_LoadTexture(renderer, path.c_str());
@@ -81,4 +82,56 @@ shared_ptr<SDL_Texture> Renderer::LoadTexture(string path)
     textureMap[path] = texture;
 
 	return texture;
+}
+
+shared_ptr<TTF_Font> Renderer::LoadFont(string path, int fontSize)
+{
+    if (fontMap.contains(path))
+    {
+        shared_ptr<TTF_Font> loadedFont = fontMap[path].lock();
+        if (loadedFont)
+        {
+            return loadedFont;
+        }
+        fontMap.erase(path);
+    }
+    TTF_Font* font = TTF_OpenFont(path.c_str(), fontSize);
+    if (font == NULL)
+    {
+        printf("Failed to load font_ptr %s! SDL_TTF Error: %s\n", path.c_str(), TTF_GetError());
+		return nullptr;
+    }
+
+	shared_ptr<TTF_Font> font_ptr = shared_ptr<TTF_Font>(font, TTF_CloseFont);
+    fontMap[path] = font_ptr;
+
+	return font_ptr;
+}
+
+shared_ptr<SDL_Texture> Renderer::LoadFontTexture(TTF_Font* font, int fontSize, const char* text, SDL_Color& color) const
+{
+    TTF_SetFontSize(font, fontSize);
+
+    SDL_Surface* sdlSurface = TTF_RenderText_Solid(font, text, color);
+    if (sdlSurface == nullptr)
+    {
+        printf("Failed to create surface from font_ptr! SDL_TTF_ERROR: %s", TTF_GetError());
+        return nullptr;
+    }
+
+    SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, sdlSurface);
+
+    SDL_FreeSurface(sdlSurface);
+    if (texture == nullptr)
+    {
+        printf("Failed to convert surface to texture! SDL_IMAGE_ERROR: %s", IMG_GetError());
+        return nullptr;
+    }
+
+    SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
+    //SDL_QueryTexture(texture, nullptr, nullptr, &texture->size.x, &texture->size.y);
+
+    shared_ptr<SDL_Texture> texture_ptr = shared_ptr<SDL_Texture>(texture, SDL_DestroyTexture);
+
+    return texture_ptr;
 }

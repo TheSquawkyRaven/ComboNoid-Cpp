@@ -1,50 +1,86 @@
 #include "Ball.h"
 #include "../Game.h"
+#include "Gameplay.h"
 #include "Paddle.h"
+#include "Block.h"
 
-Ball::Ball(Game* game) : IUpdatable(game), IDrawable(game), ICircleCollidable(game), game(game)
+Ball::Ball(Game* game, Gameplay* gameplay) : game(game), gameplay(gameplay)
 {
     printf("Ball Created\n");
+	lLimit = 0;
+	rLimit = game->renderX;
+	tLimit = 0;
 	bLimit = game->renderY;
 }
 
 void Ball::Init()
 {
-	IDrawable::Init(this);
-	ICircleCollidable::Init(this);
+	IUpdatable::Register(game);
+	IDrawable::Register(game);
+
+	gameplay->RegisterBall(this);
 
 	shared_ptr<SDL_Texture> texture = game->renderer->LoadTexture("./assets/ball.png");
 	SetTexture(texture);
 
-	offset.x = 8;
-	offset.y = 8;
-
 	SetSize(NORMAL);
+}
+
+void Ball::OnDestroy()
+{
+	IUpdatable::Unregister(game);
+	IDrawable::Unregister(game);
+
+	gameplay->UnregisterBall(this);
 }
 
 void Ball::Update()
 {
 	if (isAttached)
 	{
+		PostUpdate();
 		return;
 	}
 
 	paddleCollisionCooldown -= game->GetDeltaTime();
 
-	Vector2 velocity = direction * speed * game->deltaTime;
+	Vector2 velocity = direction * speed * game->GetDeltaTime() * timeFactor;
 	pos = pos + velocity;
-	UpdateDestRect();
 
+	if (pos.x < lLimit)
+	{
+		pos.x = pos.x;
+	}
+	else if (pos.x + radius > rLimit)
+	{
+		pos.x = rLimit - radius;
+	}
+
+	// Vertical limits adjustments with some of padding
+	int padding = currentRect->h / 2.0f - radius + 1.0f;
+	if (pos.y + padding < tLimit)
+	{
+		pos.y = tLimit - padding;
+	}
 	if (pos.y > bLimit)
 	{
-		destroyed(this);
+		fellOff(this);
 		return;
 	}
+
+	PostUpdate();
+}
+
+void Ball::PostUpdate()
+{
+	PlaceTexture(this);
+	PlaceCol(this);
 }
 
 void Ball::SetSize(BallSize size)
 {
 	SDL_Rect* lastRect = currentRect;
+	float radius = 0;
 	switch (size)
 	{
 		case NORMAL:
@@ -59,21 +95,89 @@ void Ball::SetSize(BallSize size)
 			printf("Unknown Ball Size of %d\n", size);
 			break;
 	}
+
+	ICircleCollidable::SetOffset(currentRect->w / 2.0f, currentRect->h / 2.0f);
+	ICircleCollidable::SetRadius(radius);
+
 	CropTexture(*currentRect);
 }
 
-static Vector2 GetAABBNormal(Ball& ball, IRectCollidable* colRect)
+void Ball::OnCollision(IRectCollidable* rect, int type)
 {
-	Vector2 thisPos = ball.pos + ball.offset;
-	Vector2 rectPos = colRect->GetPos();
-	Vector2 rectSize = colRect->size;
+	// Convert type to CollidedWith
+	CollidedWith collidedType = static_cast<CollidedWith>(type);
+
+	if (collidedType == BLOCK)
+	{
+		Block* block = static_cast<Block*>(rect);
+		int initialHP = block->GetHP();
+		if (block->DamageBlock(damage))
+		{
+			// Block broken
+			if (damage > initialHP)
+			{
+				// Damage is higher than its initial hp, skip reflecting, PENETRATE
+				PostUpdate();
+				return;
+			}
+		}
+	}
+
+	Vector2 thisPos = colPos + colOffset;
+	Vector2 rectPos = rect->colPos + rect->colOffset;
+	float closestX = clamp(thisPos.x, rectPos.x, rectPos.x + rect->size.x);
+	float closestY = clamp(thisPos.y, rectPos.y, rectPos.y + rect->size.y);
+
+	Vector2 closestPoint{ closestX, closestY };
+
+	// Vector from closest point to ball center
+	Vector2 difference = thisPos - closestPoint;
+	float distance = difference.Magnitude();
+
+	if (distance < radius)
+	{
+		Vector2 normal = GetBallRectNormal(rect);
+
+		// Reflect velocity using normal
+		direction = direction.Reflect(normal);
+
+		// Push the ball out of the rect
+		float penetration = radius - distance;
+		pos = pos + normal * penetration;
+	}
+
+	if (collidedType == PADDLE)
+	{
+		// Prevent continuous collision with paddle which can cause some glitches
+		if (paddleCollisionCooldown < 0)
+		{
+			Paddle* paddle = static_cast<Paddle*>(rect);
+			paddleCollisionCooldown = paddleCollisionCooldownTime;
+			float hitOffset = paddle->GetHorizontalHitOffset(thisPos);
+
+			// Modify the direction.x based on offset (e.g., curve ball more the farther from center)
+			direction.x += hitOffset * paddleHitOffsetFactor;
+			direction.Normalize();
+
+			paddle->BallHitPaddle(this);
+		}
+	}
+
+	PostUpdate();
+}
+
+Vector2 Ball::GetBallRectNormal(IRectCollidable* rect)
+{
+	Vector2 thisPos = colPos + colOffset;
+	Vector2 rectPos = rect->colPos + rect->colOffset;
+	Vector2 rectSize = rect->size;
 	float rectCenterX = rectPos.x + rectSize.x / 2.0f;
 	float rectCenterY = rectPos.y + rectSize.y / 2.0f;
 	float dx = thisPos.x - rectCenterX;
 	float dy = thisPos.y - rectCenterY;
 
-	float overlapX = (rectSize.x / 2 + ball.radius) - abs(dx);
-	float overlapY = (rectSize.y / 2 + ball.radius) - abs(dy);
+	float overlapX = (rectSize.x / 2 + radius) - abs(dx);
+	float overlapY = (rectSize.y / 2 + radius) - abs(dy);
 
 	if (overlapX < overlapY)
 	{
@@ -85,46 +189,7 @@ static Vector2 GetAABBNormal(Ball& ball, IRectCollidable* colRect)
 	}
 }
 
-void Ball::OnCollision(IRectCollidable* rect)
+void Ball::SetComboDamage(int damage)
 {
-	Vector2 thisPos = pos + offset;
-	Vector2 rectPos = rect->GetPos();
-	float closestX = clamp(thisPos.x, rectPos.x, rectPos.x + rect->size.x);
-	float closestY = clamp(thisPos.y, rectPos.y, rectPos.y + rect->size.y);
-
-	Vector2 closestPoint{ closestX, closestY };
-
-	// Vector from closest point to ball center
-	Vector2 difference = thisPos - closestPoint;
-	float distance = difference.Magnitude();
-
-
-	if (distance < radius)
-	{
-		Vector2 normal = GetAABBNormal(*this, rect);
-
-		// Reflect velocity using normal
-		direction = direction.Reflect(normal);
-
-		// Push the ball out of the rect
-		float penetration = radius - distance;
-		pos = pos + normal * penetration;
-
-		// Prevent continuous collision which can cause some glitches
-		//if (paddleCollisionCooldown < 0)
-		{
-			Paddle* paddle = dynamic_cast<Paddle*>(rect);
-			if (paddle)
-			{
-				paddleCollisionCooldown = paddleCollisionCooldownTime;
-				float hitOffset = paddle->GetHorizontalHitOffset(thisPos);
-
-				// Modify the direction.x based on offset (e.g., curve ball more the farther from center)
-				direction.x += hitOffset;
-				direction.Normalize();
-			}
-		}
-	}
-
-	UpdateDestRect();
+	this->damage = damage;
 }

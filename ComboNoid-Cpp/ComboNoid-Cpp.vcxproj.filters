@@ -19,6 +19,9 @@
     <Filter Include="Source Files\Gameplay">
       <UniqueIdentifier>{1b39d556-2a26-43a7-b052-cb2bbb7d2344}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Libraries">
+      <UniqueIdentifier>{418a42a4-d5e2-4bc4-b180-65e2bf9622be}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
@@ -60,6 +63,21 @@
     <ClCompile Include="src\Gameplay\BlockManager.cpp">
       <Filter>Source Files\Gameplay</Filter>
     </ClCompile>
+    <ClCompile Include="src\Gameplay\Powerup.cpp">
+      <Filter>Source Files\Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Gameplay\PowerupManager.cpp">
+      <Filter>Source Files\Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="tinyxml2\tinyxml2.cpp">
+      <Filter>Libraries</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Gameplay\Combo.cpp">
+      <Filter>Source Files\Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Gameplay\Score.cpp">
+      <Filter>Source Files\Gameplay</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Game.h">
@@ -96,6 +114,21 @@
       <Filter>Header Files\Gameplay</Filter>
     </ClInclude>
     <ClInclude Include="src\Gameplay\BlockManager.h">
+      <Filter>Header Files\Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Gameplay\Powerup.h">
+      <Filter>Header Files\Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Gameplay\PowerupManager.h">
+      <Filter>Header Files\Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="tinyxml2\tinyxml2.h">
+      <Filter>Libraries</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Gameplay\Combo.h">
+      <Filter>Header Files\Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Gameplay\Score.h">
       <Filter>Header Files\Gameplay</Filter>
     </ClInclude>
   </ItemGroup>

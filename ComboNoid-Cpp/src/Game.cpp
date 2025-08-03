@@ -3,6 +3,7 @@
 
 Game::Game(SDL_Window* window, SDL_Renderer* renderer)
 {
+	srand(static_cast<unsigned int>(time(nullptr)));
 	this->renderer = new Renderer(window, renderer, renderX, renderY);
 }
 
@@ -11,7 +12,7 @@ void Game::Init()
     levelManager = make_shared<LevelManager>();
     levelManager->Init();
 	gameplay = make_shared<Gameplay>(this);
-	gameplay->Init();
+	gameplay->Init(levelManager->currentLevel);
 }
 
 // Game loop
@@ -26,19 +27,11 @@ void Game::Update()
 		updatable->Update();
 	}
 
-	// Collisions (We check Circle to Rect only)
-	for (auto& circle : circleCollidables)
-	{
-		for (auto& rect : rectCollidables)
-		{
-			if (circle->CheckCollision(rect))
-			{
-				// Callbacks
-				circle->OnCollision(rect);
-				rect->OnCollision(circle);
-			}
-		}
-	}
+	HandleDestructions();
+
+	gameplay->HandleCollisions();
+
+	HandleDestructions();
 
 	// Rendering
 	renderer->Clear();
@@ -47,6 +40,18 @@ void Game::Update()
 		drawable->Draw();
 	}
 	renderer->Flush();
+}
+
+void Game::HandleDestructions()
+{
+	while (!destructionQueue.empty())
+	{
+		IDestroyable* obj = destructionQueue.front();
+		destructionQueue.pop();
+
+		obj->OnDestroy();
+		delete obj;
+	}
 }
 
 bool Game::UpdateInput()
@@ -71,7 +76,7 @@ bool Game::UpdateInput()
 
 void Game::UpdateTime()
 {
-	const float deltaTimeLimit = 0.02f; // If can't reach 50fps, the game will slow down
+	const float deltaTimeLimit = 1.0f / 60.0f; // If can't reach 60fps, the game will slow down (as well as help with freezes)
 	Uint64 currentTicks = SDL_GetTicks64();
 	Uint64 elapsedTicks = currentTicks - lastUpdateTicks;
 
@@ -81,8 +86,38 @@ void Game::UpdateTime()
 	float expectedDeltaTime = clamp(realDeltaTime, 0.0f, deltaTimeLimit);
 	deltaTime = expectedDeltaTime * timeScale;
 
-	deltaTime = realDeltaTime * timeScale;
 	totalTime += deltaTime;
 
 	lastUpdateTicks = currentTicks;
+}
+
+void Game::RegisterDestruction(IDestroyable* obj)
+{
+	obj->isDestroyed = true;
+	destructionQueue.push(obj);
+}
+
+int Game::AnimateFrame(int frameCount, float time, float frameTime, bool loop)
+{
+	int frame = static_cast<int>(time / frameTime);
+	if (!loop)
+	{
+		if (frame >= frameCount)
+		{
+			return -1;
+		}
+	}
+	frame = frame % frameCount;
+	return frame;
+}
+
+int Game::RandomIntRange(int min, int max)
+{
+	return min + (rand() % (max - min));
+}
+
+float Game::RandomFloatRange(float min, float max)
+{
+	float f = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
+	return min + (max - min) * f;
 }

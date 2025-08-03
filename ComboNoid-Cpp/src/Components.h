@@ -16,62 +16,64 @@ using namespace std;
 
 class Game;
 
+// Any class that requires Register/Unregister should also inherit from this
+// As well as classes that manage objects with components
+class IDestroyable
+{
+public:
+	// Flag to notify that the object is going to be destroyed
+	bool isDestroyed = false;
+	// Chain managed objects or handle callbacks here
+	virtual void Destroy(Game* game);
+	// Called right before the object is actually deallocated
+	// Put unregister calls here
+	virtual void OnDestroy() {};
+};
+
 class ITransform
 {
 public:
 	Vector2 pos{ 0, 0 };
-	Vector2 scale{ 1, 1 };
 };
 
 class IInput
 {
-private:
-	Game* game;
-
 public:
-	IInput(Game* game);
-	~IInput();
+	void Register(Game* game);
+	void Unregister(Game* game);
 
-	virtual void Input(SDL_Event& event) = 0;
+	virtual void Input(SDL_Event& event) {};
 
 };
 
 class IUpdatable
 {
-private:
-	Game* game;
-
 public:
-	IUpdatable(Game* game);
-	~IUpdatable();
+	void Register(Game* game);
+	void Unregister(Game* game);
 
-	virtual void Update() = 0;
+	virtual void Update() {};
 
 };
 
-// Init required! Requires ITransform (coupled)
+// Requires manual update when moved, using PlaceTexture or PlaceTextureTransform
 class IDrawable
 {
 private:
-	Game* game;
 	Renderer* renderer;
-	ITransform* transform = nullptr;
 
 public:
 	shared_ptr<SDL_Texture> texture = nullptr;
 	SDL_Rect srcRect{};
 	SDL_Rect destRect{};
 
-	IDrawable(Game* game);
-	~IDrawable();
-
-	void Init(ITransform* transform);
+	void Register(Game* game);
+	void Unregister(Game* game);
 
 	void CropTexture(int x, int y, int w, int h);
 	void CropTexture(SDL_Rect& rect);
-
-	// Can be called to update instantly to get the latest destination rect
-	void UpdateDestRect();
+	void PlaceTexture(int x, int y);
+	void PlaceTexture(ITransform* transform);
 
 	void SetTexture(shared_ptr<SDL_Texture> texture);
 	virtual void Draw();
@@ -80,51 +82,51 @@ public:
 
 class ICollidable
 {
-protected:
-	Game* game;
 public:
-	ITransform* transform = nullptr;
+	Vector2 colPos{ 0, 0 };
+	Vector2 colOffset{ 0, 0 };
 
-	void Init(ITransform* transform);
+	void SetOffset(float x, float y);
+
+	void PlaceCol(int x, int y);
+	void PlaceCol(ITransform* transform);
 
 };
 
 class IRectCollidable;
 class ICircleCollidable;
 
-// Note: Ignores scale!
+// Due to hard coded collision layers, these need to be registered and unregistered manually.
 class IRectCollidable : public ICollidable
 {
 public:
-	Vector2 offset{ 0, 0 };
-	Vector2 size{ 0, 0 };
+	Vector2 size{ 0, 0 }; // Size of the rectangle
 
-	IRectCollidable(Game* game);
-	~IRectCollidable();
+	void SetSize(float w, float h);
 
-	Vector2 GetPos();
+	// Rect to Rect collision
+	bool CheckCollision(IRectCollidable* rect);
 
 	// Callback when a collision with a circle is detected
-	virtual void OnCollision(ICircleCollidable* circle) {};
+	// type for passing down the collision type. Use enum for better readability.
+	virtual void OnCollision(IRectCollidable* rect, int type) {};
 
 };
 
-// Note: Ignores scale!
 // Also, we only support circle to rect collision ONLY
+// Due to hard coded collision layers, these need to be registered and unregistered manually.
 class ICircleCollidable : public ICollidable
 {
 public:
-	// Offset from the pos of transform. Used to determine the center of the circle
-	Vector2 offset{ 0, 0 };
-	float radius = 0;
+	float radius{ 0 };
 
-	ICircleCollidable(Game* game);
-	~ICircleCollidable();
+	void SetRadius(float radius);
 
 	// Circle to Rect collision
 	bool CheckCollision(IRectCollidable* rect);
 
 	// Callback when a collision with a rect is detected
-	virtual void OnCollision(IRectCollidable* rect) {};
+	// type for passing down the collision type. Use enum for better readability.
+	virtual void OnCollision(IRectCollidable* rect, int type) {};
 
 };

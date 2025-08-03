@@ -71,11 +71,11 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(ProjectDir)SDL2-2.32.8\include;$(ProjectDir)SDL2_image-2.8.8\include;$(ProjectDir)SDL2_mixer-2.8.1\include;$(ProjectDir)SDL2_ttf-2.24.0\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)SDL2-2.32.8\include;$(ProjectDir)SDL2_image-2.8.8\include;$(ProjectDir)SDL2_mixer-2.8.1\include;$(ProjectDir)SDL2_ttf-2.24.0\include;$(ProjectDir)tinyxml2;$(IncludePath)</IncludePath>
     <LibraryPath>$(ProjectDir)SDL2-2.32.8\lib\x64;$(ProjectDir)SDL2_image-2.8.8\lib\x64;$(ProjectDir)SDL2_mixer-2.8.1\lib\x64;$(ProjectDir)SDL2_ttf-2.24.0\lib\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(ProjectDir)SDL2-2.32.8\include;$(ProjectDir)SDL2_image-2.8.8\include;$(ProjectDir)SDL2_mixer-2.8.1\include;$(ProjectDir)SDL2_ttf-2.24.0\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)SDL2-2.32.8\include;$(ProjectDir)SDL2_image-2.8.8\include;$(ProjectDir)SDL2_mixer-2.8.1\include;$(ProjectDir)SDL2_ttf-2.24.0\include;$(ProjectDir)tinyxml2;$(IncludePath)</IncludePath>
     <LibraryPath>$(ProjectDir)SDL2-2.32.8\lib\x64;$(ProjectDir)SDL2_image-2.8.8\lib\x64;$(ProjectDir)SDL2_mixer-2.8.1\lib\x64;$(ProjectDir)SDL2_ttf-2.24.0\lib\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -153,13 +153,18 @@ copy /Y "$(ProjectDir)SDL2_ttf-2.24.0\lib\x64\SDL2_ttf.dll" "$(OutDir)"</Command
     <ClCompile Include="src\Gameplay\BallManager.cpp" />
     <ClCompile Include="src\Gameplay\Block.cpp" />
     <ClCompile Include="src\Gameplay\BlockManager.cpp" />
+    <ClCompile Include="src\Gameplay\Combo.cpp" />
     <ClCompile Include="src\Gameplay\Gameplay.cpp" />
     <ClCompile Include="src\Gameplay\Paddle.cpp" />
+    <ClCompile Include="src\Gameplay\Powerup.cpp" />
+    <ClCompile Include="src\Gameplay\PowerupManager.cpp" />
+    <ClCompile Include="src\Gameplay\Score.cpp" />
     <ClCompile Include="src\Gameplay\Wall.cpp" />
     <ClCompile Include="src\LevelManager.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\Renderer.cpp" />
     <ClCompile Include="src\Vector2.cpp" />
+    <ClCompile Include="tinyxml2\tinyxml2.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Components.h" />
@@ -168,12 +173,17 @@ copy /Y "$(ProjectDir)SDL2_ttf-2.24.0\lib\x64\SDL2_ttf.dll" "$(OutDir)"</Command
     <ClInclude Include="src\Gameplay\BallManager.h" />
     <ClInclude Include="src\Gameplay\Block.h" />
     <ClInclude Include="src\Gameplay\BlockManager.h" />
+    <ClInclude Include="src\Gameplay\Combo.h" />
     <ClInclude Include="src\Gameplay\Gameplay.h" />
     <ClInclude Include="src\Gameplay\Paddle.h" />
+    <ClInclude Include="src\Gameplay\Powerup.h" />
+    <ClInclude Include="src\Gameplay\PowerupManager.h" />
+    <ClInclude Include="src\Gameplay\Score.h" />
     <ClInclude Include="src\Gameplay\Wall.h" />
     <ClInclude Include="src\LevelManager.h" />
     <ClInclude Include="src\Renderer.h" />
     <ClInclude Include="src\Vector2.h" />
+    <ClInclude Include="tinyxml2\tinyxml2.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

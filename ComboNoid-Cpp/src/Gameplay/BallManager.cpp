@@ -1,54 +1,183 @@
 #include "BallManager.h"
+
+#include <ctime>
+#include <cstdlib>
+
 #include "../Game.h"
+#include "Gameplay.h"
+#include "Combo.h"
 
-
-BallManager::BallManager(Game* game) : game(game)
+BallManager::BallManager(Game* game, Gameplay* gameplay) : game(game), gameplay(gameplay)
 {
 
 }
 
 void BallManager::Init()
 {
+	IUpdatable::Register(game);
 	CreateBall(true);
 }
 
-void BallManager::CreateBall(bool fromStock)
+void BallManager::Destroy(Game* game)
 {
-	unique_ptr<Ball> ball = make_unique<Ball>(game);
-	ball->destroyed = [this](Ball* b)
+	IDestroyable::Destroy(game);
+	for (auto& ball : balls)
 	{
-		this->OnBallDestroyed(b);
+		ball->Destroy(game);
+	}
+	balls.clear();
+}
+
+void BallManager::OnDestroy()
+{
+	IUpdatable::Unregister(game);
+}
+
+void BallManager::Update()
+{
+	UpdateTimer();
+}
+
+void BallManager::UpdateTimer()
+{
+	if (enlarge)
+	{
+		enlargeTimer -= game->GetDeltaTime();
+		if (enlargeTimer < 0)
+		{
+			enlarge = false;
+			EndEnlargeBall();
+		}
+	}
+	if (slow)
+	{
+		slowTimer -= game->GetDeltaTime();
+		if (slowTimer < 0)
+		{
+			slow = false;
+			EndSlowBall();
+		}
+	}
+}
+
+Ball* BallManager::CreateBall(bool fromStock)
+{
+	Ball* ball = new Ball(game, gameplay);
+	ball->fellOff = [this](Ball* b)
+	{
+		this->OnBallFellOff(b);
 	};
 	ball->Init();
+
+	balls.insert(ball);
 
 	if (fromStock)
 	{
 		ballsStock--;
-		doAttach(ball.get());
+		doAttach(ball);
 	}
-
-	balls.push_back(move(ball));
+	
+	return ball;
 }
 
-void BallManager::OnBallDestroyed(Ball* ball)
+void BallManager::OnBallFellOff(Ball* ball)
 {
+	printf("Ball fell off at position (%.2f, %.2f)\n", ball->pos.x, ball->pos.y);
 	// Remove from balls vector (destrctor)
-	balls.erase(remove_if(balls.begin(), balls.end(), [ball](const unique_ptr<Ball>& b)
-	{
-		return b.get() == ball;
-	}),
-	balls.end());
+	balls.erase(ball);
+
+	// Ball fell off, destroy it
+	ball->Destroy(game);
 
 	if (balls.empty())
 	{
 		// Lost all balls in play
+		gameplay->combo->BallLost();
 		if (ballsStock <= 0)
 		{
 			// Game over, no more balls in stock
 			printf("Game Over! No more balls in stock.\n");
 			return;
 		}
-		printf("Ball destroyed, creating a new one. Balls left in stock: %d\n", ballsStock);
+		printf("Ball fell off, creating a new one. Balls left in stock: %d\n", ballsStock);
 		CreateBall(true);
+	}
+}
+
+void BallManager::GainExtraBall()
+{
+	ballsStock++;
+}
+
+void BallManager::SplitBall()
+{
+	// Copy to prevent inserting while looping
+	set<Ball*> originalBalls = balls;
+
+	for (auto& ball : originalBalls)
+	{
+		Ball* ball1 = CreateBall(false);
+		Ball* ball2 = CreateBall(false);
+
+		ball1->pos = ball->pos;
+		ball2->pos = ball->pos;
+
+		Vector2 r = Vector2(Game::RandomFloatRange(0, 1), Game::RandomFloatRange(0, 1));
+		r.Normalize();
+
+		ball1->direction = r;
+
+		r = Vector2(Game::RandomFloatRange(0, 1), Game::RandomFloatRange(0, 1));
+		r.Normalize();
+		ball2->direction = r;
+
+		if (slow)
+		{
+			ball1->timeFactor = ballSlowFactor;
+			ball2->timeFactor = ballSlowFactor;
+		}
+		if (enlarge)
+		{
+			ball1->SetSize(Ball::LARGE);
+			ball2->SetSize(Ball::LARGE);
+		}
+	}
+}
+
+void BallManager::EnlargeBall()
+{
+	enlarge = true;
+	enlargeTimer = enlargeTime;
+
+	for (auto& ball : balls)
+	{
+		ball->SetSize(Ball::LARGE);
+	}
+}
+
+void BallManager::SlowBall()
+{
+	slow = true;
+	slowTimer = slowTime;
+
+	for (auto& ball : balls)
+	{
+		ball->timeFactor = ballSlowFactor;
+	}
+}
+
+void BallManager::EndEnlargeBall()
+{
+	for (auto& ball : balls)
+	{
+		ball->SetSize(Ball::NORMAL);
+	}
+}
+
+void BallManager::EndSlowBall()
+{
+	for (auto& ball : balls)
+	{
+		ball->timeFactor = 1.0f;
 	}
 }

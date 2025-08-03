@@ -10,12 +10,10 @@
 #include "../Components.h"
 
 class Game;
+class Gameplay;
 
-class Wall : public ITransform, public IRectCollidable
+class Wall : public IDestroyable, public IRectCollidable
 {
-private:
-	Game* game;
-
 public:
 	enum Side
 	{
@@ -24,8 +22,15 @@ public:
 		RIGHT,
 	};
 
-	Wall(Game* game);
+private:
+	Game* game;
+	Gameplay* gameplay;
+
+public:
+	Wall(Game* game, Gameplay* gameplay);
 	void Init(Side side);
+
+	void OnDestroy() override;
 
 };
 

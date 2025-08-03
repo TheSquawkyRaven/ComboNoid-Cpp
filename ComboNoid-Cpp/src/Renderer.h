@@ -15,12 +15,16 @@ using namespace std;
 class Renderer
 {
 public:
+	int renderX;
+	int renderY;
+
 	SDL_Texture* renderTarget;
 
 	SDL_Window* window;
 	SDL_Renderer* renderer;
 
 	map<string, weak_ptr<SDL_Texture>> textureMap;
+	map<string, weak_ptr<TTF_Font>> fontMap;
 
 	Renderer(SDL_Window* window, SDL_Renderer* renderer, int renderX, int renderY);
 
@@ -29,4 +33,7 @@ public:
 	void Flush();
 
 	shared_ptr<SDL_Texture> LoadTexture(string path);
+
+	shared_ptr<TTF_Font> LoadFont(string path, int fontSize);
+	shared_ptr<SDL_Texture> LoadFontTexture(TTF_Font* font, int fontSize, const char* text, SDL_Color& color) const;
 };

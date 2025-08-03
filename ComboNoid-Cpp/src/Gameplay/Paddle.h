@@ -12,10 +12,11 @@
 class Game;
 
 class Ball;
+class Gameplay;
 
-class Paddle : public ITransform, public IInput, public IUpdatable, public IDrawable, public IRectCollidable
+class Paddle : public IDestroyable, public ITransform, public IInput, public IUpdatable, public IDrawable, public IRectCollidable
 {
-private:
+public:
 	enum PaddleSize
 	{
 		SHORT,
@@ -23,43 +24,72 @@ private:
 		LONG
 	};
 
+private:
+	inline static SDL_Rect rectShort{ 0, 0, 32, 16 };
+	inline static SDL_Rect rectNormal{ 0, 16, 48, 16 };
+	inline static SDL_Rect rectLong{ 0, 32, 64, 16 };
+
+	inline static const Vector2 rectOffset{ 0, 3 };
+	inline static const Vector2 rectSizeShort{ 32, 10 };
+	inline static const Vector2 rectSizeNormal{ 48, 10 };
+	inline static const Vector2 rectSizeLong{ 64, 10 };
+
+	inline static const float enlargeTime = 10.0f;
+	inline static const float shrinkTime = 10.0f;
+
+	inline static const float flashTime = 0.2f;
+	inline static const Vector2 flashSizeIncrease{ 8, 8 };
+
 	Game* game;
+	Gameplay* gameplay;
 
 	Ball* attachedBall = nullptr;
-
-	SDL_Rect rectShort{ 0, 0, 32, 16 };
-	SDL_Rect rectNormal{ 0, 16, 48, 16 };
-	SDL_Rect rectLong{ 0, 32, 64, 16 };
 	SDL_Rect* currentRect = nullptr;
-
-	Vector2 rectOffset{ 0, 3 };
-	Vector2 rectSizeShort{ 32, 10 };
-	Vector2 rectSizeNormal{ 48, 10 };
-	Vector2 rectSizeLong{ 64, 10 };
 
 	bool leftInput = false;
 	bool rightInput = false;
 	bool spaceInput = false;
+	bool spaceWasHeld = false;
+	bool spaceJustPressed = false;
 
 	float lLimit = 0;
-	float rLimit = 1280;
+	float rLimit;
 
-	float speed = 200;
+	float speed = 240;
 
-public:
-	Paddle(Game* game);
-	void Init();
+	bool sizeChanged = false;
+	float sizeChangedTimer = 0;
 
-	void Input(SDL_Event& event) override;
+	bool isFlashing = false;
+	float flashTimer = 0;
+	bool flashHit = false;
 
-	void Update() override;
+private:
+	void UpdateTimer();
+	void UpdateBall();
+	void UpdateFlash();
+	void PostUpdate();
 
 	void SetSize(PaddleSize size);
 
+public:
+	Paddle(Game* game, Gameplay* gameplay);
+	void Init();
+
+	void OnDestroy() override;
+	void Input(SDL_Event& event) override;
+	void Update() override;
+	void Draw() override;
+
 	void AttachBall(Ball* ball);
+	
+	void BallHitPaddle(Ball* ball);
 
 	// Returns a -1 to 1 offset based on the hit point on the paddle's center
 	float GetHorizontalHitOffset(Vector2 hitPoint);
+
+	void EnlargePaddle();
+	void ShrinkPaddle();
 
 };
 

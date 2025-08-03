@@ -14,25 +14,46 @@
 using namespace std;
 
 class Game;
+class Gameplay;
 
-class Ball : public ITransform, public IUpdatable, public IDrawable, public ICircleCollidable
+class Ball : public IDestroyable, public ITransform, public IUpdatable, public IDrawable, public ICircleCollidable
 {
-private:
+public:
 	enum BallSize
 	{
 		NORMAL,
 		LARGE
 	};
 
-	Game* game;
+	enum CollidedWith
+	{
+		PADDLE = 0,
+		BLOCK = 1,
+		WALL = 2,
+	};
 
-	SDL_Rect rectNormal{ 16, 0, 16, 16 };
-	SDL_Rect rectLarge{ 0, 0, 16, 16 };
+private:
+	inline static SDL_Rect rectNormal{ 16, 0, 16, 16 };
+	inline static SDL_Rect rectLarge{ 0, 0, 16, 16 };
+
+	// Too low, the ball will be too vertical, too high, the ball will be too horizontal
+	inline static const float paddleHitOffsetFactor = 0.75f;
+
+	inline static const float paddleCollisionCooldownTime = 0.01f;
+
+	Game* game;
+	Gameplay* gameplay;
+
 	SDL_Rect* currentRect = nullptr;
 
+	float lLimit;
+	float rLimit;
+	float tLimit;
 	float bLimit;
-	float paddleCollisionCooldownTime = 0.01f;
+
 	float paddleCollisionCooldown = 0;
+
+	int damage = 1;
 
 public:
 	bool isAttached = false;
@@ -40,16 +61,25 @@ public:
 	Vector2 direction{ 0, -1 };
 	float speed = 200;
 
-	function<void(Ball*)> destroyed;
+	float timeFactor = 1.0f;
 
-	Ball(Game* game);
+	function<void(Ball*)> fellOff;
+
+private:
+	Vector2 GetBallRectNormal(IRectCollidable* rect);
+
+public:
+	Ball(Game* game, Gameplay* gameplay);
 	void Init();
 
+	void OnDestroy() override;
 	void Update() override;
+	void PostUpdate();
+	void OnCollision(IRectCollidable* rect, int type) override;
 
 	void SetSize(BallSize size);
 
-	void OnCollision(IRectCollidable* rect) override;
+	void SetComboDamage(int damage);
 
 };
 

@@ -1,44 +1,101 @@
 #include "BlockManager.h"
 #include "../Game.h"
+#include "Gameplay.h"
+#include "Score.h"
 
 
-BlockManager::BlockManager(Game* game) : game(game)
+BlockManager::BlockManager(Game* game, Gameplay* gameplay) : game(game), gameplay(gameplay)
 {
 
 }
 
 void BlockManager::Init()
 {
-	for (int x = 0; x < 15; ++x)
+
+}
+
+void BlockManager::LoadLevel(Level* level)
+{
+	int width = level->tiles->width;
+	int x = 0, y = 0;
+	for (int i = 0; i < level->tiles->data.size(); i++)
 	{
-		for (int y = 0; y < 15; ++y)
+		int tile = level->tiles->data[i];
+		int data = level->data->data[i];
+		if (tile != 0)
 		{
-			Block* block = CreateBlock(static_cast<Block::Color>((x + y) % 6)); // Create blocks with different colors
-			block->pos = Vector2(x * 32, y * 16); // Position blocks in a grid
+			Vector2 pos = Vector2(x * 32, y * 16); // Position blocks in a grid
+			CreateBlockFromTile(tile, data, pos);
+		}
+		x++;
+		if (x >= width)
+		{
+			x = 0;
+			y++;
 		}
 	}
 }
 
-Block* BlockManager::CreateBlock(Block::Color color)
+void BlockManager::Destroy(Game* game)
 {
-	Block* block = new Block(game);
-	block->destroyed = [this](Block* b)
+	IDestroyable::Destroy(game);
+
+	for (auto& block : blocks)
 	{
-		this->OnBlockDestroyed(b);
-	};
-	block->Init(color);
+		block->Destroy(game);
+	}
+	blocks.clear();
 
-	blocksCount++;
-
-	return block;
+	for (auto& block : strongBlocks)
+	{
+		block->Destroy(game);
+	}
+	strongBlocks.clear();
 }
 
-void BlockManager::OnBlockDestroyed(Block* block)
+void BlockManager::CreateBlockFromTile(int tile, int data, Vector2& pos)
 {
-	// Manual deletion. The block is not stored or kept track anywhere but this vector, or component vectors in Game.h
-	delete block;
-	if (blocksCount == 0)
+    Block::Color color = TileToBlockMap.at(static_cast<Level::TileType>(tile));
+    CreateBlock(color, pos, data != 0);
+}
+
+void BlockManager::CreateBlock(Block::Color color, Vector2& pos, bool spawnPowerup)
+{
+	Block* block = new Block(game, gameplay);
+	block->broken = [this](Block* b)
+	{
+		this->OnBlockBroken(b);
+	};
+	block->Init(color, pos, spawnPowerup);
+
+	if (block->isStrong)
+	{
+		strongBlocks.insert(block);
+		return;
+	}
+	blocks.insert(block);
+}
+
+void BlockManager::OnBlockBroken(Block* block)
+{
+	if (!blocks.contains(block))
+	{
+		strongBlocks.erase(block);
+	}
+	else
+	{
+		blocks.erase(block);
+	}
+
+	Block::Color color = block->GetColor();
+	int score = blockScore.at(color);
+	gameplay->score->AddScore(score);
+
+	block->Destroy(game);
+
+	if (blocks.empty())
 	{
 		// Level copmleted
+		printf("All blocks destroyed!\n");
 	}
 }

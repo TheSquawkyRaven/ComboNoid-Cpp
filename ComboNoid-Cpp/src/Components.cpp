@@ -1,39 +1,45 @@
 #include "Components.h"
 #include "Game.h"
 
-IInput::IInput(Game* game) : game(game)
+void IDestroyable::Destroy(Game* game)
+{
+	if (isDestroyed)
+	{
+		return;
+	}
+	game->RegisterDestruction(this);
+}
+
+void IInput::Register(Game* game)
 {
 	game->Register(this);
 }
 
-IInput::~IInput()
+void IInput::Unregister(Game* game)
 {
 	game->Unregister(this);
 }
 
-IUpdatable::IUpdatable(Game* game) : game(game)
+void IUpdatable::Register(Game* game)
 {
 	game->Register(this);
 }
 
-IUpdatable::~IUpdatable()
+void IUpdatable::Unregister(Game* game)
 {
 	game->Unregister(this);
 }
 
-IDrawable::IDrawable(Game* game) : game(game), renderer(game->renderer)
+void IDrawable::Register(Game* game)
 {
 	game->Register(this);
+	renderer = game->renderer;
 }
 
-IDrawable::~IDrawable()
+void IDrawable::Unregister(Game* game)
 {
 	game->Unregister(this);
-}
-
-void IDrawable::Init(ITransform* transform)
-{
-	this->transform = transform;
+	this->renderer = nullptr;
 }
 
 void IDrawable::SetTexture(shared_ptr<SDL_Texture> texture)
@@ -55,18 +61,20 @@ void IDrawable::CropTexture(int x, int y, int w, int h)
 
 void IDrawable::CropTexture(SDL_Rect& rect)
 {
-	srcRect.x = rect.x;
-	srcRect.y = rect.y;
-	srcRect.w = rect.w;
-	srcRect.h = rect.h;
+	CropTexture(rect.x, rect.y, rect.w, rect.h);
 }
 
-void IDrawable::UpdateDestRect()
+void IDrawable::PlaceTexture(int x, int y)
 {
-	destRect.x = transform->pos.x;
-	destRect.y = transform->pos.y;
-	destRect.w = srcRect.w * transform->scale.x;
-	destRect.h = srcRect.h * transform->scale.y;
+	destRect.x = x;
+	destRect.y = y;
+	destRect.w = srcRect.w;
+	destRect.h = srcRect.h;
+}
+
+void IDrawable::PlaceTexture(ITransform* transform)
+{
+	PlaceTexture(transform->pos.x, transform->pos.y);
 }
 
 void IDrawable::Draw()
@@ -77,48 +85,54 @@ void IDrawable::Draw()
 		return;
 	}
 
-	UpdateDestRect();
 	renderer->Draw(texture.get(), &srcRect, &destRect);
 }
 
-void ICollidable::Init(ITransform* transform)
+void ICollidable::SetOffset(float x, float y)
 {
-	this->transform = transform;
+	colOffset.x = x;
+	colOffset.y = y;
 }
 
-IRectCollidable::IRectCollidable(Game* game)
+void ICollidable::PlaceCol(int x, int y)
 {
-	this->game = game;
-	game->Register(this);
+	colPos.x = x;
+	colPos.y = y;
 }
 
-IRectCollidable::~IRectCollidable()
+void ICollidable::PlaceCol(ITransform* transform)
 {
-	game->Unregister(this);
+	PlaceCol(static_cast<int>(transform->pos.x), static_cast<int>(transform->pos.y));
 }
 
-Vector2 IRectCollidable::GetPos()
+void IRectCollidable::SetSize(float w, float h)
 {
-	return transform->pos + offset;
+	size.x = w;
+	size.y = h;
 }
 
-ICircleCollidable::ICircleCollidable(Game* game)
+bool IRectCollidable::CheckCollision(IRectCollidable* rect)
 {
-	this->game = game;
-	game->Register(this);
+	Vector2 thisPos = colPos + colOffset;
+	Vector2 rectPos = rect->colPos + rect->colOffset;
+	// Check if the rectangles overlap
+	return (thisPos.x < rectPos.x + rect->size.x &&
+			thisPos.x + size.x > rectPos.x &&
+			thisPos.y < rectPos.y + rect->size.y &&
+			thisPos.y + size.y > rectPos.y);
 }
 
-ICircleCollidable::~ICircleCollidable()
+void ICircleCollidable::SetRadius(float radius)
 {
-	game->Unregister(this);
+	this->radius = radius;
 }
 
-bool ICircleCollidable::CheckCollision(IRectCollidable* colRect)
+bool ICircleCollidable::CheckCollision(IRectCollidable* rect)
 {
-	Vector2 thisPos = transform->pos + offset;
-	Vector2 rectPos = colRect->GetPos();
-	float closestX = clamp(thisPos.x, rectPos.x, rectPos.x + colRect->size.x);
-	float closestY = clamp(thisPos.y, rectPos.y, rectPos.y + colRect->size.y);
+	Vector2 thisPos = colPos + colOffset;
+	Vector2 rectPos = rect->colPos + rect->colOffset;
+	float closestX = clamp(thisPos.x, rectPos.x, rectPos.x + rect->size.x);
+	float closestY = clamp(thisPos.y, rectPos.y, rectPos.y + rect->size.y);
 
 	float dx = thisPos.x - closestX;
 	float dy = thisPos.y - closestY;
