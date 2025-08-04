@@ -22,8 +22,9 @@ class Level;
 class Combo;
 class Score;
 class Background;
+class PauseMenu;
 
-class Gameplay : public IDestroyable
+class Gameplay : public IDestroyable, public IInput
 {
 private:
 	Game* game;
@@ -35,12 +36,16 @@ private:
 	Wall* leftWall;
 	Wall* rightWall;
 
+	PauseMenu* pauseMenu;
+
 	// Collision Layers (Hard coded for now)
 	vector<ICircleCollidable*> balls{}; // Collides with paddles, blocks, walls
 	vector<IRectCollidable*> paddles{};
 	vector<IRectCollidable*> blocks{};
 	vector<IRectCollidable*> walls{};
 	vector<IRectCollidable*> powerups{}; // Collides with paddles
+
+	bool isPaused = false;
 
 public:
 
@@ -68,7 +73,7 @@ public:
 	inline void UnregisterPaddle(IRectCollidable* paddle) { UnregisterVector(paddles, paddle); }
 	inline void RegisterBlock(IRectCollidable* block) { blocks.push_back(block); }
 	inline void UnregisterBlock(IRectCollidable* block) { UnregisterVector(blocks, block); }
-	inline void RegisterWall (IRectCollidable* wall) { walls.push_back(wall); }
+	inline void RegisterWall(IRectCollidable* wall) { walls.push_back(wall); }
 	inline void UnregisterWall(IRectCollidable* wall) { UnregisterVector(walls, wall); }
 	inline void RegisterPowerup(IRectCollidable* powerup) { powerups.push_back(powerup); }
 	inline void UnregisterPowerup(IRectCollidable* powerup) { UnregisterVector(powerups, powerup); }
@@ -77,8 +82,12 @@ public:
 	void Init(shared_ptr<Level> level);
 
 	void Destroy(Game* game) override;
+	void OnDestroy() override;
+	void Input(SDL_Event& event) override;
 
 	void HandleCollisions();
+
+	void Pause(bool paused);
 
 };
 

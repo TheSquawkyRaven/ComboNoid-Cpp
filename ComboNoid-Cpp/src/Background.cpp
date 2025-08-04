@@ -19,11 +19,6 @@ void Background::Init(string backgroundPath)
 	PlaceTextureResized(0, 0, game->renderX, game->renderY);
 }
 
-void Background::Destroy(Game* game)
-{
-	IDestroyable::Destroy(game);
-}
-
 void Background::OnDestroy()
 {
 	IUpdatable::Unregister(game);
@@ -39,6 +34,10 @@ void Background::Update()
 void Background::Draw()
 {
 	IDrawable::Draw();
+	if (!GetVisible())
+	{
+		return;
+	}
 	SDL_SetRenderDrawColor(game->renderer->renderer, fogColor.r, fogColor.g, fogColor.b, fogValue * fogColor.a);
 	SDL_RenderFillRect(game->renderer->renderer, &destRect);
 	SDL_SetRenderDrawColor(game->renderer->renderer, 255, 255, 255, 255);

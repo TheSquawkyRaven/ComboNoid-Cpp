@@ -12,28 +12,25 @@
 #include "../Background.h"
 #include "Button.h"
 
-class MenuManager;
-
 using namespace std;
 
-class MainMenu : public IDestroyable
+class Gameplay;
+
+class PauseMenu : public IDestroyable, public IDrawable
 {
 private:
+	inline static const int backgroundDrawLayer = 99;
+
 	inline static const int fontSize = 16;
 	inline static const SDL_Color textColor{ 0, 0, 0, 255 };
 	inline static const int ySpacing = 48;
 
 	inline static const Vector2 centerOffset{ 0, 40 };
-	inline static const int titleFontSize = 64;
-	inline static const float titleYOffset = -80;
-	inline static const SDL_Color titleColor{ 255, 255, 255, 255 };
 
 	Game* game;
-	MenuManager* menuManager;
+	Gameplay* gameplay;
 
-	Text* title = nullptr;
-	Button* playButton = nullptr;
-	Button* levelsButton = nullptr;
+	Button* resumeButton = nullptr;
 	Button* quitButton = nullptr;
 
 	vector<Button*> buttons;
@@ -41,15 +38,15 @@ private:
 	Vector2 centerPos{ 0, 0 };
 
 private:
-	void OnPlayButtonPressed();
-	void OnLevelsButtonPressed();
+	void OnResumeButtonPressed();
 	void OnQuitButtonPressed();
 
 public:
-	MainMenu(MenuManager* menuManager, Game* game);
+	PauseMenu(Game* game, Gameplay* gameplay);
 	void Init();
 
 	void Destroy(Game* game) override;
+	void OnDestroy() override;
 
 	void SetVisible(bool visible);
 

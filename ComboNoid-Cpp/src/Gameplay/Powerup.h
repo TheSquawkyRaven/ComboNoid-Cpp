@@ -48,6 +48,8 @@ private:
 	float speed = 100;
 
 public:
+	inline static const float spawnChance = 0.1f;
+
 	function<void(Powerup*)> gained;
 	function<void(Powerup*)> fellOff;
 

@@ -61,14 +61,20 @@ class IDrawable
 {
 private:
 	Renderer* renderer;
+	int layer = 0;
+	bool visible = true;
 
 public:
+
 	shared_ptr<SDL_Texture> texture = nullptr;
 	SDL_Rect srcRect{};
 	SDL_Rect destRect{};
 
+	inline virtual bool GetVisible() const { return visible; }
+	inline virtual void SetVisible(bool visible) { this->visible = visible; }
+
 	void Register(Game* game, int layer = 0);
-	void Unregister(Game* game, int layer = 0);
+	void Unregister(Game* game);
 
 	void CropTexture(int x, int y, int w, int h);
 	void CropTexture(SDL_Rect& rect);

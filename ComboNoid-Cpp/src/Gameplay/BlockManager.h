@@ -52,8 +52,8 @@ public:
 	};
 
 private:
-	void CreateBlockFromTile(int tile, int data, Vector2& pos);
-	void CreateBlock(Block::Color color, Vector2& pos, bool spawnPowerup);
+	void CreateBlockFromTile(int tile, Vector2& pos);
+	void CreateBlock(Block::Color color, Vector2& pos);
 
 	void OnBlockBroken(Block* block);
 

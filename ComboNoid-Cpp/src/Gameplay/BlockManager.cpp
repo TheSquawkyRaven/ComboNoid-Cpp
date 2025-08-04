@@ -21,11 +21,10 @@ void BlockManager::LoadLevel(Level* level)
 	for (int i = 0; i < level->tiles->data.size(); i++)
 	{
 		int tile = level->tiles->data[i];
-		int data = level->data->data[i];
 		if (tile != 0)
 		{
 			Vector2 pos = Vector2(x * 32, y * 16); // Position blocks in a grid
-			CreateBlockFromTile(tile, data, pos);
+			CreateBlockFromTile(tile, pos);
 		}
 		x++;
 		if (x >= width)
@@ -38,8 +37,6 @@ void BlockManager::LoadLevel(Level* level)
 
 void BlockManager::Destroy(Game* game)
 {
-	IDestroyable::Destroy(game);
-
 	for (auto& block : blocks)
 	{
 		block->Destroy(game);
@@ -51,22 +48,24 @@ void BlockManager::Destroy(Game* game)
 		block->Destroy(game);
 	}
 	strongBlocks.clear();
+
+	IDestroyable::Destroy(game);
 }
 
-void BlockManager::CreateBlockFromTile(int tile, int data, Vector2& pos)
+void BlockManager::CreateBlockFromTile(int tile, Vector2& pos)
 {
     Block::Color color = TileToBlockMap.at(static_cast<Level::TileType>(tile));
-    CreateBlock(color, pos, data != 0);
+    CreateBlock(color, pos);
 }
 
-void BlockManager::CreateBlock(Block::Color color, Vector2& pos, bool spawnPowerup)
+void BlockManager::CreateBlock(Block::Color color, Vector2& pos)
 {
 	Block* block = new Block(game, gameplay);
 	block->broken = [this](Block* b)
 	{
 		this->OnBlockBroken(b);
 	};
-	block->Init(color, pos, spawnPowerup);
+	block->Init(color, pos);
 
 	if (block->isStrong)
 	{

@@ -33,10 +33,11 @@ void IUpdatable::Unregister(Game* game)
 void IDrawable::Register(Game* game, int layer)
 {
 	game->Register(this, layer);
+	this->layer = layer;
 	renderer = game->renderer;
 }
 
-void IDrawable::Unregister(Game* game, int layer)
+void IDrawable::Unregister(Game* game)
 {
 	game->Unregister(this, layer);
 	this->renderer = nullptr;
@@ -87,6 +88,10 @@ void IDrawable::PlaceTextureResized(int x, int y, int w, int h)
 
 void IDrawable::Draw()
 {
+	if (!visible)
+	{
+		return;
+	}
 	if (texture == nullptr)
 	{
 		printf("Drawable texture is null!\n");

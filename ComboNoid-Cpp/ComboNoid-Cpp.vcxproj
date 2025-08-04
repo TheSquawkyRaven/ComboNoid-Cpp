@@ -165,13 +165,16 @@ copy /Y "$(ProjectDir)SDL2_ttf-2.24.0\lib\x64\SDL2_ttf.dll" "$(OutDir)"</Command
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\Renderer.cpp" />
     <ClCompile Include="src\UI\Button.cpp" />
+    <ClCompile Include="src\UI\LevelsMenu.cpp" />
     <ClCompile Include="src\UI\MainMenu.cpp" />
+    <ClCompile Include="src\UI\MenuManager.cpp" />
+    <ClCompile Include="src\UI\PauseMenu.cpp" />
+    <ClCompile Include="src\UI\Text.cpp" />
     <ClCompile Include="src\Vector2.cpp" />
     <ClCompile Include="tinyxml2\tinyxml2.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Background.h" />
-    <ClInclude Include="src\Color.h" />
     <ClInclude Include="src\Components.h" />
     <ClInclude Include="src\Game.h" />
     <ClInclude Include="src\Gameplay\Ball.h" />
@@ -188,7 +191,11 @@ copy /Y "$(ProjectDir)SDL2_ttf-2.24.0\lib\x64\SDL2_ttf.dll" "$(OutDir)"</Command
     <ClInclude Include="src\LevelManager.h" />
     <ClInclude Include="src\Renderer.h" />
     <ClInclude Include="src\UI\Button.h" />
+    <ClInclude Include="src\UI\LevelsMenu.h" />
     <ClInclude Include="src\UI\MainMenu.h" />
+    <ClInclude Include="src\UI\MenuManager.h" />
+    <ClInclude Include="src\UI\PauseMenu.h" />
+    <ClInclude Include="src\UI\Text.h" />
     <ClInclude Include="src\Vector2.h" />
     <ClInclude Include="tinyxml2\tinyxml2.h" />
   </ItemGroup>

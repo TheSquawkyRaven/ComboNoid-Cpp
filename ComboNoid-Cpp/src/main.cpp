@@ -97,7 +97,10 @@ int main(int argc, char* args[])
 	while(quit == false)
 	{
 		quit = game->UpdateInput();
-		game->Update();
+		if (!quit)
+		{
+			quit = game->Update();
+		}
 	}
 
 	//Destroy window

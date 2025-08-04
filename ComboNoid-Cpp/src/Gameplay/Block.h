@@ -51,7 +51,6 @@ private:
 
 public:
 	bool isStrong = false;
-	bool spawnPowerup = false;
 	function<void(Block*)> broken;
 
 private:
@@ -65,7 +64,7 @@ public:
 	Block(Game* game, Gameplay* gameplay);
 
 	// Pos is only set at this Init function
-	void Init(Color color, Vector2& pos, bool spawnPowerup);
+	void Init(Color color, Vector2& pos);
 	void OnDestroy() override;
 	void Update() override;
 

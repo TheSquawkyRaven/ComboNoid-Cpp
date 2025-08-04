@@ -9,6 +9,7 @@
 #include "Combo.h"
 #include "Score.h"
 #include "../Background.h"
+#include "../UI/PauseMenu.h"
 
 
 Gameplay::Gameplay(Game* game) : game(game)
@@ -28,10 +29,14 @@ Gameplay::Gameplay(Game* game) : game(game)
 	topWall = new Wall(game, this);
 	leftWall = new Wall(game, this);
 	rightWall = new Wall(game, this);
+
+	pauseMenu = new PauseMenu(game, this);
 }
 
 void Gameplay::Init(shared_ptr<Level> level)
 {
+	IInput::Register(game);
+
 	currentLevel = level;
 
 	background->Init();
@@ -47,14 +52,25 @@ void Gameplay::Init(shared_ptr<Level> level)
 	leftWall->Init(Wall::LEFT);
 	rightWall->Init(Wall::RIGHT);
 
-	blockManager->LoadLevel(level.get());
+	pauseMenu->Init();
+	pauseMenu->SetVisible(false);
 
-	printf("Gameplay Initialized\n");
+	blockManager->LoadLevel(level.get());
+}
+
+void Gameplay::Input(SDL_Event& event)
+{
+	if (event.type == SDL_KEYDOWN)
+	{
+		if (event.key.keysym.sym == SDLK_ESCAPE)
+		{
+			Pause(!isPaused);
+		}
+	}
 }
 
 void Gameplay::Destroy(Game* game)
 {
-	IDestroyable::Destroy(game);
 	background->Destroy(game);
 	paddle->Destroy(game);
 	ballManager->Destroy(game);
@@ -66,6 +82,15 @@ void Gameplay::Destroy(Game* game)
 	topWall->Destroy(game);
 	leftWall->Destroy(game);
 	rightWall->Destroy(game);
+
+	pauseMenu->Destroy(game);
+
+	IDestroyable::Destroy(game);
+}
+
+void Gameplay::OnDestroy()
+{
+	IInput::Unregister(game);
 }
 
 void Gameplay::HandleCollisions()
@@ -110,4 +135,17 @@ void Gameplay::HandleCollisions()
 void Gameplay::OnBallManagerDoAttach(Ball* ball)
 {
 	paddle->AttachBall(ball);
+}
+
+void Gameplay::Pause(bool paused)
+{
+	isPaused = paused;
+	if (isPaused)
+	{
+		pauseMenu->SetVisible(true);
+		game->timeScale = 0;
+		return;
+	}
+	pauseMenu->SetVisible(false);
+	game->timeScale = 1;
 }

@@ -9,9 +9,6 @@
 #include <stdio.h>
 #include <string>
 #include <vector>
-#include <map>
-#include <sstream>
-#include <memory>
 #include "tinyxml2.h"
 
 using namespace std;
@@ -23,12 +20,11 @@ class Layer;
 class LevelManager
 {
 public:
-	shared_ptr<Level> currentLevel = nullptr;
 
 	LevelManager();
 	void Init();
 
-	shared_ptr<Level> LoadLevel(string path);
+	shared_ptr<Level> LoadLevel(const string& levelName);
 
 };
 
@@ -52,9 +48,8 @@ public:
 	XMLDocument doc;
 
 	Layer* tiles = nullptr;
-	Layer* data = nullptr;
 
-	Level(string path);
+	Level(const string& path);
 
 	void Load();
 };
@@ -62,8 +57,8 @@ public:
 class Layer
 {
 public:
-	int width;
-	int height;
+	int width = 0;
+	int height = 0;
 
 	vector<int> data;
 };

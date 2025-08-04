@@ -13,7 +13,7 @@
 
 #include "Renderer.h"
 #include "LevelManager.h"
-#include "UI/MainMenu.h"
+#include "UI/MenuManager.h"
 #include "Gameplay/Gameplay.h"
 #include "Gameplay/Block.h"
 
@@ -26,9 +26,9 @@ class Game
 {
 private:
 	SDL_Event event{};
-	shared_ptr<LevelManager> levelManager;
-	shared_ptr<MainMenu> mainMenu;
-	shared_ptr<Gameplay> gameplay = nullptr;
+	LevelManager* levelManager;
+	MenuManager* menuManager;
+	Gameplay* gameplay = nullptr;
 
 	Uint64 lastUpdateTicks = 0;
 
@@ -42,6 +42,8 @@ private:
 	float totalTime = 0.0f;
 	float realDeltaTime = 0.0f;
 	float realTotalTime = 0.0f;
+
+	bool quitTriggered = false;
 
 public:
 	Renderer* renderer;
@@ -96,11 +98,14 @@ public:
 	Game(SDL_Window* window, SDL_Renderer* renderer);
 	void Init();
 
-	void Update();
+	bool Update();
 	// Returns true if quit is requested
 	bool UpdateInput();
 
 	// Called from MainMenu, to call LevelManager and then create Gameplay
-	void TriggerLoadLevel(string level);
+	void TriggerLoadLevel(const string& level);
+	void TriggerOpenMenu();
+
+	void TriggerQuit();
 
 };

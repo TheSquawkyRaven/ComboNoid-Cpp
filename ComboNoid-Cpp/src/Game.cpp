@@ -6,22 +6,23 @@ Game::Game(SDL_Window* window, SDL_Renderer* renderer)
 	srand(static_cast<unsigned int>(time(nullptr)));
 	this->renderer = new Renderer(window, renderer, renderX, renderY);
 
-	levelManager = make_shared<LevelManager>();
-	mainMenu = make_shared<MainMenu>(this);
+	levelManager = new LevelManager();
 }
 
 void Game::Init()
 {
     levelManager->Init();
-	mainMenu->Init();
+	TriggerOpenMenu();
 }
 
 // Game loop
-void Game::Update()
+bool Game::Update()
 {
 	// Updating
 	UpdateTime();
 	UpdateInput();
+
+	HandleDestructions();
 
 	for (auto& updatable : updatables)
 	{
@@ -39,6 +40,12 @@ void Game::Update()
 
 	// Rendering
 	UpdateDraw();
+
+	if (quitTriggered)
+	{
+		return true;
+	}
+	return false;
 }
 
 void Game::HandleDestructions()
@@ -99,6 +106,7 @@ void Game::UpdateDraw()
 		vector<IDrawable*> drawables = pair.second;
 		for (auto& drawable : drawables)
 		{
+			
 			drawable->Draw();
 		}
 	}
@@ -111,8 +119,11 @@ void Game::RegisterDestruction(IDestroyable* obj)
 	destructionQueue.push(obj);
 }
 
-void Game::TriggerLoadLevel(string level)
+void Game::TriggerLoadLevel(const string& level)
 {
+	menuManager->Destroy(this);
+	menuManager = nullptr;
+
 	if (gameplay)
 	{
 		// Unload previous gameplay
@@ -121,8 +132,26 @@ void Game::TriggerLoadLevel(string level)
 	}
 	shared_ptr<Level> loadedLevel = levelManager->LoadLevel(level);
 	// Load gameplay with the level
-	gameplay = make_shared<Gameplay>(this);
+	gameplay = new Gameplay(this);
 	gameplay->Init(loadedLevel);
+}
+
+void Game::TriggerOpenMenu()
+{
+	menuManager = new MenuManager(this);
+	menuManager->Init();
+
+	if (gameplay)
+	{
+		gameplay->Destroy(this);
+		gameplay = nullptr;
+	}
+
+}
+
+void Game::TriggerQuit()
+{
+	quitTriggered = true;
 }
 
 int Game::AnimateFrame(int frameCount, float time, float frameTime, bool loop)

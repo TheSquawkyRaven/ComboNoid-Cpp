@@ -231,6 +231,9 @@ void Paddle::UpdateBall()
 	{
 		// Launch ball
 		attachedBall->isAttached = false;
+		// Add a tiny amount of random horizontal direction offset so the ball doesn't bounce up and down fully vertically forever
+		attachedBall->direction = Vector2(game->RandomFloatRange(-0.01, 0.01), -1);
+		attachedBall->direction.Normalize();
 		attachedBall = nullptr;
 	}
 }
@@ -238,6 +241,10 @@ void Paddle::UpdateBall()
 void Paddle::Draw()
 {
 	IDrawable::Draw();
+	if (!GetVisible())
+	{
+		return;
+	}
 	if (isFlashing)
 	{
 		float percentage = flashTimer / flashTime;

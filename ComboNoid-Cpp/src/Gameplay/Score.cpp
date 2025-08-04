@@ -15,7 +15,7 @@ void Score::Init()
 	shared_ptr<SDL_Texture> fontTexture = game->renderer->LoadFontTexture(font.get(), fontSize, "0", textColor);
 	SetTexture(fontTexture);
 
-	PlaceTexture(50, 150);
+	PlaceTexture(400, game->renderY - 40);
 }
 
 void Score::OnDestroy()

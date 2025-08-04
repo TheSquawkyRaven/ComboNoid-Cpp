@@ -20,12 +20,13 @@ void BallManager::Init()
 
 void BallManager::Destroy(Game* game)
 {
-	IDestroyable::Destroy(game);
 	for (auto& ball : balls)
 	{
 		ball->Destroy(game);
 	}
 	balls.clear();
+
+	IDestroyable::Destroy(game);
 }
 
 void BallManager::OnDestroy()

@@ -6,10 +6,9 @@
 
 Button::Button(Game* game) : game(game)
 {
-
 }
 
-void Button::Init(Vector2& pos)
+void Button::Init(const Vector2& center, int size)
 {
 	IInput::Register(game);
 	IDrawable::Register(game, drawLayer);
@@ -17,18 +16,66 @@ void Button::Init(Vector2& pos)
 	shared_ptr<SDL_Texture> texture = game->renderer->LoadTexture("./assets/button.png");
 	SetTexture(texture);
 
+	sizeX = size;
 	SetState(NORMAL);
-	PlaceTexture(pos.x - currentRect->w / 2.0f, pos.y - currentRect->h / 2.0f);
+	PlaceTexture(center.x - width / 2.0f, center.y - height / 2.0f);
+
+	this->center = center;
+}
+
+void Button::InitText(const string& text, int fontSize, SDL_Color color)
+{
+	if (this->text == nullptr)
+	{
+		this->text = new Text(game);
+	}
+	this->text->Init(center);
+	this->text->SetText(text);
+	this->text->SetFontSize(fontSize);
+	this->text->SetColor(color);
+	this->text->Render();
+}
+
+void Button::SetPos(Vector2& center)
+{
+	PlaceTexture(center.x - width / 2.0f, center.y - height / 2.0f);
+
+	this->center = center;
+
+	if (text != nullptr)
+	{
+		text->SetPos(center);
+	}
+}
+
+void Button::Destroy(Game* game)
+{
+	if (text != nullptr)
+	{
+		text->Destroy(game);
+	}
+
+	IDestroyable::Destroy(game);
 }
 
 void Button::OnDestroy()
 {
 	IInput::Unregister(game);
-	IDrawable::Unregister(game, drawLayer);
+	IDrawable::Unregister(game);
 }
 
 void Button::Input(SDL_Event& event)
 {
+	if (!GetVisible())
+	{
+		return;
+	}
+	if (wasJustVisible)
+	{
+		wasJustVisible = false;
+		return;
+	}
+
 	if (event.type == SDL_MOUSEMOTION)
 	{
 		Vector2 mousePos = GetRendererMousePos(event.motion.x, event.motion.y);
@@ -54,9 +101,9 @@ void Button::Input(SDL_Event& event)
 			{
 				leftClickInput = true;
 				SetState(PRESSED);
-				if (clicked)
+				if (pressed)
 				{
-					clicked();
+					pressed();
 				}
 			}
 			return;
@@ -90,18 +137,35 @@ void Button::SetState(State state)
 	}
 
 	this->state = state;
+	sizeX = clamp(sizeX, 1, 4);
+	width = (sizeX + 1) * 16;
+	height = sizeY;
+	int x = sizeXOffset[sizeX - 1];
+	int y = 0;
 	switch (state)
 	{
 		case NORMAL:
-			currentRect = &rectNormal;
+			y = normalY;
 			break;
 		case HOVER:
-			currentRect = &rectHover;
+			y = hoverY;
 			break;
 		case PRESSED:
-			currentRect = &rectPressed;
+			y = pressedY;
 			break;
 	}
 
-	CropTexture(*currentRect);
+	CropTexture(x, y, width, height);
+}
+
+void Button::SetVisible(bool visible)
+{
+	IDrawable::SetVisible(visible);
+	SetState(NORMAL);
+	leftClickInput = false;
+	wasJustVisible = true;
+	if (text != nullptr)
+	{
+		text->SetVisible(visible);
+	}
 }

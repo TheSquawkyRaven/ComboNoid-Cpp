@@ -6,14 +6,12 @@ Block::Block(Game* game, Gameplay* gameplay) : game(game), gameplay(gameplay)
 {
 }
 
-void Block::Init(Color color, Vector2& pos, bool spawnPowerup)
+void Block::Init(Color color, Vector2& pos)
 {
 	IUpdatable::Register(game);
 	IDrawable::Register(game);
 
 	gameplay->RegisterBlock(this);
-
-	this->spawnPowerup = spawnPowerup;
 
 	shared_ptr<SDL_Texture> texture = game->renderer->LoadTexture("./assets/block.png");
 	SetTexture(texture);
@@ -85,7 +83,9 @@ bool Block::DamageBlock(int damage)
 	{
 		breaking = true;
 		gameplay->UnregisterBlock(this);
-		if (spawnPowerup)
+
+		// The better the block the higher the chances of spawning a powerup
+		if (Powerup::spawnChance * (color + 1) > game->RandomFloatRange(0.0f, 1.0f))
 		{
 			SpawnPowerup();
 		}

@@ -15,12 +15,13 @@ void PowerupManager::Init()
 
 void PowerupManager::Destroy(Game* game)
 {
-	IDestroyable::Destroy(game);
 	for (auto& powerup : powerups)
 	{
 		powerup->Destroy(game);
 	}
 	powerups.clear();
+
+	IDestroyable::Destroy(game);
 }
 
 Powerup* PowerupManager::CreatePowerup(Powerup::Type type, Vector2& pos)

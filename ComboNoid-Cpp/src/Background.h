@@ -30,7 +30,6 @@ public:
 	Background(Game* game);
 	void Init(string backgroundPath = "./assets/background/background.png");
 
-	void Destroy(Game* game) override;
 	void OnDestroy() override;
 	void Update() override;
 	void Draw() override;

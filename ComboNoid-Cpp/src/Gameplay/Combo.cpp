@@ -8,12 +8,16 @@ Combo::Combo(Game* game, Gameplay* gameplay) : game(game), gameplay(gameplay)
 
 void Combo::Init()
 {
+	IDrawable::Register(game, drawLayer);
+	font = game->renderer->LoadFont("./assets/upheaval/upheavtt.ttf", fontSize);
 
+	UpdateText("Combo x0");
+	PlaceTexture(300, game->renderY - 40);
 }
 
 void Combo::OnDestroy()
 {
-	
+	IDrawable::Unregister(game);
 }
 
 void Combo::UpdateCombo()
@@ -28,6 +32,13 @@ void Combo::UpdateCombo()
 		}
 		printf("Combo: %d\n", combo);
 	}
+}
+
+void Combo::UpdateText(const string& text)
+{
+	shared_ptr<SDL_Texture> texture = game->renderer->LoadFontTexture(font.get(), fontSize, text.c_str(), color);
+	SetTexture(texture);
+	PlaceTexture(300, game->renderY - 40);
 }
 
 void Combo::PaddleHit()
