@@ -8,10 +8,12 @@
 #include "Ball.h"
 #include "Combo.h"
 #include "Score.h"
+#include "../Background.h"
 
 
 Gameplay::Gameplay(Game* game) : game(game)
 {
+	background = new Background(game);
 	paddle = new Paddle(game, this);
 	ballManager = new BallManager(game, this);
 	ballManager->doAttach = [this](Ball* ball)
@@ -28,8 +30,12 @@ Gameplay::Gameplay(Game* game) : game(game)
 	rightWall = new Wall(game, this);
 }
 
-void Gameplay::Init(Level* level)
+void Gameplay::Init(shared_ptr<Level> level)
 {
+	currentLevel = level;
+
+	background->Init();
+
 	paddle->Init();
 	ballManager->Init();
 	blockManager->Init();
@@ -41,7 +47,7 @@ void Gameplay::Init(Level* level)
 	leftWall->Init(Wall::LEFT);
 	rightWall->Init(Wall::RIGHT);
 
-	blockManager->LoadLevel(level);
+	blockManager->LoadLevel(level.get());
 
 	printf("Gameplay Initialized\n");
 }
@@ -49,6 +55,7 @@ void Gameplay::Init(Level* level)
 void Gameplay::Destroy(Game* game)
 {
 	IDestroyable::Destroy(game);
+	background->Destroy(game);
 	paddle->Destroy(game);
 	ballManager->Destroy(game);
 	blockManager->Destroy(game);

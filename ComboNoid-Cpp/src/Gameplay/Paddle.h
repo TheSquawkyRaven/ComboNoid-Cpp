@@ -6,6 +6,7 @@
 #include <SDL_mixer.h>
 
 #include <stdio.h>
+#include <map>
 
 #include "../Components.h"
 
@@ -37,8 +38,12 @@ private:
 	inline static const float enlargeTime = 10.0f;
 	inline static const float shrinkTime = 10.0f;
 
+	// Before 0.1f and after 0.1f of the ball hitting the paddle
+	// The paddle accepts the ball as a hit
 	inline static const float flashTime = 0.2f;
 	inline static const Vector2 flashSizeIncrease{ 8, 8 };
+	// Threshold for when after the ball hits the paddle and the paddle starts flashing
+	inline static const float flashThreshold = flashTime / 2.0f;
 
 	Game* game;
 	Gameplay* gameplay;
@@ -64,6 +69,10 @@ private:
 	float flashTimer = 0;
 	bool flashHit = false;
 
+	// Balls that hit the paddle while it is not flashing.
+	// Contains the time stamp (game->GetTotalTime()) of when the ball hit the paddle
+	map<Ball*, float> pendingFlashBalls;
+
 private:
 	void UpdateTimer();
 	void UpdateBall();
@@ -71,6 +80,10 @@ private:
 	void PostUpdate();
 
 	void SetSize(PaddleSize size);
+
+	void FlashHitBall(Ball* ball);
+	void FlashMissBall();
+	void FlashMiss();
 
 public:
 	Paddle(Game* game, Gameplay* gameplay);

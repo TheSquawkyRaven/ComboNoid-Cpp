@@ -5,14 +5,15 @@ Game::Game(SDL_Window* window, SDL_Renderer* renderer)
 {
 	srand(static_cast<unsigned int>(time(nullptr)));
 	this->renderer = new Renderer(window, renderer, renderX, renderY);
+
+	levelManager = make_shared<LevelManager>();
+	mainMenu = make_shared<MainMenu>(this);
 }
 
 void Game::Init()
 {
-    levelManager = make_shared<LevelManager>();
     levelManager->Init();
-	gameplay = make_shared<Gameplay>(this);
-	gameplay->Init(levelManager->currentLevel);
+	mainMenu->Init();
 }
 
 // Game loop
@@ -29,17 +30,15 @@ void Game::Update()
 
 	HandleDestructions();
 
-	gameplay->HandleCollisions();
+	if (gameplay)
+	{
+		gameplay->HandleCollisions();
+	}
 
 	HandleDestructions();
 
 	// Rendering
-	renderer->Clear();
-	for (auto& drawable : drawables)
-	{
-		drawable->Draw();
-	}
-	renderer->Flush();
+	UpdateDraw();
 }
 
 void Game::HandleDestructions()
@@ -91,10 +90,39 @@ void Game::UpdateTime()
 	lastUpdateTicks = currentTicks;
 }
 
+void Game::UpdateDraw()
+{
+	// Rendering
+	renderer->Clear();
+	for (auto& pair : drawablesMap)
+	{
+		vector<IDrawable*> drawables = pair.second;
+		for (auto& drawable : drawables)
+		{
+			drawable->Draw();
+		}
+	}
+	renderer->Flush();
+}
+
 void Game::RegisterDestruction(IDestroyable* obj)
 {
 	obj->isDestroyed = true;
 	destructionQueue.push(obj);
+}
+
+void Game::TriggerLoadLevel(string level)
+{
+	if (gameplay)
+	{
+		// Unload previous gameplay
+		gameplay->Destroy(this);
+		gameplay = nullptr;
+	}
+	shared_ptr<Level> loadedLevel = levelManager->LoadLevel(level);
+	// Load gameplay with the level
+	gameplay = make_shared<Gameplay>(this);
+	gameplay->Init(loadedLevel);
 }
 
 int Game::AnimateFrame(int frameCount, float time, float frameTime, bool loop)

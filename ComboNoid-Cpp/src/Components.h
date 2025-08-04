@@ -67,13 +67,14 @@ public:
 	SDL_Rect srcRect{};
 	SDL_Rect destRect{};
 
-	void Register(Game* game);
-	void Unregister(Game* game);
+	void Register(Game* game, int layer = 0);
+	void Unregister(Game* game, int layer = 0);
 
 	void CropTexture(int x, int y, int w, int h);
 	void CropTexture(SDL_Rect& rect);
 	void PlaceTexture(int x, int y);
 	void PlaceTexture(ITransform* transform);
+	void PlaceTextureResized(int x, int y, int w, int h);
 
 	void SetTexture(shared_ptr<SDL_Texture> texture);
 	virtual void Draw();

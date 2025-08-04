@@ -96,12 +96,46 @@ void Paddle::UpdateFlash()
 	spaceJustPressed = spaceInput && !spaceWasHeld;
 	spaceWasHeld = spaceInput;
 
-	if (!isFlashing)
+	if (!pendingFlashBalls.empty())
 	{
-		if (spaceJustPressed)
+		// Handle pending flash balls
+		// Only checks and removes the balls if they miss
+		float currentTime = game->GetTotalTime();
+		vector<Ball*> removingBalls;
+		for (auto& pair : pendingFlashBalls)
 		{
-			isFlashing = true;
-			flashTimer = flashTime;
+			Ball* ball = pair.first;
+			float time = pair.second;
+
+			if (currentTime - time > flashThreshold)
+			{
+				// Miss
+				removingBalls.push_back(ball);
+				FlashMissBall();
+			}
+		}
+		for (auto& ball : removingBalls)
+		{
+			pendingFlashBalls.erase(ball);
+		}
+	}
+
+	if (!isFlashing && spaceJustPressed)
+	{
+		isFlashing = true;
+		flashTimer = flashTime;
+
+		if (!pendingFlashBalls.empty())
+		{
+			// Handle pending flash balls
+			// Considered all as hits because the previous loop already checked for misses
+			for (auto& pair : pendingFlashBalls)
+			{
+				Ball* ball = pair.first;
+				FlashHitBall(ball);
+			}
+
+			pendingFlashBalls.clear();
 		}
 	}
 
@@ -114,7 +148,7 @@ void Paddle::UpdateFlash()
 	{
 		if (!flashHit)
 		{
-			gameplay->combo->PaddleMiss();
+			FlashMiss();
 		}
 		isFlashing = false;
 		flashHit = false;
@@ -224,14 +258,30 @@ void Paddle::BallHitPaddle(Ball* ball)
 {
 	if (isFlashing)
 	{
-		gameplay->combo->PaddleHit();
-		flashHit = true;
-		ball->SetComboDamage(gameplay->combo->GetCombo());
+		FlashHitBall(ball);
 	}
 	else
 	{
-		gameplay->combo->PaddleMissBall();
+		pendingFlashBalls[ball] = game->GetTotalTime();
+		//gameplay->combo->PaddleMissBall();
 	}
+}
+
+void Paddle::FlashHitBall(Ball* ball)
+{
+	gameplay->combo->PaddleHit();
+	flashHit = true;
+	ball->SetComboDamage(gameplay->combo->GetCombo());
+}
+
+void Paddle::FlashMissBall()
+{
+	gameplay->combo->PaddleMissBall();
+}
+
+void Paddle::FlashMiss()
+{
+	gameplay->combo->PaddleMiss();
 }
 
 float Paddle::GetHorizontalHitOffset(Vector2 hit)

@@ -9,9 +9,11 @@
 #include <memory>
 #include <vector>
 #include <queue>
+#include <string>
 
 #include "Renderer.h"
 #include "LevelManager.h"
+#include "UI/MainMenu.h"
 #include "Gameplay/Gameplay.h"
 #include "Gameplay/Block.h"
 
@@ -25,12 +27,13 @@ class Game
 private:
 	SDL_Event event{};
 	shared_ptr<LevelManager> levelManager;
-	shared_ptr<Gameplay> gameplay;
+	shared_ptr<MainMenu> mainMenu;
+	shared_ptr<Gameplay> gameplay = nullptr;
 
 	Uint64 lastUpdateTicks = 0;
 
 	vector<IUpdatable*> updatables;
-	vector<IDrawable*> drawables;
+	map<int, vector<IDrawable*>> drawablesMap;
 	vector<IInput*> inputs;
 
 	queue<IDestroyable*> destructionQueue;
@@ -58,6 +61,7 @@ private:
 	}
 
 	void UpdateTime();
+	void UpdateDraw();
 
 	void HandleDestructions();
 
@@ -75,8 +79,15 @@ public:
 
 	inline void Register(IUpdatable* updatable) { updatables.push_back(updatable); }
 	inline void Unregister(IUpdatable* updatable) { UnregisterVector(updatables, updatable); }
-	inline void Register(IDrawable* drawable) { drawables.push_back(drawable); }
-	inline void Unregister(IDrawable* drawable) { UnregisterVector(drawables, drawable); }
+	inline void Register(IDrawable* drawable, int layer)
+	{
+		drawablesMap[layer].push_back(drawable);
+	}
+	inline void Unregister(IDrawable* drawable, int layer)
+	{
+		vector<IDrawable*>& drawables = drawablesMap[layer];
+		UnregisterVector(drawables, drawable);
+	}
 	inline void Register(IInput* input) { inputs.push_back(input); }
 	inline void Unregister(IInput* input) { UnregisterVector(inputs, input); }
 
@@ -88,5 +99,8 @@ public:
 	void Update();
 	// Returns true if quit is requested
 	bool UpdateInput();
+
+	// Called from MainMenu, to call LevelManager and then create Gameplay
+	void TriggerLoadLevel(string level);
 
 };

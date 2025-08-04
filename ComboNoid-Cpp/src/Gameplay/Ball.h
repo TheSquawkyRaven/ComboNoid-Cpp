@@ -67,8 +67,11 @@ public:
 
 private:
 	Vector2 GetBallRectNormal(IRectCollidable* rect);
+	void DamageUpdated();
 
 public:
+	inline int GetComboDamage() const { return damage; }
+
 	Ball(Game* game, Gameplay* gameplay);
 	void Init();
 

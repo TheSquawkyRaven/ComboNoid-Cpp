@@ -9,14 +9,12 @@ LevelManager::LevelManager()
 void LevelManager::Init()
 {
 	printf("Level Manager Initialized\n");
-	Level* level1 = LoadLevel("levels/Level1.tmx");
-
-    currentLevel = level1;
+    currentLevel = LoadLevel("levels/Level1.tmx");
 }
 
-Level* LevelManager::LoadLevel(string path)
+shared_ptr<Level> LevelManager::LoadLevel(string path)
 {
-	Level* level = new Level(path);
+	shared_ptr<Level> level = make_shared<Level>(path);
 	level->Load();
 
 	return level;

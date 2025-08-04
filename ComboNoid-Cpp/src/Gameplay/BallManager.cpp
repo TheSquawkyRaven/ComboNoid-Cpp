@@ -141,6 +141,9 @@ void BallManager::SplitBall()
 			ball1->SetSize(Ball::LARGE);
 			ball2->SetSize(Ball::LARGE);
 		}
+
+		ball1->SetComboDamage(ball->GetComboDamage());
+		ball2->SetComboDamage(ball->GetComboDamage());
 	}
 }
 

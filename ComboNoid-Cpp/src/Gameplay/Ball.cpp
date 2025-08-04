@@ -111,12 +111,15 @@ void Ball::OnCollision(IRectCollidable* rect, int type)
 	{
 		Block* block = static_cast<Block*>(rect);
 		int initialHP = block->GetHP();
-		if (block->DamageBlock(damage))
+		bool blockDestroyed = block->DamageBlock(damage);
+		damage -= 1; // Decrease damage by 1 for each block hit
+		damage = max(damage, 1);
+		DamageUpdated();
+		if (blockDestroyed)
 		{
-			// Block broken
-			if (damage > initialHP)
+			if (!block->isStrong && damage > initialHP)
 			{
-				// Damage is higher than its initial hp, skip reflecting, PENETRATE
+				// (for non strong blocks) Damage is higher than its initial hp, skip reflecting, PENETRATE
 				PostUpdate();
 				return;
 			}
@@ -192,4 +195,10 @@ Vector2 Ball::GetBallRectNormal(IRectCollidable* rect)
 void Ball::SetComboDamage(int damage)
 {
 	this->damage = damage;
+	DamageUpdated();
+}
+
+void Ball::DamageUpdated()
+{
+	// TODO update texture or number or color or something for the ball
 }

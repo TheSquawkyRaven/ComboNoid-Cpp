@@ -30,15 +30,15 @@ void IUpdatable::Unregister(Game* game)
 	game->Unregister(this);
 }
 
-void IDrawable::Register(Game* game)
+void IDrawable::Register(Game* game, int layer)
 {
-	game->Register(this);
+	game->Register(this, layer);
 	renderer = game->renderer;
 }
 
-void IDrawable::Unregister(Game* game)
+void IDrawable::Unregister(Game* game, int layer)
 {
-	game->Unregister(this);
+	game->Unregister(this, layer);
 	this->renderer = nullptr;
 }
 
@@ -75,6 +75,14 @@ void IDrawable::PlaceTexture(int x, int y)
 void IDrawable::PlaceTexture(ITransform* transform)
 {
 	PlaceTexture(transform->pos.x, transform->pos.y);
+}
+
+void IDrawable::PlaceTextureResized(int x, int y, int w, int h)
+{
+	destRect.x = x;
+	destRect.y = y;
+	destRect.w = w;
+	destRect.h = h;
 }
 
 void IDrawable::Draw()

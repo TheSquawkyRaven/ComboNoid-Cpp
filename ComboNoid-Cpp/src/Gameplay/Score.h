@@ -15,6 +15,7 @@ class Gameplay;
 class Score : public IDestroyable, public IDrawable
 {
 private:
+	inline static const int drawLayer = 100;
 	inline static const int fontSize = 32;
 	inline static SDL_Color textColor{ 0, 0, 0, 255 };
 

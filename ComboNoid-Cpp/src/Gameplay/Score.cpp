@@ -9,13 +9,13 @@ Score::Score(Game* game, Gameplay* gameplay) : game(game), gameplay(gameplay)
 
 void Score::Init()
 {
-	IDrawable::Register(game);
+	IDrawable::Register(game, drawLayer);
 
 	font = game->renderer->LoadFont("./assets/upheaval/upheavtt.ttf", fontSize);
 	shared_ptr<SDL_Texture> fontTexture = game->renderer->LoadFontTexture(font.get(), fontSize, "0", textColor);
 	SetTexture(fontTexture);
 
-	PlaceTexture(50, 250);
+	PlaceTexture(50, 150);
 }
 
 void Score::OnDestroy()

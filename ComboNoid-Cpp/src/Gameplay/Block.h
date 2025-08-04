@@ -69,7 +69,7 @@ public:
 	void OnDestroy() override;
 	void Update() override;
 
-	// Returns remaining damage
+	// Returns if the block is destroyed
 	bool DamageBlock(int damage);
 
 };

@@ -10,6 +10,8 @@
 #include <map>
 #include <memory>
 
+#include "Vector2.h"
+
 using namespace std;
 
 class Renderer
@@ -36,4 +38,7 @@ public:
 
 	shared_ptr<TTF_Font> LoadFont(string path, int fontSize);
 	shared_ptr<SDL_Texture> LoadFontTexture(TTF_Font* font, int fontSize, const char* text, SDL_Color& color) const;
+
+	// Converts window coordinates to render coordinates (like mouse position)
+	Vector2 GetWindowCoordToRenderCoord(int windowX, int windowY) const;
 };

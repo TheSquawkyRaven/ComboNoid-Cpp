@@ -135,3 +135,25 @@ shared_ptr<SDL_Texture> Renderer::LoadFontTexture(TTF_Font* font, int fontSize, 
 
     return texture_ptr;
 }
+
+Vector2 Renderer::GetWindowCoordToRenderCoord(int windowX, int windowY) const
+{
+    int winW, winH;
+    SDL_GetWindowSize(window, &winW, &winH);
+
+    // Using int (floor) to allow integer scaling
+    int scaleX = winW / renderX;
+    int scaleY = winH / renderY;
+    float scale = min(scaleX, scaleY);
+
+    int drawW = (int)floor(renderX * scale);
+    int drawH = (int)floor(renderY * scale);
+
+    int offsetX = (winW - drawW) / 2;
+    int offsetY = (winH - drawH) / 2;
+
+    float rX = (windowX - offsetX) / scale;
+    float rY = (windowY - offsetY) / scale;
+
+    return Vector2(rX, rY);
+}

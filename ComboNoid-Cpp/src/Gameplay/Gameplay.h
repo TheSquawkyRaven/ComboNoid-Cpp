@@ -21,12 +21,16 @@ class Wall;
 class Level;
 class Combo;
 class Score;
+class Background;
 
 class Gameplay : public IDestroyable
 {
 private:
 	Game* game;
 
+	shared_ptr<Level> currentLevel = nullptr;
+
+	Background* background;
 	Wall* topWall;
 	Wall* leftWall;
 	Wall* rightWall;
@@ -39,6 +43,7 @@ private:
 	vector<IRectCollidable*> powerups{}; // Collides with paddles
 
 public:
+
 	Paddle* paddle;
 	BallManager* ballManager;
 	BlockManager* blockManager;
@@ -69,7 +74,7 @@ public:
 	inline void UnregisterPowerup(IRectCollidable* powerup) { UnregisterVector(powerups, powerup); }
 
 	Gameplay(Game* game);
-	void Init(Level* level);
+	void Init(shared_ptr<Level> level);
 
 	void Destroy(Game* game) override;
 

@@ -11,6 +11,7 @@
 #include <vector>
 #include <map>
 #include <sstream>
+#include <memory>
 #include "tinyxml2.h"
 
 using namespace std;
@@ -22,12 +23,12 @@ class Layer;
 class LevelManager
 {
 public:
-	Level* currentLevel = nullptr;
+	shared_ptr<Level> currentLevel = nullptr;
 
 	LevelManager();
 	void Init();
 
-	Level* LoadLevel(string path);
+	shared_ptr<Level> LoadLevel(string path);
 
 };
 
