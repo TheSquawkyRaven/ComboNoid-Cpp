@@ -10,6 +10,7 @@
 #include "Score.h"
 #include "../Background.h"
 #include "../UI/PauseMenu.h"
+#include "Tutorial.h"
 
 
 Gameplay::Gameplay(Game* game) : game(game)
@@ -31,6 +32,7 @@ Gameplay::Gameplay(Game* game) : game(game)
 	rightWall = new Wall(game, this);
 
 	pauseMenu = new PauseMenu(game, this);
+	tutorial = new Tutorial(game);
 }
 
 void Gameplay::Init(shared_ptr<Level> level, int levelIndex)
@@ -55,10 +57,12 @@ void Gameplay::Init(shared_ptr<Level> level, int levelIndex)
 
 	pauseMenu->Init();
 	pauseMenu->SetVisible(false);
-
 	Pause(false);
 
 	blockManager->LoadLevel(level.get());
+
+	tutorial->Init();
+	tutorial->LevelLoaded(levelIndex);
 
 	backgroundMusic = game->audioManager->LoadMusic("./assets/audio/game_music.wav");
 	game->audioManager->PlayMusic(backgroundMusic);
@@ -90,6 +94,7 @@ void Gameplay::Destroy(Game* game)
 	rightWall->Destroy(game);
 
 	pauseMenu->Destroy(game);
+	tutorial->Destroy(game);
 
 	IDestroyable::Destroy(game);
 }
@@ -163,9 +168,19 @@ void Gameplay::GameOver(bool won)
 		return;
 	}
 
+	game->audioManager->StopMusic();
+
 	score->AddBallsStockScore(ballManager->GetBallsStock());
 	Pause(true);
-	pauseMenu->GameOver(won, score->totalScore, 0); // TODO high score
+
+	int currentScore = score->totalScore;
+	int highScore = game->highScore->GetHighScore(levelIndex);
+	pauseMenu->GameOver(won, currentScore, highScore);
+
+	if (won && currentScore > highScore)
+	{
+		game->highScore->SetHighScore(levelIndex, currentScore);
+	}
 
 	gameOver = true;
 }

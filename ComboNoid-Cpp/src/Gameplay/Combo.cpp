@@ -12,7 +12,9 @@ Combo::Combo(Game* game, Gameplay* gameplay) : game(game), gameplay(gameplay)
 
 void Combo::Init()
 {
-	Vector2 center = Vector2(300, game->renderY - 20);
+	IUpdatable::Register(game);
+
+	Vector2 center = Vector2(game->renderX / 2 + offset.x, game->renderY + offset.y);
 	text->Init(center);
 	text->SetFontSize(fontSize);
 	text->SetColor(textColor);
@@ -26,6 +28,43 @@ void Combo::Destroy(Game* game)
 	IDestroyable::Destroy(game);
 }
 
+void Combo::OnDestroy()
+{
+	IUpdatable::Unregister(game);
+}
+
+void Combo::Update()
+{
+	if (!isAnimating)
+	{
+		return;
+	}
+
+	timer -= game->GetDeltaTime();
+	float t = timer / time;
+	if (t < 0)
+	{
+		isAnimating = false;
+		t = 0;
+	}
+
+	t = t * t;
+
+	float scVal = 1.0f + (sc - 1.0f) * t;
+	float rotVal = rot * t;
+
+	SDL_Color colorVal = textColor;
+	colorVal.r += static_cast<Uint8>((col.r - textColor.r) * t);
+	colorVal.g += static_cast<Uint8>((col.g - textColor.g) * t);
+	colorVal.b += static_cast<Uint8>((col.b - textColor.b) * t);
+	colorVal.a += static_cast<Uint8>((col.a - textColor.a) * t);
+
+	text->SetColor(colorVal);
+
+	text->scale = Vector2(scVal, scVal);
+	text->rotation = rotVal;
+}
+
 void Combo::UpdateCombo()
 {
 	if (combo == lastCombo)
@@ -33,8 +72,39 @@ void Combo::UpdateCombo()
 		return;
 	}
 
+	// Ignore last negative combo for animation
+	if (lastCombo >= 0)
+	{
+		isAnimating = true;
+		if (combo > lastCombo)
+		{
+			timer = expandTime;
+			time = expandTime;
+			rot = expandRotation;
+			sc = expandScale;
+			col = expandColor;
+		}
+		else
+		{
+			timer = lossTime;
+			time = lossTime;
+			rot = lossRotation;
+			sc = lossScale;
+			col = lossColor;
+		}
+	}
+
+	if (combo == 0)
+	{
+		// Don't show when 0 combo
+		text->SetText(" ");
+	}
+	else
+	{
+		text->SetText("Combo x" + to_string(combo));
+	}
+
 	lastCombo = combo;
-	text->SetText("Combo x" + to_string(combo));
 }
 
 void Combo::PaddleHit()
@@ -51,8 +121,11 @@ void Combo::PaddleMiss()
 	{
 		combo = 0;
 	}
+	else
+	{
+		comboDecreaseClip->Play();
+	}
 	UpdateCombo();
-	comboDecreaseClip->Play();
 }
 
 void Combo::PaddleMissBall()
@@ -62,13 +135,15 @@ void Combo::PaddleMissBall()
 	{
 		combo = 0;
 	}
+	else
+	{
+		comboDecreaseClip->Play();
+	}
 	UpdateCombo();
-	comboDecreaseClip->Play();
 }
 
 void Combo::BallLost()
 {
 	combo = 0;
 	UpdateCombo();
-	comboDecreaseClip->Play();
 }

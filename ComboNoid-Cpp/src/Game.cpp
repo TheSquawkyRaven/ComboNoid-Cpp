@@ -8,11 +8,13 @@ Game::Game(SDL_Window* window, SDL_Renderer* renderer)
 	this->audioManager = new AudioManager();
 
 	levelManager = new LevelManager();
+	highScore = new HighScore();
 }
 
 void Game::Init()
 {
     levelManager->Init();
+	highScore->Init();
 	TriggerOpenMenu();
 }
 

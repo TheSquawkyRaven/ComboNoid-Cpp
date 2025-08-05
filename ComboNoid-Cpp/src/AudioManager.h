@@ -23,8 +23,8 @@ private:
 	map<string, weak_ptr<Mix_Music>> musicMap;
 
 public:
-	inline static const float defaultMusicVolume = 0.15f;
-	inline static const float defaultMixVolume = 0.5f;
+	inline static const float defaultMusicVolume = 0.175f;
+	inline static const float defaultMixVolume = 1.0f;
 
 public:
 	AudioManager();

@@ -112,8 +112,7 @@ void BlockManager::OnBlockDestroyed(Block* block)
 
 	if (blocks.empty())
 	{
-		// Level copmleted
-		printf("All blocks destroyed!\n");
+		// Level completed, all blocks destroyed
 		gameplay->GameOver(true);
 	}
 }

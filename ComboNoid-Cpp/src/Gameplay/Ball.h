@@ -40,8 +40,9 @@ private:
 
 	// Too low, the ball will be too vertical, too high, the ball will be too horizontal
 	inline static const float paddleHitOffsetFactor = 0.75f;
-
 	inline static const float paddleCollisionCooldownTime = 0.01f;
+
+	inline static const float minVerticalDirection = 0.2f;
 
 	Game* game;
 	Gameplay* gameplay;

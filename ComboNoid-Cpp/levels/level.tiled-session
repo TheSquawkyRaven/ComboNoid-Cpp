@@ -3,7 +3,7 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "Level4.tmx",
+    "activeFile": "Level2.tmx",
     "expandedProjectPaths": [
         "."
     ],
@@ -16,16 +16,16 @@
             "scale": 2,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 304.5,
-                "y": 127
+                "x": 277,
+                "y": 175
             }
         },
         "Level10.tmx": {
-            "scale": 2.2404166666666665,
+            "scale": 1,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 422.6892319137065,
-                "y": 186.7956109354659
+                "x": 240,
+                "y": 135.5
             }
         },
         "Level2 - Copy (2).tmx": {
@@ -37,67 +37,67 @@
             }
         },
         "Level2.tmx": {
-            "scale": 2.2404166666666665,
+            "scale": 1.5,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 254.4169611307421,
-                "y": 133.68049098010044
+                "x": 286.6666666666667,
+                "y": 158.66666666666669
             }
         },
         "Level3.tmx": {
-            "scale": 2.2404166666666665,
+            "scale": 1.5,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 240.13390366375305,
-                "y": 119.84377905895482
+                "x": 319.33333333333326,
+                "y": 142
             }
         },
         "Level4.tmx": {
             "scale": 2.2404166666666665,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 249.50716012646458,
-                "y": 159.56853263901806
+                "x": 240.13390366375305,
+                "y": 135.9122187093175
             }
         },
         "Level5.tmx": {
-            "scale": 2.2404166666666665,
+            "scale": 2,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 240.13390366375302,
-                "y": 120.06695183187652
+                "x": 240,
+                "y": 135.75
             }
         },
         "Level6.tmx": {
-            "scale": 2.2404166666666665,
+            "scale": 1.5,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 240.13390366375302,
-                "y": 120.06695183187652
+                "x": 240,
+                "y": 135.66666666666669
             }
         },
         "Level7.tmx": {
-            "scale": 2.2404166666666665,
+            "scale": 2,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 240.13390366375302,
-                "y": 120.06695183187652
+                "x": 258,
+                "y": 153
             }
         },
         "Level8.tmx": {
-            "scale": 2.2404166666666665,
+            "scale": 1,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 240.13390366375302,
-                "y": 120.06695183187652
+                "x": 240,
+                "y": 135.5
             }
         },
         "Level9.tmx": {
-            "scale": 2.2404166666666665,
+            "scale": 1,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 240.13390366375302,
-                "y": 120.06695183187652
+                "x": 240,
+                "y": 135.5
             }
         }
     },
@@ -124,8 +124,6 @@
     "recentFiles": [
         "Block.tsx",
         "Level1.tmx",
-        "Level2.tmx",
-        "Level3.tmx",
         "Level10.tmx",
         "Level9.tmx",
         "Level8.tmx",
@@ -133,6 +131,8 @@
         "Level6.tmx",
         "Level5.tmx",
         "Level4.tmx",
+        "Level3.tmx",
+        "Level2.tmx",
         "Level2 - Copy (2).tmx"
     ],
     "tileset.lastUsedFormat": "tsx",

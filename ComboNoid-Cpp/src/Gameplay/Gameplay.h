@@ -23,6 +23,7 @@ class Combo;
 class Score;
 class Background;
 class PauseMenu;
+class Tutorial;
 
 class Gameplay : public IDestroyable, public IInput
 {
@@ -39,6 +40,7 @@ private:
 	Wall* leftWall;
 	Wall* rightWall;
 
+	Tutorial* tutorial;
 	PauseMenu* pauseMenu;
 
 	// Collision Layers (Hard coded for now)

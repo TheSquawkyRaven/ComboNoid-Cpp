@@ -129,11 +129,20 @@ void PauseMenu::GameOver(bool won, int score, int highScore)
 
 	p.y += scoreYOffset;
 	scoreText->Init(p);
-	scoreText->SetText("Score: " + to_string(score));
+	if (won)
+	{
+		scoreText->SetText("Score: " + to_string(score));
+	}
+	else
+	{
+		// Don't show score if the player lost
+		scoreText->SetText(" ");
+	}
 
 	p.y += scoreYOffset;
 	highScoreText->Init(p);
-	if (score > highScore)
+
+	if (won && score > highScore)
 	{
 		highScoreText->SetText("NEW HIGH SCORE!");
 	}

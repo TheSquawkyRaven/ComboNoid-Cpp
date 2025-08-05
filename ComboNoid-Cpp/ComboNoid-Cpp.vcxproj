@@ -163,7 +163,9 @@ copy /Y "$(ProjectDir)libraries/SDL2_ttf-2.24.0\lib\x64\SDL2_ttf.dll" "$(OutDir)
     <ClCompile Include="src\Gameplay\Powerup.cpp" />
     <ClCompile Include="src\Gameplay\PowerupManager.cpp" />
     <ClCompile Include="src\Gameplay\Score.cpp" />
+    <ClCompile Include="src\Gameplay\Tutorial.cpp" />
     <ClCompile Include="src\Gameplay\Wall.cpp" />
+    <ClCompile Include="src\HighScore.cpp" />
     <ClCompile Include="src\LevelManager.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\Renderer.cpp" />
@@ -192,7 +194,9 @@ copy /Y "$(ProjectDir)libraries/SDL2_ttf-2.24.0\lib\x64\SDL2_ttf.dll" "$(OutDir)
     <ClInclude Include="src\Gameplay\Powerup.h" />
     <ClInclude Include="src\Gameplay\PowerupManager.h" />
     <ClInclude Include="src\Gameplay\Score.h" />
+    <ClInclude Include="src\Gameplay\Tutorial.h" />
     <ClInclude Include="src\Gameplay\Wall.h" />
+    <ClInclude Include="src\HighScore.h" />
     <ClInclude Include="src\LevelManager.h" />
     <ClInclude Include="src\Renderer.h" />
     <ClInclude Include="src\UI\Button.h" />

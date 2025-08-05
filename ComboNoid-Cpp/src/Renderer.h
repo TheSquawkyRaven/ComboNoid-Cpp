@@ -30,8 +30,9 @@ public:
 
 	Renderer(SDL_Window* window, SDL_Renderer* renderer, int renderX, int renderY);
 
-	void Clear();
-	void Draw(SDL_Texture* texture, SDL_Rect* srcRect, SDL_Rect* destRect);
+	void Clear() const;
+	void Draw(SDL_Texture* texture, SDL_Rect* srcRect, SDL_Rect* destRect) const;
+	void Draw(SDL_Texture* texture, SDL_Rect* srcRect, SDL_Rect* destRect, float angle) const;
 	void Flush();
 
 	shared_ptr<SDL_Texture> LoadTexture(string path);

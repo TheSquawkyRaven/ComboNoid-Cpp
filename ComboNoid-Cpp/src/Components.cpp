@@ -76,7 +76,10 @@ void IDrawable::PlaceTexture(int x, int y)
 
 void IDrawable::PlaceTexture(ITransform* transform)
 {
-	PlaceTexture(transform->pos.x, transform->pos.y);
+	PlaceTextureResized(transform->pos.x, transform->pos.y,
+		static_cast<int>(srcRect.w * transform->scale.x),
+		static_cast<int>(srcRect.h * transform->scale.y));
+	angle = transform->rotation;
 }
 
 void IDrawable::PlaceTextureResized(int x, int y, int w, int h)
@@ -99,7 +102,7 @@ void IDrawable::Draw()
 		return;
 	}
 
-	renderer->Draw(texture.get(), &srcRect, &destRect);
+	renderer->Draw(texture.get(), &srcRect, &destRect, angle);
 }
 
 void IClip::Register(Game* game, int channel)

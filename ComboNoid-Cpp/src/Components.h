@@ -35,6 +35,8 @@ class ITransform
 {
 public:
 	Vector2 pos{ 0, 0 };
+	Vector2 scale{ 1, 1 };
+	float rotation = 0;
 };
 
 class IInput
@@ -64,6 +66,7 @@ private:
 	Renderer* renderer = nullptr;
 	int layer = 0;
 	bool visible = true;
+	float angle = 0;
 
 public:
 

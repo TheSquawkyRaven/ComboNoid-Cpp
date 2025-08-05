@@ -139,12 +139,12 @@ void BallManager::SplitBall()
 		ball1->pos = ball->pos;
 		ball2->pos = ball->pos;
 
-		Vector2 r = Vector2(Game::RandomFloatRange(0, 1), Game::RandomFloatRange(0, 1));
+		Vector2 r = Vector2(Game::RandomFloatRange(-1, 1), Game::RandomFloatRange(-1, 1));
 		r.Normalize();
 
 		ball1->direction = r;
 
-		r = Vector2(Game::RandomFloatRange(0, 1), Game::RandomFloatRange(0, 1));
+		r = Vector2(Game::RandomFloatRange(-1, 1), Game::RandomFloatRange(-1, 1));
 		r.Normalize();
 		ball2->direction = r;
 

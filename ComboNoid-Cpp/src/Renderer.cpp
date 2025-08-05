@@ -16,7 +16,7 @@ Renderer::Renderer(SDL_Window* window, SDL_Renderer* renderer, int renderX, int 
     SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "nearest");
 }
 
-void Renderer::Clear()
+void Renderer::Clear() const
 {
     // Set to render to the target renderer
     SDL_SetRenderTarget(renderer, renderTarget);
@@ -25,10 +25,16 @@ void Renderer::Clear()
 	SDL_RenderClear(renderer);
 }
 
-void Renderer::Draw(SDL_Texture* texture, SDL_Rect* srcRect, SDL_Rect* destRect)
+void Renderer::Draw(SDL_Texture* texture, SDL_Rect* srcRect, SDL_Rect* destRect) const
 {
     // Each draw will be rendered to the render target
 	SDL_RenderCopy(renderer, texture, srcRect, destRect);
+}
+
+void Renderer::Draw(SDL_Texture* texture, SDL_Rect* srcRect, SDL_Rect* destRect, float angle) const
+{
+	SDL_Point center = { destRect->w / 2, destRect->h / 2 };
+	SDL_RenderCopyEx(renderer, texture, srcRect, destRect, static_cast<double>(angle), &center, SDL_FLIP_NONE);
 }
 
 void Renderer::Flush()

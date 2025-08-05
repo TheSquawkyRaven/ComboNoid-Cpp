@@ -15,7 +15,7 @@ using namespace std;
 class Text : public IDestroyable, public ITransform, public IDrawable
 {
 private:
-	inline static const int drawLayer = 100;
+	inline static const int defaultDrawLayer = 100;
 
 	Game* game;
 
@@ -29,7 +29,7 @@ private:
 
 public:
 	Text(Game* game);
-	void Init(const Vector2& center);
+	void Init(const Vector2& center, int drawLayer = INT_MIN);
 
 	void OnDestroy() override;
 	void Draw() override;

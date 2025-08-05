@@ -9,8 +9,12 @@ Text::Text(Game* game) : game(game)
 
 }
 
-void Text::Init(const Vector2& center)
+void Text::Init(const Vector2& center, int drawLayer)
 {
+	if (drawLayer == INT_MIN)
+	{
+		drawLayer = defaultDrawLayer;
+	}
 	IDrawable::Register(game, drawLayer);
 
 	this->center = center;
@@ -30,7 +34,10 @@ void Text::SetPos(const Vector2& center)
 
 	int x = center.x - static_cast<int>(srcRect.w / 2.0f);
 	int y = center.y - static_cast<int>(srcRect.h / 2.0f);
-	PlaceTexture(x, y);
+
+	pos.x = x;
+	pos.y = y;
+	PlaceTexture(this);
 }
 
 void Text::Draw()
@@ -40,6 +47,8 @@ void Text::Draw()
 		Render();
 		dirty = false;
 	}
+
+	PlaceTexture(this);
 
 	IDrawable::Draw();
 }

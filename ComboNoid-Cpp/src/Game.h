@@ -17,6 +17,7 @@
 #include "AudioManager.h"
 #include "Gameplay/Gameplay.h"
 #include "Gameplay/Block.h"
+#include "HighScore.h"
 
 using namespace std;
 
@@ -49,6 +50,8 @@ private:
 public:
 	Renderer* renderer;
 	AudioManager* audioManager;
+
+	HighScore* highScore = nullptr;
 
 	float timeScale = 1.0f;
 

@@ -179,6 +179,14 @@ void Ball::OnCollision(IRectCollidable* rect, int type)
 		}
 	}
 
+	// Too horizontal check (checks if the ball is too horizontal)
+	float y = abs(direction.y);
+	if (y < minVerticalDirection)
+	{
+		direction.y += (direction.y < 0 ? -1 : 1) * minVerticalDirection;
+		direction.Normalize();
+	}
+
 	PostUpdate();
 }
 
