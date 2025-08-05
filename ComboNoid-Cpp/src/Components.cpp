@@ -1,5 +1,6 @@
 #include "Components.h"
 #include "Game.h"
+#include "AudioManager.h"
 
 void IDestroyable::Destroy(Game* game)
 {
@@ -99,6 +100,28 @@ void IDrawable::Draw()
 	}
 
 	renderer->Draw(texture.get(), &srcRect, &destRect);
+}
+
+void IClip::Register(Game* game, int channel)
+{
+	audioManager = game->audioManager;
+	this->channel = channel;
+}
+
+void IClip::Unregister(Game* game)
+{
+	mix = nullptr;
+	channel = -1;
+}
+
+void IClip::SetMix(shared_ptr<Mix_Chunk> mix)
+{
+	this->mix = mix;
+}
+
+void IClip::Play()
+{
+	audioManager->PlayMix(mix, channel);
 }
 
 void ICollidable::SetOffset(float x, float y)

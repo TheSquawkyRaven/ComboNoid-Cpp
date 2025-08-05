@@ -5,6 +5,9 @@
 Combo::Combo(Game* game, Gameplay* gameplay) : game(game), gameplay(gameplay)
 {
 	text = new Text(game);
+
+	comboIncreaseClip = make_unique<Clip>(game->audioManager, "./assets/audio/combo_increase.wav");
+	comboDecreaseClip = make_unique<Clip>(game->audioManager, "./assets/audio/combo_decrease.wav");
 }
 
 void Combo::Init()
@@ -38,6 +41,7 @@ void Combo::PaddleHit()
 {
 	combo++;
 	UpdateCombo();
+	comboIncreaseClip->Play();
 }
 
 void Combo::PaddleMiss()
@@ -48,6 +52,7 @@ void Combo::PaddleMiss()
 		combo = 0;
 	}
 	UpdateCombo();
+	comboDecreaseClip->Play();
 }
 
 void Combo::PaddleMissBall()
@@ -58,10 +63,12 @@ void Combo::PaddleMissBall()
 		combo = 0;
 	}
 	UpdateCombo();
+	comboDecreaseClip->Play();
 }
 
 void Combo::BallLost()
 {
 	combo = 0;
 	UpdateCombo();
+	comboDecreaseClip->Play();
 }

@@ -92,6 +92,7 @@ bool Block::DamageBlock(int damage)
 		broken(this);
 		return true;
 	}
+	hit(this);
 
 	int frame = breakingStartFrame - hp;
 	CropTexture(frame * blockSize.x, color * blockSize.y, blockSize.x, blockSize.y);

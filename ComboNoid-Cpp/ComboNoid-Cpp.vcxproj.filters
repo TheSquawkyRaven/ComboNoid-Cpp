@@ -105,6 +105,12 @@
     <ClCompile Include="libraries\tinyxml2\tinyxml2.cpp">
       <Filter>Libraries</Filter>
     </ClCompile>
+    <ClCompile Include="src\AudioManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Clip.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Game.h">
@@ -178,6 +184,12 @@
     </ClInclude>
     <ClInclude Include="libraries\tinyxml2\tinyxml2.h">
       <Filter>Libraries</Filter>
+    </ClInclude>
+    <ClInclude Include="src\AudioManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Clip.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

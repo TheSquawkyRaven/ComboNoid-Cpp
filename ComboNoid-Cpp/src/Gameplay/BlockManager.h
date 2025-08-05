@@ -12,6 +12,7 @@
 #include "../Components.h"
 #include "../LevelManager.h"
 #include "Block.h"
+#include "../Clip.h"
 
 using namespace std;
 
@@ -23,6 +24,10 @@ class BlockManager : IDestroyable
 private:
 	Game* game;
 	Gameplay* gameplay;
+
+	unique_ptr<Clip> blockHitClip;
+	unique_ptr<Clip> blockBreakClip;
+
 
 	// Blocks in play
 	set<Block*> blocks;
@@ -55,6 +60,7 @@ private:
 	void CreateBlockFromTile(int tile, Vector2& pos);
 	void CreateBlock(Block::Color color, Vector2& pos);
 
+	void OnBlockHit(Block* block);
 	void OnBlockBroken(Block* block);
 	void OnBlockDestroyed(Block* block);
 

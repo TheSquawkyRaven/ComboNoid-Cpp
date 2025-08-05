@@ -5,7 +5,8 @@
 
 PowerupManager::PowerupManager(Game* game, Gameplay* gameplay) : game(game), gameplay(gameplay)
 {
-
+	powerupGainedClip = make_unique<Clip>(game->audioManager, "./assets/audio/powerup_gain.wav");
+	powerupCreatedClip = make_unique<Clip>(game->audioManager, "./assets/audio/powerup_create.wav");
 }
 
 void PowerupManager::Init()
@@ -26,6 +27,8 @@ void PowerupManager::Destroy(Game* game)
 
 Powerup* PowerupManager::CreatePowerup(Powerup::Type type, Vector2& pos)
 {
+	powerupCreatedClip->Play();
+
 	Powerup* powerup = new Powerup(game, gameplay);
 	powerup->gained = [this](Powerup* p)
 	{
@@ -44,6 +47,7 @@ Powerup* PowerupManager::CreatePowerup(Powerup::Type type, Vector2& pos)
 
 void PowerupManager::OnPowerupGained(Powerup* powerup)
 {
+	powerupGainedClip->Play();
 	powerups.erase(powerup);
 	powerup->Destroy(game);
 }

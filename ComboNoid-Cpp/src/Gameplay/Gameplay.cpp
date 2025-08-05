@@ -59,6 +59,9 @@ void Gameplay::Init(shared_ptr<Level> level, int levelIndex)
 	Pause(false);
 
 	blockManager->LoadLevel(level.get());
+
+	backgroundMusic = game->audioManager->LoadMusic("./assets/audio/game_music.wav");
+	game->audioManager->PlayMusic(backgroundMusic);
 }
 
 void Gameplay::Input(SDL_Event& event)

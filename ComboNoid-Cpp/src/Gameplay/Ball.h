@@ -7,9 +7,11 @@
 
 #include <stdio.h>
 #include <functional>
+#include <memory>
 
 #include "../Components.h"
 #include "../Vector2.h"
+#include "../Clip.h"
 
 using namespace std;
 
@@ -43,6 +45,8 @@ private:
 
 	Game* game;
 	Gameplay* gameplay;
+
+	unique_ptr<Clip> hitClip;
 
 	SDL_Rect* currentRect = nullptr;
 

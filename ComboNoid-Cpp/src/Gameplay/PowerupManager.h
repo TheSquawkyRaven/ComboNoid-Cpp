@@ -11,6 +11,7 @@
 
 #include "../Components.h"
 #include "Powerup.h"
+#include "../Clip.h"
 
 using namespace std;
 
@@ -22,6 +23,9 @@ class PowerupManager : IDestroyable
 private:
 	Game* game;
 	Gameplay* gameplay;
+
+	unique_ptr<Clip> powerupGainedClip;
+	unique_ptr<Clip> powerupCreatedClip;
 
 	// Blocks in play
 	set<Powerup*> powerups;

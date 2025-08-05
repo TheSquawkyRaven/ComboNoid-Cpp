@@ -60,21 +60,21 @@ int main(int argc, char* args[])
 	int imageFlags = IMG_INIT_PNG;
 	if (!(IMG_Init(imageFlags) & imageFlags))
 	{
-		printf("SDL_image cannot initialize! SDL_IMAGE_ERROR: %s", IMG_GetError());
+		printf("SDL_image cannot initialize! SDL_IMAGE_ERROR: %s\n", IMG_GetError());
 		return false;
 	}
 
 	// Mixer (Audio) Loading
 	if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0)
 	{
-		printf("SDL_mixer cannot initialize! SDL_MIXER_ERROR: %s", Mix_GetError());
+		printf("SDL_mixer cannot initialize! SDL_MIXER_ERROR: %s\n", Mix_GetError());
 		return false;
 	}
 
 	// TTF Loading
 	if (TTF_Init() == -1)
 	{
-		printf("SDL_TTF cannot initialize! SDL_TTF_ERROR: %s", TTF_GetError());
+		printf("SDL_TTF cannot initialize! SDL_TTF_ERROR: %s\n", TTF_GetError());
 		return false;
 	}
 

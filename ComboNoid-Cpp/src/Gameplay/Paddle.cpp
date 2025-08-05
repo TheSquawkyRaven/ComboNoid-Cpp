@@ -8,6 +8,7 @@
 Paddle::Paddle(Game* game, Gameplay* gameplay) : game(game), gameplay(gameplay)
 {
 	rLimit = game->renderX;
+	paddleFlashClip = make_unique<Clip>(game->audioManager, "./assets/audio/paddle_flash.wav");
 }
 
 void Paddle::Init()
@@ -122,6 +123,7 @@ void Paddle::UpdateFlash()
 
 	if (!isFlashing && spaceJustPressed)
 	{
+		paddleFlashClip->Play();
 		isFlashing = true;
 		flashTimer = flashTime;
 

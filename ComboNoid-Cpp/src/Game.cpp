@@ -5,6 +5,7 @@ Game::Game(SDL_Window* window, SDL_Renderer* renderer)
 {
 	srand(static_cast<unsigned int>(time(nullptr)));
 	this->renderer = new Renderer(window, renderer, renderX, renderY);
+	this->audioManager = new AudioManager();
 
 	levelManager = new LevelManager();
 }

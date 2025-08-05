@@ -14,6 +14,7 @@
 #include "Renderer.h"
 #include "LevelManager.h"
 #include "UI/MenuManager.h"
+#include "AudioManager.h"
 #include "Gameplay/Gameplay.h"
 #include "Gameplay/Block.h"
 
@@ -47,6 +48,7 @@ private:
 
 public:
 	Renderer* renderer;
+	AudioManager* audioManager;
 
 	float timeScale = 1.0f;
 

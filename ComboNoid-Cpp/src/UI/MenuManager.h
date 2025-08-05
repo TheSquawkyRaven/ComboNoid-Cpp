@@ -7,11 +7,13 @@
 
 #include <stdio.h>
 #include <vector>
+#include <memory>
 
 #include "../Components.h"
 #include "../Background.h"
 #include "MainMenu.h"
 #include "LevelsMenu.h"
+#include "../AudioManager.h"
 
 using namespace std;
 
@@ -27,6 +29,8 @@ private:
 	Game* game;
 
 	Background* background = nullptr;
+
+	shared_ptr<Mix_Music> backgroundMusic = nullptr;
 
 	MainMenu* mainMenu = nullptr;
 	LevelsMenu* levelsMenu = nullptr;

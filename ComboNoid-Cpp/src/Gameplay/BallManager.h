@@ -12,6 +12,7 @@
 #include "../Components.h"
 #include "Ball.h"
 #include "../UI/Text.h"
+#include "../Clip.h"
 
 using namespace std;
 
@@ -27,6 +28,8 @@ private:
 
 	Game* game;
 	Gameplay* gameplay;
+
+	unique_ptr<Clip> ballDroppedClip;
 
 	Text* text = nullptr;
 	Vector2 ballCountPos{};

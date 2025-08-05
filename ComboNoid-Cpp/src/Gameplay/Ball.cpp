@@ -6,6 +6,8 @@
 
 Ball::Ball(Game* game, Gameplay* gameplay) : game(game), gameplay(gameplay)
 {
+	hitClip = make_unique<Clip>(game->audioManager, "./assets/audio/ball_hit.wav");
+
 	lLimit = 0;
 	rLimit = game->renderX;
 	tLimit = 0;
@@ -105,6 +107,12 @@ void Ball::SetSize(BallSize size)
 
 void Ball::OnCollision(IRectCollidable* rect, int type)
 {
+	if (isAttached)
+	{
+		return;
+	}
+	hitClip->Play();
+
 	// Convert type to CollidedWith
 	CollidedWith collidedType = static_cast<CollidedWith>(type);
 
@@ -125,12 +133,6 @@ void Ball::OnCollision(IRectCollidable* rect, int type)
 			if (isBig)
 			{
 				// If the ball is big, no need to reflect if it manages to destroy the block
-				PostUpdate();
-				return;
-			}
-			if (!block->isStrong && damage > initialHP)
-			{
-				// (for non strong blocks) Damage is higher than its initial hp, skip reflecting, PENETRATE
 				PostUpdate();
 				return;
 			}

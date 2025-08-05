@@ -20,6 +20,9 @@ void MenuManager::Init()
 	levelsMenu->Init();
 
 	OpenMainMenu();
+
+	backgroundMusic = game->audioManager->LoadMusic("./assets/audio/menu_music.wav");
+	game->audioManager->PlayMusic(backgroundMusic);
 }
 
 void MenuManager::Destroy(Game* game)

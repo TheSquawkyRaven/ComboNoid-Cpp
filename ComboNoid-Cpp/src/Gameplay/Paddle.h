@@ -7,8 +7,10 @@
 
 #include <stdio.h>
 #include <map>
+#include <memory>
 
 #include "../Components.h"
+#include "../Clip.h"
 
 class Game;
 
@@ -47,6 +49,8 @@ private:
 
 	Game* game;
 	Gameplay* gameplay;
+
+	unique_ptr<Clip> paddleFlashClip;
 
 	Ball* attachedBall = nullptr;
 	SDL_Rect* currentRect = nullptr;

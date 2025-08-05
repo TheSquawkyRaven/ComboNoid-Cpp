@@ -6,12 +6,12 @@
 
 BlockManager::BlockManager(Game* game, Gameplay* gameplay) : game(game), gameplay(gameplay)
 {
-
+	blockHitClip = make_unique<Clip>(game->audioManager, "./assets/audio/block_hit.wav");
+	blockBreakClip = make_unique<Clip>(game->audioManager, "./assets/audio/block_break.wav");
 }
 
 void BlockManager::Init()
 {
-
 }
 
 void BlockManager::LoadLevel(Level* level)
@@ -61,6 +61,10 @@ void BlockManager::CreateBlockFromTile(int tile, Vector2& pos)
 void BlockManager::CreateBlock(Block::Color color, Vector2& pos)
 {
 	Block* block = new Block(game, gameplay);
+	block->hit = [this](Block* b)
+	{
+		this->OnBlockHit(b);
+	};
 	block->broken = [this](Block* b)
 	{
 		this->OnBlockBroken(b);
@@ -79,11 +83,18 @@ void BlockManager::CreateBlock(Block::Color color, Vector2& pos)
 	blocks.insert(block);
 }
 
+void BlockManager::OnBlockHit(Block* block)
+{
+	blockHitClip->Play();
+}
+
 void BlockManager::OnBlockBroken(Block* block)
 {
 	Block::Color color = block->GetColor();
 	int score = blockScore.at(color);
 	gameplay->score->AddScore(score);
+
+	blockBreakClip->Play();
 }
 
 void BlockManager::OnBlockDestroyed(Block* block)

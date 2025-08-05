@@ -10,6 +10,7 @@
 BallManager::BallManager(Game* game, Gameplay* gameplay) : game(game), gameplay(gameplay)
 {
 	text = new Text(game);
+	ballDroppedClip = make_unique<Clip>(game->audioManager, "./assets/audio/ball_drop.wav");
 }
 
 void BallManager::Init()
@@ -106,6 +107,7 @@ void BallManager::OnBallFellOff(Ball* ball)
 
 	if (balls.empty())
 	{
+		ballDroppedClip->Play();
 		// Lost all balls in play
 		gameplay->combo->BallLost();
 		if (ballsStock <= 0)

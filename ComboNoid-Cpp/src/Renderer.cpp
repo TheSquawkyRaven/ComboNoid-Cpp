@@ -115,7 +115,7 @@ shared_ptr<SDL_Texture> Renderer::LoadFontTexture(TTF_Font* font, int fontSize, 
     SDL_Surface* sdlSurface = TTF_RenderText_Solid(font, text, color);
     if (sdlSurface == nullptr)
     {
-        printf("Failed to create surface from font_ptr! SDL_TTF_ERROR: %s", TTF_GetError());
+        printf("Failed to create surface from font_ptr! SDL_TTF_ERROR: %s\n", TTF_GetError());
         return nullptr;
     }
 
@@ -124,7 +124,7 @@ shared_ptr<SDL_Texture> Renderer::LoadFontTexture(TTF_Font* font, int fontSize, 
     SDL_FreeSurface(sdlSurface);
     if (texture == nullptr)
     {
-        printf("Failed to convert surface to texture! SDL_IMAGE_ERROR: %s", IMG_GetError());
+        printf("Failed to convert surface to texture! SDL_IMAGE_ERROR: %s\n", IMG_GetError());
         return nullptr;
     }
 

@@ -6,9 +6,11 @@
 #include <SDL_mixer.h>
 
 #include <stdio.h>
+#include <memory>
 
 #include "../Components.h"
 #include "../UI/Text.h"
+#include "../Clip.h"
 
 class Game;
 class Gameplay;
@@ -22,6 +24,9 @@ private:
 
 	Game* game;
 	Gameplay* gameplay;
+
+	unique_ptr<Clip> comboIncreaseClip;
+	unique_ptr<Clip> comboDecreaseClip;
 
 	Text* text = nullptr;
 

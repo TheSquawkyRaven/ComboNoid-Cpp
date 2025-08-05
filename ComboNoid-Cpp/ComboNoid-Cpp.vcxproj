@@ -148,7 +148,9 @@ copy /Y "$(ProjectDir)libraries/SDL2_ttf-2.24.0\lib\x64\SDL2_ttf.dll" "$(OutDir)
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="libraries\tinyxml2\tinyxml2.cpp" />
+    <ClCompile Include="src\AudioManager.cpp" />
     <ClCompile Include="src\Background.cpp" />
+    <ClCompile Include="src\Clip.cpp" />
     <ClCompile Include="src\Components.cpp" />
     <ClCompile Include="src\Game.cpp" />
     <ClCompile Include="src\Gameplay\Ball.cpp" />
@@ -175,7 +177,9 @@ copy /Y "$(ProjectDir)libraries/SDL2_ttf-2.24.0\lib\x64\SDL2_ttf.dll" "$(OutDir)
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="libraries\tinyxml2\tinyxml2.h" />
+    <ClInclude Include="src\AudioManager.h" />
     <ClInclude Include="src\Background.h" />
+    <ClInclude Include="src\Clip.h" />
     <ClInclude Include="src\Components.h" />
     <ClInclude Include="src\Game.h" />
     <ClInclude Include="src\Gameplay\Ball.h" />

@@ -29,6 +29,8 @@ class Gameplay : public IDestroyable, public IInput
 private:
 	Game* game;
 
+	shared_ptr<Mix_Music> backgroundMusic = nullptr;
+
 	shared_ptr<Level> currentLevel = nullptr;
 	int levelIndex = 0;
 

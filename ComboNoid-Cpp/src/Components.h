@@ -15,6 +15,7 @@
 using namespace std;
 
 class Game;
+class AudioManager;
 
 // Any class that requires Register/Unregister should also inherit from this
 // As well as classes that manage objects with components
@@ -60,7 +61,7 @@ public:
 class IDrawable
 {
 private:
-	Renderer* renderer;
+	Renderer* renderer = nullptr;
 	int layer = 0;
 	bool visible = true;
 
@@ -84,6 +85,23 @@ public:
 
 	void SetTexture(shared_ptr<SDL_Texture> texture);
 	virtual void Draw();
+
+};
+
+class IClip
+{
+private:
+	AudioManager* audioManager = nullptr;
+	int channel = -1;
+
+public:
+	shared_ptr<Mix_Chunk> mix = nullptr;
+
+	void Register(Game* game, int channel = -1);
+	void Unregister(Game* game);
+
+	void SetMix(shared_ptr<Mix_Chunk> mix);
+	void Play();
 
 };
 
