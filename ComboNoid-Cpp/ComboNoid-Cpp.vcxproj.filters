@@ -75,9 +75,6 @@
     <ClCompile Include="src\Gameplay\PowerupManager.cpp">
       <Filter>Source Files\Gameplay</Filter>
     </ClCompile>
-    <ClCompile Include="tinyxml2\tinyxml2.cpp">
-      <Filter>Libraries</Filter>
-    </ClCompile>
     <ClCompile Include="src\Gameplay\Combo.cpp">
       <Filter>Source Files\Gameplay</Filter>
     </ClCompile>
@@ -104,6 +101,9 @@
     </ClCompile>
     <ClCompile Include="src\UI\PauseMenu.cpp">
       <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="libraries\tinyxml2\tinyxml2.cpp">
+      <Filter>Libraries</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -149,9 +149,6 @@
     <ClInclude Include="src\Gameplay\PowerupManager.h">
       <Filter>Header Files\Gameplay</Filter>
     </ClInclude>
-    <ClInclude Include="tinyxml2\tinyxml2.h">
-      <Filter>Libraries</Filter>
-    </ClInclude>
     <ClInclude Include="src\Gameplay\Combo.h">
       <Filter>Header Files\Gameplay</Filter>
     </ClInclude>
@@ -178,6 +175,9 @@
     </ClInclude>
     <ClInclude Include="src\UI\PauseMenu.h">
       <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="libraries\tinyxml2\tinyxml2.h">
+      <Filter>Libraries</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
