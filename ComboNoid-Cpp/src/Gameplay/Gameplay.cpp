@@ -33,11 +33,12 @@ Gameplay::Gameplay(Game* game) : game(game)
 	pauseMenu = new PauseMenu(game, this);
 }
 
-void Gameplay::Init(shared_ptr<Level> level)
+void Gameplay::Init(shared_ptr<Level> level, int levelIndex)
 {
 	IInput::Register(game);
 
 	currentLevel = level;
+	this->levelIndex = levelIndex;
 
 	background->Init();
 
@@ -54,6 +55,8 @@ void Gameplay::Init(shared_ptr<Level> level)
 
 	pauseMenu->Init();
 	pauseMenu->SetVisible(false);
+
+	Pause(false);
 
 	blockManager->LoadLevel(level.get());
 }
@@ -148,4 +151,29 @@ void Gameplay::Pause(bool paused)
 	}
 	pauseMenu->SetVisible(false);
 	game->timeScale = 1;
+}
+
+void Gameplay::GameOver(bool won)
+{
+	if (gameOver)
+	{
+		return;
+	}
+
+	score->AddBallsStockScore(ballManager->GetBallsStock());
+	Pause(true);
+	pauseMenu->GameOver(won, score->totalScore, 0); // TODO high score
+
+	gameOver = true;
+}
+
+void Gameplay::RestartLevel()
+{
+	game->TriggerLoadLevel(levelIndex);
+}
+
+void Gameplay::LoadNextLevel()
+{
+	int nextLevel = levelIndex + 1;
+	game->TriggerLoadLevel(nextLevel);
 }

@@ -37,7 +37,7 @@ void Block::Update()
 	int frame = Game::AnimateFrame(breakingFrames, breakingTimer, breakingTime / breakingFrames, false);
 	if (frame == -1)
 	{
-		broken(this);
+		destroyed(this);
 		return;
 	}
 	CropTexture((breakingStartFrame + frame) * blockSize.x, color * blockSize.y, blockSize.x, blockSize.y);
@@ -89,6 +89,7 @@ bool Block::DamageBlock(int damage)
 		{
 			SpawnPowerup();
 		}
+		broken(this);
 		return true;
 	}
 

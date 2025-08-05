@@ -20,11 +20,23 @@ class Layer;
 class LevelManager
 {
 public:
+	inline static const vector<string> levels = {
+		"Level1",
+		"Level2",
+		"Level3",
+		"Level4",
+		"Level5",
+		"Level6",
+		"Level7",
+		"Level8",
+		"Level9",
+		"Level10",
+	};
 
 	LevelManager();
 	void Init();
 
-	shared_ptr<Level> LoadLevel(const string& levelName);
+	shared_ptr<Level> LoadLevel(int levelIndex);
 
 };
 

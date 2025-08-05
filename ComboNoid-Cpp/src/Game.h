@@ -102,8 +102,7 @@ public:
 	// Returns true if quit is requested
 	bool UpdateInput();
 
-	// Called from MainMenu, to call LevelManager and then create Gameplay
-	void TriggerLoadLevel(const string& level);
+	void TriggerLoadLevel(int levelIndex);
 	void TriggerOpenMenu();
 
 	void TriggerQuit();

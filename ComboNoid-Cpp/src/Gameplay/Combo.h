@@ -8,28 +8,28 @@
 #include <stdio.h>
 
 #include "../Components.h"
+#include "../UI/Text.h"
 
 class Game;
 class Gameplay;
 
-class Combo : public IDestroyable, public IDrawable
+class Combo : public IDestroyable
 {
 private:
 	inline static const int drawLayer = 50;
 	inline static const int fontSize = 16;
-	inline static SDL_Color color{ 0, 0, 0, 255 };
-
-	shared_ptr<TTF_Font> font = nullptr;
+	inline static SDL_Color textColor{ 255, 255, 255, 255 };
 
 	Game* game;
 	Gameplay* gameplay;
 
-	int lastCombo = 0;
+	Text* text = nullptr;
+
+	int lastCombo = -1;
 	int combo = 0;
 
 private:
 	void UpdateCombo();
-	void UpdateText(const string& text);
 
 public:
 	inline int GetCombo() const { return combo; }
@@ -37,7 +37,7 @@ public:
 	Combo(Game* game, Gameplay* gameplay);
 	void Init();
 
-	void OnDestroy() override;
+	void Destroy(Game* game) override;
 
 	// Paddle Flash and Hit
 	void PaddleHit();

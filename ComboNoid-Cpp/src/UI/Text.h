@@ -19,6 +19,8 @@ private:
 
 	Game* game;
 
+	bool dirty = false;
+
 	shared_ptr<TTF_Font> font = nullptr;
 	int fontSize = 16;
 	string text;
@@ -30,6 +32,7 @@ public:
 	void Init(const Vector2& center);
 
 	void OnDestroy() override;
+	void Draw() override;
 
 	void SetPos(const Vector2& center);
 

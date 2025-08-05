@@ -5,27 +5,28 @@
 
 Score::Score(Game* game, Gameplay* gameplay) : game(game), gameplay(gameplay)
 {
+	text = new Text(game);
 }
 
 void Score::Init()
 {
-	IDrawable::Register(game, drawLayer);
+	Vector2 center(400, game->renderY - fontSize / 2);
+	text->Init(center);
+	text->SetFontSize(fontSize);
+	text->SetColor(textColor);
 
-	font = game->renderer->LoadFont("./assets/upheaval/upheavtt.ttf", fontSize);
-	shared_ptr<SDL_Texture> fontTexture = game->renderer->LoadFontTexture(font.get(), fontSize, "0", textColor);
-	SetTexture(fontTexture);
-
-	PlaceTexture(400, game->renderY - 40);
+	UpdateScore();
 }
 
-void Score::OnDestroy()
+void Score::Destroy(Game* game)
 {
-	IDrawable::Unregister(game);
+	text->Destroy(game);
+	IDestroyable::Destroy(game);
 }
 
 void Score::UpdateScore()
 {
-
+	text->SetText(to_string(totalScore));
 }
 
 void Score::AddScore(int score)
@@ -38,4 +39,9 @@ void Score::AddScore(int score)
 
 	totalScore += score * combo;
 	UpdateScore();
+}
+
+void Score::AddBallsStockScore(int ballsStock)
+{
+	AddScore(ballsStock * scorePerBallStock);
 }

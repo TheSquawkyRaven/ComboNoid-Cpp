@@ -54,6 +54,7 @@ private:
 	float paddleCollisionCooldown = 0;
 
 	int damage = 1;
+	bool isBig = false;
 
 public:
 	bool isAttached = false;

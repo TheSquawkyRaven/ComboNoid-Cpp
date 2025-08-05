@@ -6,7 +6,6 @@
 
 Ball::Ball(Game* game, Gameplay* gameplay) : game(game), gameplay(gameplay)
 {
-    printf("Ball Created\n");
 	lLimit = 0;
 	rLimit = game->renderX;
 	tLimit = 0;
@@ -86,10 +85,12 @@ void Ball::SetSize(BallSize size)
 		case NORMAL:
 			currentRect = &rectNormal;
 			radius = 6;
+			isBig = false;
 			break;
 		case LARGE:
 			currentRect = &rectLarge;
 			radius = 8;
+			isBig = true;
 			break;
 		default:
 			printf("Unknown Ball Size of %d\n", size);
@@ -112,11 +113,21 @@ void Ball::OnCollision(IRectCollidable* rect, int type)
 		Block* block = static_cast<Block*>(rect);
 		int initialHP = block->GetHP();
 		bool blockDestroyed = block->DamageBlock(damage);
-		damage -= 1; // Decrease damage by 1 for each block hit
-		damage = max(damage, 1);
-		DamageUpdated();
+		// if the ball is big, do not decrease damage
+		if (!isBig)
+		{
+			damage -= 1; // Decrease damage by 1 for each block hit
+			damage = max(damage, 1);
+			DamageUpdated();
+		}
 		if (blockDestroyed)
 		{
+			if (isBig)
+			{
+				// If the ball is big, no need to reflect if it manages to destroy the block
+				PostUpdate();
+				return;
+			}
 			if (!block->isStrong && damage > initialHP)
 			{
 				// (for non strong blocks) Damage is higher than its initial hp, skip reflecting, PENETRATE

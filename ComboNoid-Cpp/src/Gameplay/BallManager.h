@@ -11,6 +11,7 @@
 
 #include "../Components.h"
 #include "Ball.h"
+#include "../UI/Text.h"
 
 using namespace std;
 
@@ -20,8 +21,15 @@ class Gameplay;
 class BallManager : public IDestroyable, public IUpdatable
 {
 private:
+	inline static const int ballCountDrawLayer = 50;
+	inline static const int fontSize = 16;
+	inline static SDL_Color textColor{ 255, 255, 255, 255 };
+
 	Game* game;
 	Gameplay* gameplay;
+
+	Text* text = nullptr;
+	Vector2 ballCountPos{};
 
 	// Balls in play
 	set<Ball*> balls;
@@ -38,6 +46,10 @@ private:
 
 	float ballSlowFactor = 0.5f;
 
+public:
+	function<void(Ball*)> doAttach;
+
+private:
 	Ball* CreateBall(bool fromStock);
 
 	void UpdateTimer();
@@ -48,8 +60,10 @@ private:
 	void EndEnlargeBall();
 	void EndSlowBall();
 
+	void UpdateBallCount();
+
 public:
-	function<void(Ball*)> doAttach;
+	inline int GetBallsStock() const { return ballsStock; }
 
 	BallManager(Game* game, Gameplay* gameplay);
 	void Init();

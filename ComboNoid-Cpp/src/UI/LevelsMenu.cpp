@@ -26,7 +26,7 @@ void LevelsMenu::Init()
 	int y = 0;
 	Vector2 p;
 	int c = 1;
-	for (auto& levelName : levels)
+	for (int i = 0; i < LevelManager::levels.size(); i++)
 	{
 		if (x == columns)
 		{
@@ -40,9 +40,9 @@ void LevelsMenu::Init()
 		Button* button = new Button(game);
 		button->Init(p, 1);
 		button->InitText(to_string(c), fontSize, textColor);
-		button->pressed = [this, levelName]()
+		button->pressed = [this, i]()
 		{
-			this->OnLevelPressed(levelName);
+			this->OnLevelPressed(i);
 		};
 
 		levelButtons.push_back(button);
@@ -77,12 +77,12 @@ void LevelsMenu::SetVisible(bool visible)
 	}
 }
 
-void LevelsMenu::OnLevelPressed(const string& levelName)
+void LevelsMenu::OnLevelPressed(int levelIndex)
 {
-	game->TriggerLoadLevel(levelName);
+	game->TriggerLoadLevel(levelIndex);
 }
 
 void LevelsMenu::LaunchFirstLevel()
 {
-	game->TriggerLoadLevel(levels.at(0));
+	game->TriggerLoadLevel(0);
 }

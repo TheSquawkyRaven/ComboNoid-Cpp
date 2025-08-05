@@ -4,41 +4,34 @@
 
 Combo::Combo(Game* game, Gameplay* gameplay) : game(game), gameplay(gameplay)
 {
+	text = new Text(game);
 }
 
 void Combo::Init()
 {
-	IDrawable::Register(game, drawLayer);
-	font = game->renderer->LoadFont("./assets/upheaval/upheavtt.ttf", fontSize);
+	Vector2 center = Vector2(300, game->renderY - 20);
+	text->Init(center);
+	text->SetFontSize(fontSize);
+	text->SetColor(textColor);
 
-	UpdateText("Combo x0");
-	PlaceTexture(300, game->renderY - 40);
+	UpdateCombo();
 }
 
-void Combo::OnDestroy()
+void Combo::Destroy(Game* game)
 {
-	IDrawable::Unregister(game);
+	text->Destroy(game);
+	IDestroyable::Destroy(game);
 }
 
 void Combo::UpdateCombo()
 {
-	if (combo != lastCombo)
+	if (combo == lastCombo)
 	{
-		lastCombo = combo;
-		if (combo == 0)
-		{
-			printf("Combo Ended\n");
-			return;
-		}
-		printf("Combo: %d\n", combo);
+		return;
 	}
-}
 
-void Combo::UpdateText(const string& text)
-{
-	shared_ptr<SDL_Texture> texture = game->renderer->LoadFontTexture(font.get(), fontSize, text.c_str(), color);
-	SetTexture(texture);
-	PlaceTexture(300, game->renderY - 40);
+	lastCombo = combo;
+	text->SetText("Combo x" + to_string(combo));
 }
 
 void Combo::PaddleHit()

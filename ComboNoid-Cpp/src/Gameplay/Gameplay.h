@@ -30,6 +30,7 @@ private:
 	Game* game;
 
 	shared_ptr<Level> currentLevel = nullptr;
+	int levelIndex = 0;
 
 	Background* background;
 	Wall* topWall;
@@ -46,6 +47,7 @@ private:
 	vector<IRectCollidable*> powerups{}; // Collides with paddles
 
 	bool isPaused = false;
+	bool gameOver = false;
 
 public:
 
@@ -79,7 +81,7 @@ public:
 	inline void UnregisterPowerup(IRectCollidable* powerup) { UnregisterVector(powerups, powerup); }
 
 	Gameplay(Game* game);
-	void Init(shared_ptr<Level> level);
+	void Init(shared_ptr<Level> level, int levelIndex);
 
 	void Destroy(Game* game) override;
 	void OnDestroy() override;
@@ -88,6 +90,11 @@ public:
 	void HandleCollisions();
 
 	void Pause(bool paused);
+
+	void GameOver(bool won);
+
+	void RestartLevel();
+	void LoadNextLevel();
 
 };
 

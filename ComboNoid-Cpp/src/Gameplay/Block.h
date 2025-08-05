@@ -51,7 +51,9 @@ private:
 
 public:
 	bool isStrong = false;
+
 	function<void(Block*)> broken;
+	function<void(Block*)> destroyed;
 
 private:
 	void SetColor(Color color);

@@ -56,6 +56,7 @@ private:
 	void CreateBlock(Block::Color color, Vector2& pos);
 
 	void OnBlockBroken(Block* block);
+	void OnBlockDestroyed(Block* block);
 
 public:
 

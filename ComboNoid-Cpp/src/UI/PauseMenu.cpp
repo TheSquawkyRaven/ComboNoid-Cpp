@@ -51,6 +51,13 @@ void PauseMenu::Init()
 
 void PauseMenu::Destroy(Game* game)
 {
+	if (winText != nullptr)
+	{
+		winText->Destroy(game);
+		scoreText->Destroy(game);
+		highScoreText->Destroy(game);
+		nextLevelbutton->Destroy(game);
+	}
 	resumeButton->Destroy(game);
 	quitButton->Destroy(game);
 
@@ -60,6 +67,16 @@ void PauseMenu::Destroy(Game* game)
 void PauseMenu::OnDestroy()
 {
 	IDrawable::Unregister(game);
+}
+
+void PauseMenu::OnNextLevelButtonPressed()
+{
+	gameplay->LoadNextLevel();
+}
+
+void PauseMenu::OnRetryButtonPressed()
+{
+	gameplay->RestartLevel();
 }
 
 void PauseMenu::OnResumeButtonPressed()
@@ -80,3 +97,71 @@ void PauseMenu::SetVisible(bool visible)
 		button->SetVisible(visible);
 	}
 }
+
+void PauseMenu::GameOver(bool won, int score, int highScore)
+{
+	winText = new Text(game);
+	scoreText = new Text(game);
+	highScoreText = new Text(game);
+	nextLevelbutton = new Button(game);
+
+	winText->SetFontSize(titleFontSize);
+	winText->SetColor(titleColor);
+
+	scoreText->SetFontSize(scoreFontSize);
+	scoreText->SetColor(scoreColor);
+	highScoreText->SetFontSize(scoreFontSize);
+	highScoreText->SetColor(scoreColor);
+
+	Vector2 p = centerPos;
+	p.x += titleOffset.x;
+	p.y += titleOffset.y;
+
+	winText->Init(p);
+	if (won)
+	{
+		winText->SetText("You Win!");
+	}
+	else
+	{
+		winText->SetText("You Lose");
+	}
+
+	p.y += scoreYOffset;
+	scoreText->Init(p);
+	scoreText->SetText("Score: " + to_string(score));
+
+	p.y += scoreYOffset;
+	highScoreText->Init(p);
+	if (score > highScore)
+	{
+		highScoreText->SetText("NEW HIGH SCORE!");
+	}
+	else
+	{
+		highScoreText->SetText("High Score: " + to_string(highScore));
+	}
+
+	nextLevelbutton->Init(centerPos, 4);
+	if (won)
+	{
+		nextLevelbutton->InitText("Next", fontSize, textColor);
+		nextLevelbutton->pressed = [this]()
+		{
+			this->OnNextLevelButtonPressed();
+		};
+	}
+	else
+	{
+		nextLevelbutton->InitText("Retry", fontSize, textColor);
+		nextLevelbutton->pressed = [this]()
+		{
+			this->OnRetryButtonPressed();
+		};
+	}
+	p = Vector2(centerPos.x + centerOffset.x, centerPos.y + centerOffset.y);
+	nextLevelbutton->SetPos(p);
+
+	resumeButton->SetVisible(false);
+}
+

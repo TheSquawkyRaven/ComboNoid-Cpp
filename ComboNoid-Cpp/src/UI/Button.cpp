@@ -33,7 +33,6 @@ void Button::InitText(const string& text, int fontSize, SDL_Color color)
 	this->text->SetText(text);
 	this->text->SetFontSize(fontSize);
 	this->text->SetColor(color);
-	this->text->Render();
 }
 
 void Button::SetPos(Vector2& center)

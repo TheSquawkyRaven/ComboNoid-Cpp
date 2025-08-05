@@ -9,17 +9,26 @@
 
 BallManager::BallManager(Game* game, Gameplay* gameplay) : game(game), gameplay(gameplay)
 {
-
+	text = new Text(game);
 }
 
 void BallManager::Init()
 {
 	IUpdatable::Register(game);
+
+	ballCountPos.x = 40;
+	ballCountPos.y = game->renderY - 12;
+
+	text->Init(ballCountPos);
+	text->SetFontSize(fontSize);
+	text->SetColor(textColor);
+
 	CreateBall(true);
 }
 
 void BallManager::Destroy(Game* game)
 {
+	text->Destroy(game);
 	for (auto& ball : balls)
 	{
 		ball->Destroy(game);
@@ -61,6 +70,11 @@ void BallManager::UpdateTimer()
 	}
 }
 
+void BallManager::UpdateBallCount()
+{
+	text->SetText("Balls: " + to_string(ballsStock));
+}
+
 Ball* BallManager::CreateBall(bool fromStock)
 {
 	Ball* ball = new Ball(game, gameplay);
@@ -75,6 +89,7 @@ Ball* BallManager::CreateBall(bool fromStock)
 	if (fromStock)
 	{
 		ballsStock--;
+		UpdateBallCount();
 		doAttach(ball);
 	}
 	
@@ -83,7 +98,6 @@ Ball* BallManager::CreateBall(bool fromStock)
 
 void BallManager::OnBallFellOff(Ball* ball)
 {
-	printf("Ball fell off at position (%.2f, %.2f)\n", ball->pos.x, ball->pos.y);
 	// Remove from balls vector (destrctor)
 	balls.erase(ball);
 
@@ -97,10 +111,9 @@ void BallManager::OnBallFellOff(Ball* ball)
 		if (ballsStock <= 0)
 		{
 			// Game over, no more balls in stock
-			printf("Game Over! No more balls in stock.\n");
+			gameplay->GameOver(false);
 			return;
 		}
-		printf("Ball fell off, creating a new one. Balls left in stock: %d\n", ballsStock);
 		CreateBall(true);
 	}
 }
@@ -108,6 +121,7 @@ void BallManager::OnBallFellOff(Ball* ball)
 void BallManager::GainExtraBall()
 {
 	ballsStock++;
+	UpdateBallCount();
 }
 
 void BallManager::SplitBall()

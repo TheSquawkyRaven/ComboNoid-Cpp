@@ -16,6 +16,7 @@ void Text::Init(const Vector2& center)
 	this->center = center;
 
 	font = game->renderer->LoadFont("./assets/upheaval/upheavtt.ttf", fontSize);
+	dirty = true;
 }
 
 void Text::OnDestroy()
@@ -32,19 +33,33 @@ void Text::SetPos(const Vector2& center)
 	PlaceTexture(x, y);
 }
 
+void Text::Draw()
+{
+	if (dirty)
+	{
+		Render();
+		dirty = false;
+	}
+
+	IDrawable::Draw();
+}
+
 void Text::SetText(const string& text)
 {
 	this->text = text;
+	dirty = true;
 }
 
 void Text::SetFontSize(int fontSize)
 {
 	this->fontSize = fontSize;
+	dirty = true;
 }
 
 void Text::SetColor(const SDL_Color& color)
 {
 	this->color = color;
+	dirty = true;
 }
 
 void Text::Render()

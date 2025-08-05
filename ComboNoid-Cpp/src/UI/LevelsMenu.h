@@ -37,20 +37,6 @@ private:
 
 	Vector2 backButtonPos{};
 
-public:
-	inline static const vector<string> levels = {
-		"Level1",
-		"Level2",
-		"Level3",
-		"Level4",
-		"Level5",
-		"Level6",
-		"Level7",
-		"Level8",
-		"Level9",
-		"Level10",
-	};
-
 private:
 	void OnBackButtonPressed();
 
@@ -62,7 +48,8 @@ public:
 
 	void SetVisible(bool visible);
 
-	void OnLevelPressed(const string& levelName);
+	void OnLevelPressed(int levelIndex);
 	void LaunchFirstLevel();
+	void LaunchLevel(int levelIndex);
 
 };

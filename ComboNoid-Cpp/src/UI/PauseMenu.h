@@ -27,8 +27,20 @@ private:
 
 	inline static const Vector2 centerOffset{ 0, 40 };
 
+	inline static const int titleFontSize = 32;
+	inline static const int scoreFontSize = 24;
+	inline static const SDL_Color titleColor{ 255, 255, 255, 255 };
+	inline static const SDL_Color scoreColor{ 255, 255, 0, 255 };
+	inline static const Vector2 titleOffset{ 0, -100 };
+	inline static const int scoreYOffset = 40;
+
 	Game* game;
 	Gameplay* gameplay;
+
+	Text* winText = nullptr;
+	Text* scoreText = nullptr;
+	Text* highScoreText = nullptr;
+	Button* nextLevelbutton = nullptr;
 
 	Button* resumeButton = nullptr;
 	Button* quitButton = nullptr;
@@ -38,6 +50,8 @@ private:
 	Vector2 centerPos{ 0, 0 };
 
 private:
+	void OnNextLevelButtonPressed();
+	void OnRetryButtonPressed();
 	void OnResumeButtonPressed();
 	void OnQuitButtonPressed();
 
@@ -49,5 +63,7 @@ public:
 	void OnDestroy() override;
 
 	void SetVisible(bool visible);
+
+	void GameOver(bool won, int score, int highScore);
 
 };

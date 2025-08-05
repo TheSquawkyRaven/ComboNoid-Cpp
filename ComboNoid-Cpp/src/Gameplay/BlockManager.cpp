@@ -65,6 +65,10 @@ void BlockManager::CreateBlock(Block::Color color, Vector2& pos)
 	{
 		this->OnBlockBroken(b);
 	};
+	block->destroyed = [this](Block* b)
+	{
+		this->OnBlockDestroyed(b);
+	};
 	block->Init(color, pos);
 
 	if (block->isStrong)
@@ -77,6 +81,13 @@ void BlockManager::CreateBlock(Block::Color color, Vector2& pos)
 
 void BlockManager::OnBlockBroken(Block* block)
 {
+	Block::Color color = block->GetColor();
+	int score = blockScore.at(color);
+	gameplay->score->AddScore(score);
+}
+
+void BlockManager::OnBlockDestroyed(Block* block)
+{
 	if (!blocks.contains(block))
 	{
 		strongBlocks.erase(block);
@@ -86,15 +97,12 @@ void BlockManager::OnBlockBroken(Block* block)
 		blocks.erase(block);
 	}
 
-	Block::Color color = block->GetColor();
-	int score = blockScore.at(color);
-	gameplay->score->AddScore(score);
-
 	block->Destroy(game);
 
 	if (blocks.empty())
 	{
 		// Level copmleted
 		printf("All blocks destroyed!\n");
+		gameplay->GameOver(true);
 	}
 }

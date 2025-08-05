@@ -27,7 +27,6 @@ void MainMenu::Init()
 	title->SetText("Combonoid");
 	title->SetFontSize(titleFontSize);
 	title->SetColor(titleColor);
-	title->Render();
 
 	playButton->Init(centerPos, 4);
 	playButton->InitText("Start", fontSize, textColor);

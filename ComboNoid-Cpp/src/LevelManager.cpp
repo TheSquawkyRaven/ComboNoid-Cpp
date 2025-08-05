@@ -13,13 +13,19 @@ void LevelManager::Init()
 {
 }
 
-shared_ptr<Level> LevelManager::LoadLevel(const string& levelName)
+shared_ptr<Level> LevelManager::LoadLevel(int levelIndex)
 {
+    if (levelIndex < 0 || levelIndex >= levels.size())
+    {
+        printf("Invalid level index: %d\n", levelIndex);
+        return nullptr;
+	}
+    string levelName = levels.at(levelIndex);
     string path = "levels/" + levelName + ".tmx";
-	shared_ptr<Level> level = make_shared<Level>(path);
-	level->Load();
+    shared_ptr<Level> level = make_shared<Level>(path);
+    level->Load();
 
-	return level;
+    return level;
 }
 
 Level::Level(const string& path) : path(path)

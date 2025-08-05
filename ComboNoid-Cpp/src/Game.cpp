@@ -119,10 +119,13 @@ void Game::RegisterDestruction(IDestroyable* obj)
 	destructionQueue.push(obj);
 }
 
-void Game::TriggerLoadLevel(const string& level)
+void Game::TriggerLoadLevel(int levelIndex)
 {
-	menuManager->Destroy(this);
-	menuManager = nullptr;
+	if (menuManager)
+	{
+		menuManager->Destroy(this);
+		menuManager = nullptr;
+	}
 
 	if (gameplay)
 	{
@@ -130,10 +133,17 @@ void Game::TriggerLoadLevel(const string& level)
 		gameplay->Destroy(this);
 		gameplay = nullptr;
 	}
-	shared_ptr<Level> loadedLevel = levelManager->LoadLevel(level);
+
+	shared_ptr<Level> loadedLevel = levelManager->LoadLevel(levelIndex);
+	if (loadedLevel == nullptr)
+	{
+		// No more levels to load, return to main menu
+		TriggerOpenMenu();
+		return;
+	}
 	// Load gameplay with the level
 	gameplay = new Gameplay(this);
-	gameplay->Init(loadedLevel);
+	gameplay->Init(loadedLevel, levelIndex);
 }
 
 void Game::TriggerOpenMenu()
