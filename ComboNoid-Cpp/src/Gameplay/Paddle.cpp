@@ -112,6 +112,7 @@ void Paddle::UpdateFlash()
 			{
 				// Miss
 				removingBalls.push_back(ball);
+				ball->SetComboDamage(0);
 				FlashMissBall();
 			}
 		}
@@ -236,6 +237,7 @@ void Paddle::UpdateBall()
 		// Add a tiny amount of random horizontal direction offset so the ball doesn't bounce up and down fully vertically forever
 		attachedBall->direction = Vector2(game->RandomFloatRange(-0.01, 0.01), -1);
 		attachedBall->direction.Normalize();
+		attachedBall->SetComboDamage(0);
 		attachedBall = nullptr;
 	}
 }

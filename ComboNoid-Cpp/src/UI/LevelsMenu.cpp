@@ -9,14 +9,35 @@ LevelsMenu::LevelsMenu(MenuManager* menuManager, Game* game) : game(game), menuM
 {
 	backButton = new Button(game);
 
+	highScoreText = new Text(game);
+	highScoreValue = new Text(game);
+
 	backButtonPos.x = game->renderX / 2.0f;
 	backButtonPos.y = backButtonY;
+
+	highScoreTextPos.x = game->renderX / 2.0f;
+	highScoreTextPos.y = highScoreTextY;
 }
 
 void LevelsMenu::Init()
 {
+	Vector2 hPos = highScoreTextPos;
+	highScoreText->Init(hPos);
+	highScoreText->SetFontSize(fontSize);
+	highScoreText->SetColor(highScoreTextColor);
+	highScoreText->SetText("High Score:");
+
+	hPos.y += highScoreValueYOffset;
+	highScoreValue->Init(hPos);
+	highScoreValue->SetFontSize(fontSize);
+	highScoreValue->SetColor(highScoreTextColor);
+	highScoreValue->SetText(" ");
+
+	highScoreText->SetVisible(false);
+	highScoreValue->SetVisible(false);
+
 	backButton->Init(backButtonPos, 4);
-	backButton->InitText("Back", fontSize, textColor);
+	backButton->SetText("Back", fontSize, textColor);
 	backButton->pressed = [this]()
 	{
 		this->OnBackButtonPressed();
@@ -39,10 +60,21 @@ void LevelsMenu::Init()
 
 		Button* button = new Button(game);
 		button->Init(p, 1);
-		button->InitText(to_string(c), fontSize, textColor);
+		button->SetText(to_string(c), fontSize, textColor);
 		button->pressed = [this, i]()
 		{
 			this->OnLevelPressed(i);
+		};
+		button->hovered = [this, i](bool hover)
+		{
+			if (hover)
+			{
+				this->OnLevelButtonHovered(i);
+			}
+			else
+			{
+				this->OnLevelButtonExitHover();
+			}
 		};
 
 		levelButtons.push_back(button);
@@ -60,6 +92,9 @@ void LevelsMenu::Destroy(Game* game)
 	}
 	levelButtons.clear();
 
+	highScoreText->Destroy(game);
+	highScoreValue->Destroy(game);
+
 	IDestroyable::Destroy(game);
 }
 
@@ -75,6 +110,8 @@ void LevelsMenu::SetVisible(bool visible)
 	{
 		button->SetVisible(visible);
 	}
+	highScoreText->SetVisible(false);
+	highScoreValue->SetVisible(false);
 }
 
 void LevelsMenu::OnLevelPressed(int levelIndex)
@@ -85,4 +122,25 @@ void LevelsMenu::OnLevelPressed(int levelIndex)
 void LevelsMenu::LaunchFirstLevel()
 {
 	game->TriggerLoadLevel(0);
+}
+
+void LevelsMenu::OnLevelButtonHovered(int levelIndex)
+{
+	int highScore = game->highScore->GetHighScore(levelIndex);
+	if (highScore == 0)
+	{
+		highScoreText->SetVisible(false);
+		highScoreValue->SetVisible(false);
+		return;
+	}
+
+	highScoreValue->SetText(to_string(highScore));
+	highScoreText->SetVisible(true);
+	highScoreValue->SetVisible(true);
+}
+
+void LevelsMenu::OnLevelButtonExitHover()
+{
+	highScoreText->SetVisible(false);
+	highScoreValue->SetVisible(false);
 }

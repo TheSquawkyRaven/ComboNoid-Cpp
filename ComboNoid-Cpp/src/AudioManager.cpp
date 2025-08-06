@@ -98,3 +98,17 @@ void AudioManager::SetMusicVolume(float volume) const
     int v = static_cast<int>(volume * MIX_MAX_VOLUME);
 	Mix_VolumeMusic(v);
 }
+
+void AudioManager::ToggleMusicMute()
+{
+    musicMuted = !musicMuted;
+	float vol = musicMuted ? 0.0f : defaultMusicVolume;
+	SetMusicVolume(vol);
+}
+
+void AudioManager::ToggleMixMute()
+{
+    mixMuted = !mixMuted;
+    float vol = mixMuted ? 0.0f : defaultMixVolume;
+    SetMixVolume(vol);
+}

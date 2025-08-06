@@ -61,7 +61,7 @@ private:
 	void SpawnPowerup();
 
 public:
-	inline Color GetColor() const { return color; }
+	inline Color GetBlockColor() const { return color; }
 	inline int GetHP() const { return hp; }
 
 	Block(Game* game, Gameplay* gameplay);

@@ -68,12 +68,11 @@ void Text::SetFontSize(int fontSize)
 void Text::SetColor(const SDL_Color& color)
 {
 	this->color = color;
-	dirty = true;
 }
 
 void Text::Render()
 {
-	shared_ptr<SDL_Texture> texture = game->renderer->LoadFontTexture(font.get(), fontSize, text.c_str(), color);
+	shared_ptr<SDL_Texture> texture = game->renderer->LoadFontTexture(font.get(), fontSize, text.c_str());
 	SetTexture(texture);
 
 	SetPos(center);

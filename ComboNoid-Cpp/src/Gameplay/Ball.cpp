@@ -6,6 +6,7 @@
 
 Ball::Ball(Game* game, Gameplay* gameplay) : game(game), gameplay(gameplay)
 {
+	ballFx = new BallFx(game);
 	hitClip = make_unique<Clip>(game->audioManager, "./assets/audio/ball_hit.wav");
 
 	lLimit = 0;
@@ -19,12 +20,20 @@ void Ball::Init()
 	IUpdatable::Register(game);
 	IDrawable::Register(game);
 
+	ballFx->Init();
+
 	gameplay->RegisterBall(this);
 
 	shared_ptr<SDL_Texture> texture = game->renderer->LoadTexture("./assets/ball.png");
 	SetTexture(texture);
 
 	SetSize(NORMAL);
+}
+
+void Ball::Destroy(Game* game)
+{
+	ballFx->Destroy(game);
+	IDestroyable::Destroy(game);
 }
 
 void Ball::OnDestroy()
@@ -39,6 +48,7 @@ void Ball::Update()
 {
 	if (isAttached)
 	{
+		UpdatePowerup();
 		PostUpdate();
 		return;
 	}
@@ -69,6 +79,7 @@ void Ball::Update()
 		return;
 	}
 
+	UpdatePowerup();
 	PostUpdate();
 }
 
@@ -76,6 +87,40 @@ void Ball::PostUpdate()
 {
 	PlaceTexture(this);
 	PlaceCol(this);
+
+	ballFx->BallUpdate(pos);
+}
+
+void Ball::UpdatePowerup()
+{
+	if (isSlow)
+	{
+		slowTimer -= game->GetDeltaTime();
+		if (slowTimer < 0)
+		{
+			color.a = 255;
+			isSlow = false;
+			timeFactor = 1.0f;
+			ballFx->timeFactor = timeFactor;
+		}
+		else if (slowTimer < slowBlinkTime)
+		{
+			float f = slowBlinkTime - slowTimer;
+			float speed = (1.0f - slowTimer / slowBlinkTime) * slowBlinkSpeed;
+			float aFactor = sinf(f * speed) * 0.5f + 0.5f;
+			color.a = static_cast<Uint8>(slowBlinkAlpha + ((255 - slowBlinkAlpha) * aFactor));
+		}
+	}
+
+	if (isBig)
+	{
+		bigTimer -= game->GetDeltaTime();
+		if (bigTimer < 0)
+		{
+			SetSize(NORMAL);
+			isBig = false;
+		}
+	}
 }
 
 void Ball::SetSize(BallSize size)
@@ -122,12 +167,12 @@ void Ball::OnCollision(IRectCollidable* rect, int type)
 		int initialHP = block->GetHP();
 		bool blockDestroyed = block->DamageBlock(damage);
 		// if the ball is big, do not decrease damage
-		if (!isBig)
-		{
-			damage -= 1; // Decrease damage by 1 for each block hit
-			damage = max(damage, 1);
-			DamageUpdated();
-		}
+		//if (!isBig)
+		//{
+		//	damage -= 1; // Decrease damage by 1 for each block hit
+		//	damage = max(damage, 1);
+		//	DamageUpdated();
+		//}
 		if (blockDestroyed)
 		{
 			if (isBig)
@@ -213,13 +258,27 @@ Vector2 Ball::GetBallRectNormal(IRectCollidable* rect)
 	}
 }
 
-void Ball::SetComboDamage(int damage)
+void Ball::SetComboDamage(int combo)
 {
-	this->damage = damage;
-	DamageUpdated();
+	this->damage = combo;
+	if (damage < 1)
+	{
+		damage = 1;
+	}
+	ballFx->SetCombo(combo);
 }
 
-void Ball::DamageUpdated()
+void Ball::Slow(float time)
 {
-	// TODO update texture or number or color or something for the ball
+	slowTimer = time;
+	timeFactor = slowFactor;
+	ballFx->timeFactor = timeFactor;
+	isSlow = true;
+}
+
+void Ball::Big(float time)
+{
+	bigTimer = time;
+	SetSize(LARGE);
+	isBig = true;
 }

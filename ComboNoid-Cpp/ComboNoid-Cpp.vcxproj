@@ -154,6 +154,7 @@ copy /Y "$(ProjectDir)libraries/SDL2_ttf-2.24.0\lib\x64\SDL2_ttf.dll" "$(OutDir)
     <ClCompile Include="src\Components.cpp" />
     <ClCompile Include="src\Game.cpp" />
     <ClCompile Include="src\Gameplay\Ball.cpp" />
+    <ClCompile Include="src\Gameplay\BallFx.cpp" />
     <ClCompile Include="src\Gameplay\BallManager.cpp" />
     <ClCompile Include="src\Gameplay\Block.cpp" />
     <ClCompile Include="src\Gameplay\BlockManager.cpp" />
@@ -185,6 +186,7 @@ copy /Y "$(ProjectDir)libraries/SDL2_ttf-2.24.0\lib\x64\SDL2_ttf.dll" "$(OutDir)
     <ClInclude Include="src\Components.h" />
     <ClInclude Include="src\Game.h" />
     <ClInclude Include="src\Gameplay\Ball.h" />
+    <ClInclude Include="src\Gameplay\BallFx.h" />
     <ClInclude Include="src\Gameplay\BallManager.h" />
     <ClInclude Include="src\Gameplay\Block.h" />
     <ClInclude Include="src\Gameplay\BlockManager.h" />

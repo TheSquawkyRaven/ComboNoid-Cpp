@@ -117,6 +117,9 @@
     <ClCompile Include="src\HighScore.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Gameplay\BallFx.cpp">
+      <Filter>Source Files\Gameplay</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Game.h">
@@ -202,6 +205,9 @@
     </ClInclude>
     <ClInclude Include="src\HighScore.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Gameplay\BallFx.h">
+      <Filter>Header Files\Gameplay</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

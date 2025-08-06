@@ -52,6 +52,7 @@ private:
 	Vector2 center{};
 
 public:
+	function<void(bool)> hovered = nullptr;
 	function<void()> pressed = nullptr;
 
 private:
@@ -61,6 +62,8 @@ private:
 	void SetState(State state);
 
 public:
+	Vector2& GetCenter() { return center; }
+
 	Button(Game* game);
 	// Sizes are only 1 to 4
 	void Init(const Vector2& center, int size);
@@ -69,7 +72,7 @@ public:
 	void OnDestroy() override;
 	void Input(SDL_Event& event) override;
 
-	void InitText(const string& text, int fontSize = 16, SDL_Color color = { 0, 0, 0, 255 });
+	void SetText(const string& text, int fontSize = 16, SDL_Color color = { 0, 0, 0, 255 });
 
 	void SetPos(Vector2& center);
 

@@ -14,6 +14,7 @@ Renderer::Renderer(SDL_Window* window, SDL_Renderer* renderer, int renderX, int 
     );
 
     SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "nearest");
+    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 }
 
 void Renderer::Clear() const
@@ -65,6 +66,17 @@ void Renderer::Flush()
     SDL_RenderPresent(renderer);
 }
 
+void Renderer::SetColor(SDL_Texture* texture, const SDL_Color& color) const
+{
+	SDL_SetTextureColorMod(texture, color.r, color.g, color.b);
+	SDL_SetTextureAlphaMod(texture, color.a);
+}
+
+void Renderer::ResetColor() const
+{
+	SDL_SetRenderDrawColor(renderer, defaultColor.r, defaultColor.g, defaultColor.b, defaultColor.a);
+}
+
 shared_ptr<SDL_Texture> Renderer::LoadTexture(string path)
 {
     if (textureMap.contains(path))
@@ -82,6 +94,7 @@ shared_ptr<SDL_Texture> Renderer::LoadTexture(string path)
         printf("Unable to load image %s! SDL_image Error: %s\n", path.c_str(), IMG_GetError());
         return nullptr;
     }
+    SDL_SetTextureBlendMode(texture_, SDL_BLENDMODE_BLEND);
 
     // Destruction uses SDL_DestroyTexture
     shared_ptr<SDL_Texture> texture = shared_ptr<SDL_Texture>(texture_, SDL_DestroyTexture);
@@ -114,11 +127,11 @@ shared_ptr<TTF_Font> Renderer::LoadFont(string path, int fontSize)
 	return font_ptr;
 }
 
-shared_ptr<SDL_Texture> Renderer::LoadFontTexture(TTF_Font* font, int fontSize, const char* text, SDL_Color& color) const
+shared_ptr<SDL_Texture> Renderer::LoadFontTexture(TTF_Font* font, int fontSize, const char* text) const
 {
     TTF_SetFontSize(font, fontSize);
 
-    SDL_Surface* sdlSurface = TTF_RenderText_Solid(font, text, color);
+    SDL_Surface* sdlSurface = TTF_RenderText_Solid(font, text, defaultColor);
     if (sdlSurface == nullptr)
     {
         printf("Failed to create surface from font_ptr! SDL_TTF_ERROR: %s\n", TTF_GetError());
@@ -162,4 +175,17 @@ Vector2 Renderer::GetWindowCoordToRenderCoord(int windowX, int windowY) const
     float rY = (windowY - offsetY) / scale;
 
     return Vector2(rX, rY);
+}
+
+void Renderer::ToggleFullScreen()
+{
+    isFullScreen = !isFullScreen;
+    if (isFullScreen)
+    {
+        SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP);
+    }
+    else
+    {
+        SDL_SetWindowFullscreen(window, 0);
+	}
 }

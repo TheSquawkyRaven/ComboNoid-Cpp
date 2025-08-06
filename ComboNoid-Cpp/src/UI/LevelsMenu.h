@@ -24,14 +24,23 @@ private:
 
 	inline static const float backButtonY = 280;
 
-	inline static const Vector2 firstLevelButton = Vector2(140, 140);
+	inline static const Vector2 firstLevelButton = Vector2(140, 150);
 	inline static const Vector2 levelButtonSpacing = Vector2(50, 50);
 	inline static const int columns = 5;
+
+	inline static const SDL_Color highScoreTextColor{ 255, 255, 0, 255 };
+	inline static const int highScoreTextY = 100;
+	inline static const int highScoreValueYOffset = 10;
+
+	Vector2 highScoreTextPos;
 
 	Game* game;
 	MenuManager* menuManager;
 
 	Button* backButton = nullptr;
+
+	Text* highScoreText = nullptr;
+	Text* highScoreValue = nullptr;
 
 	vector<Button*> levelButtons;
 
@@ -39,6 +48,8 @@ private:
 
 private:
 	void OnBackButtonPressed();
+	void OnLevelButtonHovered(int levelIndex);
+	void OnLevelButtonExitHover();
 
 public:
 	LevelsMenu(MenuManager* menuManager, Game* game);
@@ -50,6 +61,5 @@ public:
 
 	void OnLevelPressed(int levelIndex);
 	void LaunchFirstLevel();
-	void LaunchLevel(int levelIndex);
 
 };

@@ -22,11 +22,17 @@ private:
 	map<string, weak_ptr<Mix_Chunk>> mixMap;
 	map<string, weak_ptr<Mix_Music>> musicMap;
 
+	bool musicMuted = false;
+	bool mixMuted = false;
+
 public:
 	inline static const float defaultMusicVolume = 0.175f;
 	inline static const float defaultMixVolume = 1.0f;
 
 public:
+	bool GetMusicMuted() const { return musicMuted; }
+	bool GetMixMuted() const { return mixMuted; }
+
 	AudioManager();
 
 	shared_ptr<Mix_Music> LoadMusic(const string& path);
@@ -40,5 +46,8 @@ public:
 	
 	void SetMixVolume(float volume) const;
 	void SetMusicVolume(float volume) const;
+
+	void ToggleMusicMute();
+	void ToggleMixMute();
 
 };

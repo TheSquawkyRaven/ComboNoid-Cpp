@@ -65,15 +65,17 @@ class IDrawable
 private:
 	Renderer* renderer = nullptr;
 	int layer = 0;
-	bool visible = true;
-	float angle = 0;
 
 public:
-
 	shared_ptr<SDL_Texture> texture = nullptr;
 	SDL_Rect srcRect{};
 	SDL_Rect destRect{};
+	
+	bool visible = true;
+	float angle = 0;
+	SDL_Color color{ 255, 255, 255, 255 }; // Default color is white
 
+public:
 	inline virtual bool GetVisible() const { return visible; }
 	inline virtual void SetVisible(bool visible) { this->visible = visible; }
 
@@ -87,6 +89,7 @@ public:
 	void PlaceTextureResized(int x, int y, int w, int h);
 
 	void SetTexture(shared_ptr<SDL_Texture> texture);
+	//void SetAlpha(Uint8 alpha) const;
 	virtual void Draw();
 
 };

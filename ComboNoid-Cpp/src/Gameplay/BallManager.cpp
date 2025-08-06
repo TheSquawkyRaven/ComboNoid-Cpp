@@ -15,8 +15,6 @@ BallManager::BallManager(Game* game, Gameplay* gameplay) : game(game), gameplay(
 
 void BallManager::Init()
 {
-	IUpdatable::Register(game);
-
 	ballCountPos.x = 40;
 	ballCountPos.y = game->renderY - 12;
 
@@ -37,38 +35,6 @@ void BallManager::Destroy(Game* game)
 	balls.clear();
 
 	IDestroyable::Destroy(game);
-}
-
-void BallManager::OnDestroy()
-{
-	IUpdatable::Unregister(game);
-}
-
-void BallManager::Update()
-{
-	UpdateTimer();
-}
-
-void BallManager::UpdateTimer()
-{
-	if (enlarge)
-	{
-		enlargeTimer -= game->GetDeltaTime();
-		if (enlargeTimer < 0)
-		{
-			enlarge = false;
-			EndEnlargeBall();
-		}
-	}
-	if (slow)
-	{
-		slowTimer -= game->GetDeltaTime();
-		if (slowTimer < 0)
-		{
-			slow = false;
-			EndSlowBall();
-		}
-	}
 }
 
 void BallManager::UpdateBallCount()
@@ -148,15 +114,11 @@ void BallManager::SplitBall()
 		r.Normalize();
 		ball2->direction = r;
 
-		if (slow)
+		if (ball->IsBig())
 		{
-			ball1->timeFactor = ballSlowFactor;
-			ball2->timeFactor = ballSlowFactor;
-		}
-		if (enlarge)
-		{
-			ball1->SetSize(Ball::LARGE);
-			ball2->SetSize(Ball::LARGE);
+			float bigTimer = ball->GetBigTimer();
+			ball1->Big(bigTimer);
+			ball2->Big(bigTimer);
 		}
 
 		ball1->SetComboDamage(ball->GetComboDamage());
@@ -166,38 +128,16 @@ void BallManager::SplitBall()
 
 void BallManager::EnlargeBall()
 {
-	enlarge = true;
-	enlargeTimer = enlargeTime;
-
 	for (auto& ball : balls)
 	{
-		ball->SetSize(Ball::LARGE);
+		ball->Big();
 	}
 }
 
 void BallManager::SlowBall()
 {
-	slow = true;
-	slowTimer = slowTime;
-
 	for (auto& ball : balls)
 	{
-		ball->timeFactor = ballSlowFactor;
-	}
-}
-
-void BallManager::EndEnlargeBall()
-{
-	for (auto& ball : balls)
-	{
-		ball->SetSize(Ball::NORMAL);
-	}
-}
-
-void BallManager::EndSlowBall()
-{
-	for (auto& ball : balls)
-	{
-		ball->timeFactor = 1.0f;
+		ball->Slow();
 	}
 }

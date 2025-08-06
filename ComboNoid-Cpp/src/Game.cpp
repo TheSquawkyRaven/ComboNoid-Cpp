@@ -74,9 +74,10 @@ bool Game::UpdateInput()
 		// Pass input to the other classes that need them
 		// Use e.type == SDL_KEYDOWN or SDL_KEYUP
 		// Can be checked using event.key.keysym.sym
-		for (auto& input : inputs)
+		size_t size = inputs.size();
+		for (int i = 0; i < size; i++)
 		{
-			input->Input(event);
+			inputs[i]->Input(event);
 		}
 	}
 	return false;

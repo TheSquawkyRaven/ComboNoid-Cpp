@@ -24,8 +24,11 @@ private:
 	shared_ptr<TTF_Font> font = nullptr;
 	int fontSize = 16;
 	string text;
-	SDL_Color color{ 0, 0, 0, 255 };
+	//SDL_Color color{ 0, 0, 0, 255 };
 	Vector2 center;
+
+private:
+	void Render();
 
 public:
 	Text(Game* game);
@@ -39,7 +42,5 @@ public:
 	void SetText(const string& text);
 	void SetFontSize(int fontSize);
 	void SetColor(const SDL_Color& color);
-
-	void Render();
 
 };

@@ -90,7 +90,7 @@ void BlockManager::OnBlockHit(Block* block)
 
 void BlockManager::OnBlockBroken(Block* block)
 {
-	Block::Color color = block->GetColor();
+	Block::Color color = block->GetBlockColor();
 	int score = blockScore.at(color);
 	gameplay->score->AddScore(score);
 

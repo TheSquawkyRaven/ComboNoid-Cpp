@@ -26,14 +26,14 @@ void PauseMenu::Init()
 	PlaceTexture(0, 0);
 
 	resumeButton->Init(centerPos, 4);
-	resumeButton->InitText("Resume", fontSize, textColor);
+	resumeButton->SetText("Resume", fontSize, textColor);
 	resumeButton->pressed = [this]()
 	{
 		this->OnResumeButtonPressed();
 	};
 
 	quitButton->Init(centerPos, 4);
-	quitButton->InitText("Quit", fontSize, textColor);
+	quitButton->SetText("Quit", fontSize, textColor);
 	quitButton->pressed = [this]()
 	{
 		this->OnQuitButtonPressed();
@@ -154,7 +154,7 @@ void PauseMenu::GameOver(bool won, int score, int highScore)
 	nextLevelbutton->Init(centerPos, 4);
 	if (won)
 	{
-		nextLevelbutton->InitText("Next", fontSize, textColor);
+		nextLevelbutton->SetText("Next", fontSize, textColor);
 		nextLevelbutton->pressed = [this]()
 		{
 			this->OnNextLevelButtonPressed();
@@ -162,7 +162,7 @@ void PauseMenu::GameOver(bool won, int score, int highScore)
 	}
 	else
 	{
-		nextLevelbutton->InitText("Retry", fontSize, textColor);
+		nextLevelbutton->SetText("Retry", fontSize, textColor);
 		nextLevelbutton->pressed = [this]()
 		{
 			this->OnRetryButtonPressed();

@@ -90,6 +90,17 @@ void IDrawable::PlaceTextureResized(int x, int y, int w, int h)
 	destRect.h = h;
 }
 
+//void IDrawable::SetColor(const SDL_Color& color)
+//{
+//	SetAlpha(color.a);
+//	this->color = color;
+//}
+//
+//void IDrawable::SetAlpha(Uint8 alpha) const
+//{
+//	renderer->SetTextureAlpha(texture.get(), alpha);
+//}
+
 void IDrawable::Draw()
 {
 	if (!visible)
@@ -102,7 +113,9 @@ void IDrawable::Draw()
 		return;
 	}
 
+	renderer->SetColor(texture.get(), color);
 	renderer->Draw(texture.get(), &srcRect, &destRect, angle);
+	renderer->ResetColor();
 }
 
 void IClip::Register(Game* game, int channel)

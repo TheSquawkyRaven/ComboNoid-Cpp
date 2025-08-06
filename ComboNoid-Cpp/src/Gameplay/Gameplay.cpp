@@ -150,6 +150,11 @@ void Gameplay::OnBallManagerDoAttach(Ball* ball)
 
 void Gameplay::Pause(bool paused)
 {
+	if (gameOver)
+	{
+		return;
+	}
+
 	isPaused = paused;
 	if (isPaused)
 	{

@@ -23,13 +23,13 @@ void Button::Init(const Vector2& center, int size)
 	this->center = center;
 }
 
-void Button::InitText(const string& text, int fontSize, SDL_Color color)
+void Button::SetText(const string& text, int fontSize, SDL_Color color)
 {
 	if (this->text == nullptr)
 	{
 		this->text = new Text(game);
+		this->text->Init(center);
 	}
-	this->text->Init(center);
 	this->text->SetText(text);
 	this->text->SetFontSize(fontSize);
 	this->text->SetColor(color);
@@ -133,6 +133,21 @@ void Button::SetState(State state)
 	{
 		// No change in state
 		return;
+	}
+
+	if (previousState != HOVER && state == HOVER)
+	{
+		if (hovered)
+		{
+			hovered(true);
+		}
+	}
+	else if (previousState == HOVER && state != HOVER)
+	{
+		if (hovered)
+		{
+			hovered(false);
+		}
 	}
 
 	this->state = state;
