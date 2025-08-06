@@ -2,27 +2,23 @@
 #include "../Game.h"
 #include "Gameplay.h"
 
-Block::Block(Game* game, Gameplay* gameplay) : game(game), gameplay(gameplay)
+Block::Block(Game* game, Gameplay* gameplay) : NodeSprite(game), NodeRectCollider(game), Node(game), gameplay(gameplay)
 {
+	layer = Tree::BLOCK;
 }
 
 void Block::Init(Color color, Vector2& pos)
 {
-	IUpdatable::Register(game);
-	IDrawable::Register(game);
-
-	gameplay->RegisterBlock(this);
-
 	shared_ptr<SDL_Texture> texture = game->renderer->LoadTexture("./assets/block.png");
 	SetTexture(texture);
 
 	SetColor(color);
 
 	this->pos = pos;
+	centered = true;
 
-	// Only need to place once
-	PlaceTexture(this);
-	PlaceCol(this);
+	cropRect.w = blockSize.x;
+	cropRect.h = blockSize.y;
 }
 
 void Block::Update()
@@ -40,20 +36,16 @@ void Block::Update()
 		destroyed(this);
 		return;
 	}
-	CropTexture((breakingStartFrame + frame) * blockSize.x, color * blockSize.y, blockSize.x, blockSize.y);
-}
-
-void Block::OnDestroy()
-{
-	IDrawable::Unregister(game);
-	IUpdatable::Unregister(game);
+	cropRect.x = (breakingStartFrame + frame) * blockSize.x;
+	cropRect.y = color * blockSize.y;
 }
 
 void Block::SetColor(Color color)
 {
 	this->color = color;
-	IRectCollidable::SetSize(blockSize.x, blockSize.y);
-	CropTexture(0, color * blockSize.y, blockSize.x, blockSize.y);
+	size = blockSize;
+	cropRect.x = 0;
+	cropRect.y = color * blockSize.y;
 
 	if (color == WOOD)
 	{
@@ -82,7 +74,6 @@ bool Block::DamageBlock(int damage)
 	if (hp <= 0)
 	{
 		breaking = true;
-		gameplay->UnregisterBlock(this);
 
 		// The better the block the higher the chances of spawning a powerup
 		if (Powerup::spawnChance * (color + 1) > game->RandomFloatRange(0.0f, 1.0f))
@@ -95,7 +86,8 @@ bool Block::DamageBlock(int damage)
 	hit(this);
 
 	int frame = breakingStartFrame - hp;
-	CropTexture(frame * blockSize.x, color * blockSize.y, blockSize.x, blockSize.y);
+	cropRect.x = frame * blockSize.x;
+	cropRect.y = color * blockSize.y;
 
 	return false;
 }

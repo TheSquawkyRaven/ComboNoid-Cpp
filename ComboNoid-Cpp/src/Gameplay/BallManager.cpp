@@ -7,7 +7,7 @@
 #include "Gameplay.h"
 #include "Combo.h"
 
-BallManager::BallManager(Game* game, Gameplay* gameplay) : game(game), gameplay(gameplay)
+BallManager::BallManager(Game* game, Gameplay* gameplay) : Node(game), gameplay(gameplay)
 {
 	text = new Text(game);
 	ballDroppedClip = make_unique<Clip>(game->audioManager, "./assets/audio/ball_drop.wav");
@@ -15,26 +15,17 @@ BallManager::BallManager(Game* game, Gameplay* gameplay) : game(game), gameplay(
 
 void BallManager::Init()
 {
+	AddChild(text);
+
 	ballCountPos.x = 40;
 	ballCountPos.y = game->renderY - 12;
 
-	text->Init(ballCountPos);
+	text->Init();
+	text->pos = ballCountPos;
 	text->SetFontSize(fontSize);
 	text->SetColor(textColor);
 
 	CreateBall(true);
-}
-
-void BallManager::Destroy(Game* game)
-{
-	text->Destroy(game);
-	for (auto& ball : balls)
-	{
-		ball->Destroy(game);
-	}
-	balls.clear();
-
-	IDestroyable::Destroy(game);
 }
 
 void BallManager::UpdateBallCount()
@@ -52,6 +43,7 @@ Ball* BallManager::CreateBall(bool fromStock)
 	ball->Init();
 
 	balls.insert(ball);
+	AddChild(ball);
 
 	if (fromStock)
 	{
@@ -69,7 +61,7 @@ void BallManager::OnBallFellOff(Ball* ball)
 	balls.erase(ball);
 
 	// Ball fell off, destroy it
-	ball->Destroy(game);
+	ball->Destroy(this);
 
 	if (balls.empty())
 	{

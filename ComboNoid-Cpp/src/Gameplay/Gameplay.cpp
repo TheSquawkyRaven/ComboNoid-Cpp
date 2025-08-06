@@ -13,7 +13,7 @@
 #include "Tutorial.h"
 
 
-Gameplay::Gameplay(Game* game) : game(game)
+Gameplay::Gameplay(Game* game) : Node(game)
 {
 	background = new Background(game);
 	paddle = new Paddle(game, this);
@@ -27,9 +27,9 @@ Gameplay::Gameplay(Game* game) : game(game)
 	combo = new Combo(game, this);
 	score = new Score(game, this);
 
-	topWall = new Wall(game, this);
-	leftWall = new Wall(game, this);
-	rightWall = new Wall(game, this);
+	topWall = new Wall(game);
+	leftWall = new Wall(game);
+	rightWall = new Wall(game);
 
 	pauseMenu = new PauseMenu(game, this);
 	tutorial = new Tutorial(game);
@@ -37,17 +37,29 @@ Gameplay::Gameplay(Game* game) : game(game)
 
 void Gameplay::Init(shared_ptr<Level> level, int levelIndex)
 {
-	IInput::Register(game);
-
 	currentLevel = level;
 	this->levelIndex = levelIndex;
 
-	background->Init();
+	AddChild(background);
+	AddChild(paddle);
+	AddChild(ballManager);
+	AddChild(blockManager);
+	AddChild(powerupManager);
 
+	AddChild(combo);
+	AddChild(score);
+
+	AddChild(topWall);
+	AddChild(leftWall);
+	AddChild(rightWall);
+	AddChild(pauseMenu);
+	AddChild(tutorial);
+
+
+	background->Init();
 	paddle->Init();
 	ballManager->Init();
-	blockManager->Init();
-	powerupManager->Init();
+
 	combo->Init();
 	score->Init();
 
@@ -61,7 +73,6 @@ void Gameplay::Init(shared_ptr<Level> level, int levelIndex)
 
 	blockManager->LoadLevel(level.get());
 
-	tutorial->Init();
 	tutorial->LevelLoaded(levelIndex);
 
 	backgroundMusic = game->audioManager->LoadMusic("./assets/audio/game_music.wav");
@@ -75,70 +86,6 @@ void Gameplay::Input(SDL_Event& event)
 		if (event.key.keysym.sym == SDLK_ESCAPE)
 		{
 			Pause(!isPaused);
-		}
-	}
-}
-
-void Gameplay::Destroy(Game* game)
-{
-	background->Destroy(game);
-	paddle->Destroy(game);
-	ballManager->Destroy(game);
-	blockManager->Destroy(game);
-	powerupManager->Destroy(game);
-	combo->Destroy(game);
-	score->Destroy(game);
-
-	topWall->Destroy(game);
-	leftWall->Destroy(game);
-	rightWall->Destroy(game);
-
-	pauseMenu->Destroy(game);
-	tutorial->Destroy(game);
-
-	IDestroyable::Destroy(game);
-}
-
-void Gameplay::OnDestroy()
-{
-	IInput::Unregister(game);
-}
-
-void Gameplay::HandleCollisions()
-{
-	// Collisions (We check Circle to Rect only)
-	for (auto& ball : balls)
-	{
-		for (auto& paddle : paddles)
-		{
-			if (ball->CheckCollision(paddle))
-			{
-				ball->OnCollision(paddle, Ball::PADDLE);
-			}
-		}
-		for (auto& block : blocks)
-		{
-			if (ball->CheckCollision(block))
-			{
-				ball->OnCollision(block, Ball::BLOCK);
-			}
-		}
-		for (auto& wall : walls)
-		{
-			if (ball->CheckCollision(wall))
-			{
-				ball->OnCollision(wall, Ball::WALL);
-			}
-		}
-	}
-	for (auto& powerup : powerups)
-	{
-		for (auto& paddle : paddles)
-		{
-			if (powerup->CheckCollision(paddle))
-			{
-				powerup->OnCollision(paddle, 0);
-			}
 		}
 	}
 }

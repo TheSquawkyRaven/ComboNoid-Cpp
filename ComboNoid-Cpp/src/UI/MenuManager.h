@@ -9,7 +9,7 @@
 #include <vector>
 #include <memory>
 
-#include "../Components.h"
+#include "../Node/Node.h"
 #include "../Background.h"
 #include "MainMenu.h"
 #include "LevelsMenu.h"
@@ -17,7 +17,7 @@
 
 using namespace std;
 
-class MenuManager : public IDestroyable
+class MenuManager : public Node
 {
 private:
 	inline static const int fontSize = 16;
@@ -25,8 +25,6 @@ private:
 	inline static const int ySpacing = 48;
 
 	inline static const Vector2 centerOffset{ 0, 40 };
-
-	Game* game;
 
 	Background* background = nullptr;
 
@@ -38,8 +36,6 @@ private:
 public:
 	MenuManager(Game* game);
 	void Init();
-
-	void Destroy(Game* game) override;
 
 	void OpenMainMenu();
 	void OpenLevelsMenu();

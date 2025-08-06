@@ -9,12 +9,12 @@
 #include <map>
 #include <vector>
 
-#include "../Components.h"
+#include "../Node/Node.h"
 #include "../UI/Text.h"
 
 class Game;
 
-class Tutorial : public IDestroyable
+class Tutorial : public Node
 {
 private:
 	inline static const int drawLayer = -10;
@@ -66,8 +66,6 @@ private:
 		},
 	};
 
-	Game* game;
-
 	vector<Text*> texts;
 
 private:
@@ -75,9 +73,6 @@ private:
 
 public:
 	Tutorial(Game* game);
-	void Init();
-
-	void Destroy(Game* game) override;
 
 	void LevelLoaded(int levelIndex);
 

@@ -1,28 +1,19 @@
 #include "Background.h"
 #include "Game.h"
+#include "Renderer.h"
 
 #include <cmath>
 
-
-Background::Background(Game* game) : game(game)
+Background::Background(Game* game) : NodeSprite(game), Node(game)
 {
 }
 
 void Background::Init(string backgroundPath)
 {
-	IUpdatable::Register(game);
-	IDrawable::Register(game, drawLayer);
-
 	shared_ptr<SDL_Texture> texture = game->renderer->LoadTexture(backgroundPath);
 	SetTexture(texture);
 
-	PlaceTextureResized(0, 0, game->renderX, game->renderY);
-}
-
-void Background::OnDestroy()
-{
-	IUpdatable::Unregister(game);
-	IDrawable::Unregister(game);
+	destRect = { 0, 0, static_cast<int>(game->renderX), static_cast<int>(game->renderY) };
 }
 
 void Background::Update()
@@ -33,11 +24,9 @@ void Background::Update()
 
 void Background::Draw()
 {
-	IDrawable::Draw();
-	if (!GetVisible())
-	{
-		return;
-	}
+	shared_ptr<SDL_Texture> texture = GetTexture();
+	game->renderer->Draw(texture.get(), &cropRect, &destRect);
+
 	SDL_SetRenderDrawColor(game->renderer->renderer, fogColor.r, fogColor.g, fogColor.b, fogValue * fogColor.a);
 	SDL_RenderFillRect(game->renderer->renderer, &destRect);
 	SDL_SetRenderDrawColor(game->renderer->renderer, 255, 255, 255, 255);

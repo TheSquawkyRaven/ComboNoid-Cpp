@@ -7,13 +7,14 @@
 
 #include <stdio.h>
 #include <functional>
+#include <string>
 
-#include "../Components.h"
+#include "../Node/NodeSprite.h"
 #include "Text.h"
 
 using namespace std;
 
-class Button : public IDestroyable, public IInput, public IDrawable
+class Button : public NodeSprite
 {
 public:
 	enum State
@@ -25,7 +26,6 @@ public:
 	};
 
 private:
-	inline static const int drawLayer = 100;
 	inline static const int normalY = 0;
 	inline static const int hoverY = 32;
 	inline static const int pressedY = 64;
@@ -33,8 +33,6 @@ private:
 	inline static int sizeXOffset[] = { 192, 144, 80, 0 };
 
 	inline static const int fontSize = 16;
-
-	Game* game;
 
 	Text* text = nullptr;
 
@@ -49,8 +47,6 @@ private:
 	// 1 - 4
 	int sizeX = 4;
 
-	Vector2 center{};
-
 public:
 	function<void(bool)> hovered = nullptr;
 	function<void()> pressed = nullptr;
@@ -62,20 +58,16 @@ private:
 	void SetState(State state);
 
 public:
-	Vector2& GetCenter() { return center; }
-
 	Button(Game* game);
 	// Sizes are only 1 to 4
-	void Init(const Vector2& center, int size);
+	void Init(int size);
 
-	void Destroy(Game* game) override;
-	void OnDestroy() override;
 	void Input(SDL_Event& event) override;
 
-	void SetText(const string& text, int fontSize = 16, SDL_Color color = { 0, 0, 0, 255 });
+	void SetText(const string& textStr, int fontSize = 16, SDL_Color color = { 0, 0, 0, 255 });
 
 	void SetPos(Vector2& center);
-
+	
 	void SetVisible(bool visible) override;
 
 };

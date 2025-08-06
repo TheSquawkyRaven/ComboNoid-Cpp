@@ -28,6 +28,12 @@
     <Filter Include="Source Files\UI">
       <UniqueIdentifier>{43698f16-eeba-4b46-9087-097d06519538}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Node">
+      <UniqueIdentifier>{62eef851-4d2d-48e4-9694-1ece6df92bad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Node">
+      <UniqueIdentifier>{a93216c0-3c43-4f90-bb8a-6eab9182aed3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
@@ -44,9 +50,6 @@
     </ClCompile>
     <ClCompile Include="src\Gameplay\Gameplay.cpp">
       <Filter>Source Files\Gameplay</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Components.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Renderer.cpp">
       <Filter>Source Files</Filter>
@@ -120,6 +123,21 @@
     <ClCompile Include="src\Gameplay\BallFx.cpp">
       <Filter>Source Files\Gameplay</Filter>
     </ClCompile>
+    <ClCompile Include="src\Node\Node.cpp">
+      <Filter>Source Files\Node</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Node\NodeSprite.cpp">
+      <Filter>Source Files\Node</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Node\NodeRectCollider.cpp">
+      <Filter>Source Files\Node</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Node\NodeCircleCollider.cpp">
+      <Filter>Source Files\Node</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Node\Tree.cpp">
+      <Filter>Source Files\Node</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Game.h">
@@ -133,9 +151,6 @@
     </ClInclude>
     <ClInclude Include="src\Gameplay\Gameplay.h">
       <Filter>Header Files\Gameplay</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Components.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Renderer.h">
       <Filter>Header Files</Filter>
@@ -208,6 +223,21 @@
     </ClInclude>
     <ClInclude Include="src\Gameplay\BallFx.h">
       <Filter>Header Files\Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Node\Node.h">
+      <Filter>Header Files\Node</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Node\NodeSprite.h">
+      <Filter>Header Files\Node</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Node\NodeRectCollider.h">
+      <Filter>Header Files\Node</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Node\NodeCircleCollider.h">
+      <Filter>Header Files\Node</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Node\Tree.h">
+      <Filter>Header Files\Node</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

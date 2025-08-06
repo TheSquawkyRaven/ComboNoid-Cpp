@@ -2,7 +2,7 @@
 #include "../Game.h"
 #include "Gameplay.h"
 
-Combo::Combo(Game* game, Gameplay* gameplay) : game(game), gameplay(gameplay)
+Combo::Combo(Game* game, Gameplay* gameplay) : Node(game), gameplay(gameplay)
 {
 	text = new Text(game);
 
@@ -12,25 +12,14 @@ Combo::Combo(Game* game, Gameplay* gameplay) : game(game), gameplay(gameplay)
 
 void Combo::Init()
 {
-	IUpdatable::Register(game);
-
 	Vector2 center = Vector2(game->renderX / 2 + offset.x, game->renderY + offset.y);
-	text->Init(center);
+	AddChild(text);
+	text->Init();
+	text->pos = center;
 	text->SetFontSize(fontSize);
 	text->SetColor(textColor);
 
 	UpdateCombo();
-}
-
-void Combo::Destroy(Game* game)
-{
-	text->Destroy(game);
-	IDestroyable::Destroy(game);
-}
-
-void Combo::OnDestroy()
-{
-	IUpdatable::Unregister(game);
 }
 
 void Combo::Update()
@@ -62,7 +51,7 @@ void Combo::Update()
 	text->SetColor(colorVal);
 
 	text->scale = Vector2(scVal, scVal);
-	text->rotation = rotVal;
+	text->rot = rotVal;
 }
 
 void Combo::UpdateCombo()

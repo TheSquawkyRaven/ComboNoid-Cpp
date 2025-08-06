@@ -4,23 +4,17 @@
 #include "Paddle.h"
 #include "Block.h"
 
-BallFx::BallFx(Game* game) : game(game)
+BallFx::BallFx(Game* game) : NodeSprite(game), Node(game)
 {
 
 }
 
 void BallFx::Init()
 {
-	IDrawable::Register(game);
-
 	shared_ptr<SDL_Texture> texture = game->renderer->LoadTexture("./assets/ballfx.png");
 	SetTexture(texture);
 	SetVisible(false);
-}
-
-void BallFx::OnDestroy()
-{
-	IDrawable::Unregister(game);
+	centered = true;
 }
 
 void BallFx::BallUpdate(Vector2& pos)
@@ -30,9 +24,8 @@ void BallFx::BallUpdate(Vector2& pos)
 		return;
 	}
 
-	rotation += game->GetDeltaTime() * wheelRotateSpeed * timeFactor;
+	rot += game->GetDeltaTime() * wheelRotateSpeed * timeFactor;
 	this->pos = pos;
-	PlaceTexture(this);
 }
 
 void BallFx::SetCombo(int combo)
@@ -55,5 +48,5 @@ void BallFx::SetCombo(int combo)
 		wheelX = i;
 	}
 
-	CropTexture(wheelX * wheelRect.w, wheelRect.y, wheelRect.w, wheelRect.h);
+	cropRect = wheelRect;
 }

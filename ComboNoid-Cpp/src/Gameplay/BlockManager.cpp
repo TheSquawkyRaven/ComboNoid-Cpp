@@ -4,14 +4,10 @@
 #include "Score.h"
 
 
-BlockManager::BlockManager(Game* game, Gameplay* gameplay) : game(game), gameplay(gameplay)
+BlockManager::BlockManager(Game* game, Gameplay* gameplay) : Node(game), gameplay(gameplay)
 {
 	blockHitClip = make_unique<Clip>(game->audioManager, "./assets/audio/block_hit.wav");
 	blockBreakClip = make_unique<Clip>(game->audioManager, "./assets/audio/block_break.wav");
-}
-
-void BlockManager::Init()
-{
 }
 
 void BlockManager::LoadLevel(Level* level)
@@ -23,7 +19,8 @@ void BlockManager::LoadLevel(Level* level)
 		int tile = level->tiles->data[i];
 		if (tile != 0)
 		{
-			Vector2 pos = Vector2(x * 32, y * 16); // Position blocks in a grid
+			// Position blocks in a grid
+			Vector2 pos = offset + Vector2(x * 32, y * 16);
 			CreateBlockFromTile(tile, pos);
 		}
 		x++;
@@ -35,23 +32,6 @@ void BlockManager::LoadLevel(Level* level)
 	}
 }
 
-void BlockManager::Destroy(Game* game)
-{
-	for (auto& block : blocks)
-	{
-		block->Destroy(game);
-	}
-	blocks.clear();
-
-	for (auto& block : strongBlocks)
-	{
-		block->Destroy(game);
-	}
-	strongBlocks.clear();
-
-	IDestroyable::Destroy(game);
-}
-
 void BlockManager::CreateBlockFromTile(int tile, Vector2& pos)
 {
     Block::Color color = TileToBlockMap.at(static_cast<Level::TileType>(tile));
@@ -61,6 +41,8 @@ void BlockManager::CreateBlockFromTile(int tile, Vector2& pos)
 void BlockManager::CreateBlock(Block::Color color, Vector2& pos)
 {
 	Block* block = new Block(game, gameplay);
+	AddChild(block);
+
 	block->hit = [this](Block* b)
 	{
 		this->OnBlockHit(b);
@@ -108,7 +90,7 @@ void BlockManager::OnBlockDestroyed(Block* block)
 		blocks.erase(block);
 	}
 
-	block->Destroy(game);
+	block->Destroy(this);
 
 	if (blocks.empty())
 	{

@@ -9,7 +9,7 @@
 #include <set>
 #include <memory>
 
-#include "../Components.h"
+#include "../Node/Node.h"
 #include "Powerup.h"
 #include "../Clip.h"
 
@@ -18,10 +18,9 @@ using namespace std;
 class Game;
 class Gameplay;
 
-class PowerupManager : IDestroyable
+class PowerupManager : public Node
 {
 private:
-	Game* game;
 	Gameplay* gameplay;
 
 	unique_ptr<Clip> powerupGainedClip;
@@ -36,9 +35,6 @@ private:
 
 public:
 	PowerupManager(Game* game, Gameplay* gameplay);
-	void Init();
-
-	void Destroy(Game* game) override;
 
 	Powerup* CreatePowerup(Powerup::Type type, Vector2& pos);
 

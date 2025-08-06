@@ -9,15 +9,17 @@
 #include <map>
 #include <memory>
 
-#include "../Components.h"
 #include "../Clip.h"
+
+#include "../Node/NodeSprite.h"
+#include "../Node/NodeRectCollider.h"
 
 class Game;
 
 class Ball;
 class Gameplay;
 
-class Paddle : public IDestroyable, public ITransform, public IInput, public IUpdatable, public IDrawable, public IRectCollidable
+class Paddle : public NodeSprite, public NodeRectCollider
 {
 public:
 	enum PaddleSize
@@ -32,7 +34,7 @@ private:
 	inline static SDL_Rect rectNormal{ 0, 16, 48, 16 };
 	inline static SDL_Rect rectLong{ 0, 32, 64, 16 };
 
-	inline static const Vector2 rectOffset{ 0, 3 };
+	inline static const Vector2 rectOffset{ 0, -5 };
 	inline static const Vector2 rectSizeShort{ 32, 10 };
 	inline static const Vector2 rectSizeNormal{ 48, 10 };
 	inline static const Vector2 rectSizeLong{ 64, 10 };
@@ -47,7 +49,6 @@ private:
 	// Threshold for when after the ball hits the paddle and the paddle starts flashing
 	inline static const float flashThreshold = flashTime / 2.0f;
 
-	Game* game;
 	Gameplay* gameplay;
 
 	unique_ptr<Clip> paddleFlashClip;
@@ -81,7 +82,6 @@ private:
 	void UpdateTimer();
 	void UpdateBall();
 	void UpdateFlash();
-	void PostUpdate();
 
 	void SetSize(PaddleSize size);
 
@@ -93,7 +93,6 @@ public:
 	Paddle(Game* game, Gameplay* gameplay);
 	void Init();
 
-	void OnDestroy() override;
 	void Input(SDL_Event& event) override;
 	void Update() override;
 	void Draw() override;

@@ -8,13 +8,14 @@
 #include <stdio.h>
 #include <functional>
 
-#include "../Components.h"
+#include "../Node/NodeSprite.h"
+#include "../Node/NodeRectCollider.h"
 #include "PowerupManager.h"
 
 class Game;
 class Gameplay;
 
-class Block : public IDestroyable, public ITransform, public IUpdatable, public IDrawable, public IRectCollidable
+class Block : public NodeSprite, public NodeRectCollider
 {
 public:
 	enum Color
@@ -39,7 +40,6 @@ private:
 	inline static const int damageToBreakWood = 8;
 	inline static const int damageToBreakStone = 12;
 
-	Game* game;
 	Gameplay* gameplay;
 
 	Color color = RED;
@@ -63,12 +63,12 @@ private:
 public:
 	inline Color GetBlockColor() const { return color; }
 	inline int GetHP() const { return hp; }
+	inline bool IsBroken() const { return breaking; }
 
 	Block(Game* game, Gameplay* gameplay);
 
 	// Pos is only set at this Init function
 	void Init(Color color, Vector2& pos);
-	void OnDestroy() override;
 	void Update() override;
 
 	// Returns if the block is destroyed

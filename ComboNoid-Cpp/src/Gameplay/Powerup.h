@@ -8,12 +8,12 @@
 #include <stdio.h>
 #include <functional>
 
-#include "../Components.h"
+#include "../Node/NodeSprite.h"
+#include "../Node/NodeRectCollider.h"
 
-class Game;
 class Gameplay;
 
-class Powerup : public IDestroyable, public ITransform, public IUpdatable, public IDrawable, public IRectCollidable
+class Powerup : public NodeSprite, public NodeRectCollider
 {
 public:
 	enum Type
@@ -36,13 +36,9 @@ private:
 	inline static SDL_Rect rectEnlargeBall{ 0, 32, 16, 16 };
 	inline static SDL_Rect rectSlowBall{ 16, 32, 16, 16 };
 
-	inline static const SDL_Rect rectOffset{ 0, 4 };
-	inline static const SDL_Rect rectSize{ 16, 9 };
+	inline static const Vector2 rectSize{ 16, 9 };
 
-	Game* game;
 	Gameplay* gameplay;
-
-	SDL_Rect* currentRect = nullptr;
 
 	Type type = ENLARGE;
 	float speed = 100;
@@ -53,17 +49,13 @@ public:
 	function<void(Powerup*)> gained;
 	function<void(Powerup*)> fellOff;
 
-private:
-	void PostUpdate();
-
 public:
 
 	Powerup(Game* game, Gameplay* gameplay);
 	void Init(Type type, Vector2 pos);
 
-	void OnDestroy() override;
 	void Update() override;
-	void OnCollision(IRectCollidable* rect, int type) override;
+	void OnCollision(NodeRectCollider* rect, Tree::Layer layer) override;
 
 	void SetType(Type type);
 

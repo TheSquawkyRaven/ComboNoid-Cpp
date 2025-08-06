@@ -3,26 +3,10 @@
 #include "Gameplay.h"
 
 
-PowerupManager::PowerupManager(Game* game, Gameplay* gameplay) : game(game), gameplay(gameplay)
+PowerupManager::PowerupManager(Game* game, Gameplay* gameplay) : Node(game), gameplay(gameplay)
 {
 	powerupGainedClip = make_unique<Clip>(game->audioManager, "./assets/audio/powerup_gain.wav");
 	powerupCreatedClip = make_unique<Clip>(game->audioManager, "./assets/audio/powerup_create.wav");
-}
-
-void PowerupManager::Init()
-{
-
-}
-
-void PowerupManager::Destroy(Game* game)
-{
-	for (auto& powerup : powerups)
-	{
-		powerup->Destroy(game);
-	}
-	powerups.clear();
-
-	IDestroyable::Destroy(game);
 }
 
 Powerup* PowerupManager::CreatePowerup(Powerup::Type type, Vector2& pos)
@@ -30,6 +14,8 @@ Powerup* PowerupManager::CreatePowerup(Powerup::Type type, Vector2& pos)
 	powerupCreatedClip->Play();
 
 	Powerup* powerup = new Powerup(game, gameplay);
+	AddChild(powerup);
+
 	powerup->gained = [this](Powerup* p)
 	{
 		this->OnPowerupGained(p);
@@ -49,11 +35,11 @@ void PowerupManager::OnPowerupGained(Powerup* powerup)
 {
 	powerupGainedClip->Play();
 	powerups.erase(powerup);
-	powerup->Destroy(game);
+	powerup->Destroy(this);
 }
 
 void PowerupManager::OnPowerupFellOff(Powerup* powerup)
 {
 	powerups.erase(powerup);
-	powerup->Destroy(game);
+	powerup->Destroy(this);
 }

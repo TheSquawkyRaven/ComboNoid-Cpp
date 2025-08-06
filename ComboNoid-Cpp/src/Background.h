@@ -6,31 +6,27 @@
 #include <SDL_mixer.h>
 
 #include <stdio.h>
+#include <string>
 
-#include "Components.h"
-#include "Vector2.h"
+#include "Node/NodeSprite.h"
 
 using namespace std;
 
-class Background : public IDestroyable, public IUpdatable, public IDrawable
+class Background : public NodeSprite
 {
 private:
-	inline static const int drawLayer = -100;
-
-	Game* game;
-
+	SDL_Rect destRect{};
 	float fogValue = 0;
 
 public:
-	float fogSpeed = 0.25f;
-	Vector2 fogRange{ 0.4f, 0.8f };
-	SDL_Color fogColor{ 68, 84, 226, 255 };
+	inline static const float fogSpeed = 0.25f;
+	inline static const Vector2 fogRange{ 0.4f, 0.8f };
+	inline static const SDL_Color fogColor{ 68, 84, 226, 255 };
 
 public:
 	Background(Game* game);
 	void Init(string backgroundPath = "./assets/background/background.png");
 
-	void OnDestroy() override;
 	void Update() override;
 	void Draw() override;
 

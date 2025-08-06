@@ -4,7 +4,7 @@
 #include "Paddle.h"
 #include "Block.h"
 
-Ball::Ball(Game* game, Gameplay* gameplay) : game(game), gameplay(gameplay)
+Ball::Ball(Game* game, Gameplay* gameplay) : NodeSprite(game), NodeCircleCollider(game), Node(game), gameplay(gameplay)
 {
 	ballFx = new BallFx(game);
 	hitClip = make_unique<Clip>(game->audioManager, "./assets/audio/ball_hit.wav");
@@ -17,31 +17,15 @@ Ball::Ball(Game* game, Gameplay* gameplay) : game(game), gameplay(gameplay)
 
 void Ball::Init()
 {
-	IUpdatable::Register(game);
-	IDrawable::Register(game);
-
 	ballFx->Init();
-
-	gameplay->RegisterBall(this);
+	AddChild(ballFx);
 
 	shared_ptr<SDL_Texture> texture = game->renderer->LoadTexture("./assets/ball.png");
 	SetTexture(texture);
 
 	SetSize(NORMAL);
-}
 
-void Ball::Destroy(Game* game)
-{
-	ballFx->Destroy(game);
-	IDestroyable::Destroy(game);
-}
-
-void Ball::OnDestroy()
-{
-	IUpdatable::Unregister(game);
-	IDrawable::Unregister(game);
-
-	gameplay->UnregisterBall(this);
+	centered = true;
 }
 
 void Ball::Update()
@@ -58,20 +42,19 @@ void Ball::Update()
 	Vector2 velocity = direction * speed * game->GetDeltaTime() * timeFactor;
 	pos = pos + velocity;
 
-	if (pos.x < lLimit)
+	float r = radius + 1.0f;
+	if (pos.x - r < lLimit)
 	{
-		pos.x = pos.x;
+		pos.x = lLimit + r;
 	}
-	else if (pos.x + radius > rLimit)
+	else if (pos.x + r > rLimit)
 	{
-		pos.x = rLimit - radius;
+		pos.x = rLimit - r;
 	}
 
-	// Vertical limits adjustments with some of padding
-	int padding = currentRect->h / 2.0f - radius + 1.0f;
-	if (pos.y + padding < tLimit)
+	if (pos.y - r < tLimit)
 	{
-		pos.y = tLimit - padding;
+		pos.y = tLimit + r;
 	}
 	if (pos.y > bLimit)
 	{
@@ -85,9 +68,6 @@ void Ball::Update()
 
 void Ball::PostUpdate()
 {
-	PlaceTexture(this);
-	PlaceCol(this);
-
 	ballFx->BallUpdate(pos);
 }
 
@@ -144,35 +124,28 @@ void Ball::SetSize(BallSize size)
 			break;
 	}
 
-	ICircleCollidable::SetOffset(currentRect->w / 2.0f, currentRect->h / 2.0f);
-	ICircleCollidable::SetRadius(radius);
+	this->radius = radius;
 
-	CropTexture(*currentRect);
+	cropRect = *currentRect;
 }
 
-void Ball::OnCollision(IRectCollidable* rect, int type)
+void Ball::OnCollision(NodeRectCollider* rect, Tree::Layer layer)
 {
 	if (isAttached)
 	{
 		return;
 	}
-	hitClip->Play();
 
-	// Convert type to CollidedWith
-	CollidedWith collidedType = static_cast<CollidedWith>(type);
-
-	if (collidedType == BLOCK)
+	if (layer == Tree::BLOCK)
 	{
 		Block* block = static_cast<Block*>(rect);
+		if (block->IsBroken())
+		{
+			// Block is already broken
+			return;
+		}
 		int initialHP = block->GetHP();
 		bool blockDestroyed = block->DamageBlock(damage);
-		// if the ball is big, do not decrease damage
-		//if (!isBig)
-		//{
-		//	damage -= 1; // Decrease damage by 1 for each block hit
-		//	damage = max(damage, 1);
-		//	DamageUpdated();
-		//}
 		if (blockDestroyed)
 		{
 			if (isBig)
@@ -184,10 +157,12 @@ void Ball::OnCollision(IRectCollidable* rect, int type)
 		}
 	}
 
-	Vector2 thisPos = colPos + colOffset;
-	Vector2 rectPos = rect->colPos + rect->colOffset;
-	float closestX = clamp(thisPos.x, rectPos.x, rectPos.x + rect->size.x);
-	float closestY = clamp(thisPos.y, rectPos.y, rectPos.y + rect->size.y);
+	hitClip->Play();
+
+	Vector2 thisPos = pos;
+	SDL_Rect to = rect->GetDestRect();
+	float closestX = clamp(pos.x, static_cast<float>(to.x), static_cast<float>(to.x + to.w));
+	float closestY = clamp(pos.y, static_cast<float>(to.y), static_cast<float>(to.y + to.h));
 
 	Vector2 closestPoint{ closestX, closestY };
 
@@ -207,7 +182,7 @@ void Ball::OnCollision(IRectCollidable* rect, int type)
 		pos = pos + normal * penetration;
 	}
 
-	if (collidedType == PADDLE)
+	if (layer == Tree::PADDLE)
 	{
 		// Prevent continuous collision with paddle which can cause some glitches
 		if (paddleCollisionCooldown < 0)
@@ -235,18 +210,15 @@ void Ball::OnCollision(IRectCollidable* rect, int type)
 	PostUpdate();
 }
 
-Vector2 Ball::GetBallRectNormal(IRectCollidable* rect)
+Vector2 Ball::GetBallRectNormal(NodeRectCollider* rect)
 {
-	Vector2 thisPos = colPos + colOffset;
-	Vector2 rectPos = rect->colPos + rect->colOffset;
-	Vector2 rectSize = rect->size;
-	float rectCenterX = rectPos.x + rectSize.x / 2.0f;
-	float rectCenterY = rectPos.y + rectSize.y / 2.0f;
-	float dx = thisPos.x - rectCenterX;
-	float dy = thisPos.y - rectCenterY;
+	Vector2 thisPos = pos;
+	SDL_Rect to = rect->GetDestRect();
+	float dx = thisPos.x - to.x;
+	float dy = thisPos.y - to.y;
 
-	float overlapX = (rectSize.x / 2 + radius) - abs(dx);
-	float overlapY = (rectSize.y / 2 + radius) - abs(dy);
+	float overlapX = (to.w / 2.0f + radius) - abs(dx);
+	float overlapY = (to.h / 2.0f + radius) - abs(dy);
 
 	if (overlapX < overlapY)
 	{

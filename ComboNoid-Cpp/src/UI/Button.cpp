@@ -4,63 +4,41 @@
 #include <cmath>
 
 
-Button::Button(Game* game) : game(game)
+Button::Button(Game* game) : NodeSprite(game), Node(game)
 {
 }
 
-void Button::Init(const Vector2& center, int size)
+void Button::Init(int size)
 {
-	IInput::Register(game);
-	IDrawable::Register(game, drawLayer);
-
 	shared_ptr<SDL_Texture> texture = game->renderer->LoadTexture("./assets/button.png");
 	SetTexture(texture);
 
 	sizeX = size;
 	SetState(NORMAL);
-	PlaceTexture(center.x - width / 2.0f, center.y - height / 2.0f);
-
-	this->center = center;
 }
 
-void Button::SetText(const string& text, int fontSize, SDL_Color color)
+void Button::SetText(const string& textStr, int fontSize, SDL_Color color)
 {
 	if (this->text == nullptr)
 	{
 		this->text = new Text(game);
-		this->text->Init(center);
+		AddChild(this->text);
+		this->text->Init();
+		this->text->pos = pos;
 	}
-	this->text->SetText(text);
+	this->text->SetText(textStr);
 	this->text->SetFontSize(fontSize);
 	this->text->SetColor(color);
 }
 
 void Button::SetPos(Vector2& center)
 {
-	PlaceTexture(center.x - width / 2.0f, center.y - height / 2.0f);
-
-	this->center = center;
+	pos = center;
 
 	if (text != nullptr)
 	{
-		text->SetPos(center);
+		text->pos = center;
 	}
-}
-
-void Button::Destroy(Game* game)
-{
-	if (text != nullptr)
-	{
-		text->Destroy(game);
-	}
-
-	IDestroyable::Destroy(game);
-}
-
-void Button::OnDestroy()
-{
-	IInput::Unregister(game);
-	IDrawable::Unregister(game);
 }
 
 void Button::Input(SDL_Event& event)
@@ -169,17 +147,15 @@ void Button::SetState(State state)
 			break;
 	}
 
-	CropTexture(x, y, width, height);
+	cropRect.x = x;
+	cropRect.y = y;
+	cropRect.w = width;
+	cropRect.h = height;
 }
 
 void Button::SetVisible(bool visible)
 {
-	IDrawable::SetVisible(visible);
 	SetState(NORMAL);
 	leftClickInput = false;
 	wasJustVisible = true;
-	if (text != nullptr)
-	{
-		text->SetVisible(visible);
-	}
 }

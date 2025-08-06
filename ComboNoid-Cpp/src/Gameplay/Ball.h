@@ -11,7 +11,8 @@
 #include <vector>
 #include <map>
 
-#include "../Components.h"
+#include "../Node/NodeSprite.h"
+#include "../Node/NodeCircleCollider.h"
 #include "../Vector2.h"
 #include "../Clip.h"
 #include "BallFx.h"
@@ -21,20 +22,13 @@ using namespace std;
 class Game;
 class Gameplay;
 
-class Ball : public IDestroyable, public ITransform, public IUpdatable, public IDrawable, public ICircleCollidable
+class Ball : public NodeSprite, public NodeCircleCollider
 {
 public:
 	enum BallSize
 	{
 		NORMAL,
 		LARGE
-	};
-
-	enum CollidedWith
-	{
-		PADDLE = 0,
-		BLOCK = 1,
-		WALL = 2,
 	};
 
 private:
@@ -55,7 +49,6 @@ private:
 	inline static const float slowBlinkAlpha = 32;
 	inline static const float bigTime = 10.0f;
 
-	Game* game;
 	Gameplay* gameplay;
 
 	BallFx* ballFx = nullptr;
@@ -90,7 +83,7 @@ public:
 	function<void(Ball*)> fellOff;
 
 private:
-	Vector2 GetBallRectNormal(IRectCollidable* rect);
+	Vector2 GetBallRectNormal(NodeRectCollider* rect);
 
 private:
 	void UpdatePowerup();
@@ -105,11 +98,9 @@ public:
 	Ball(Game* game, Gameplay* gameplay);
 	void Init();
 
-	void Destroy(Game* game) override;
-	void OnDestroy() override;
 	void Update() override;
 	void PostUpdate();
-	void OnCollision(IRectCollidable* rect, int type) override;
+	void OnCollision(NodeRectCollider* rect, Tree::Layer layer) override;
 
 	void SetSize(BallSize size);
 	void Slow(float time = slowTime);

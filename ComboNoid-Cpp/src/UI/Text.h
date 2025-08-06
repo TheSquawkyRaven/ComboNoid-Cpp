@@ -6,35 +6,29 @@
 #include <SDL_mixer.h>
 
 #include <stdio.h>
-#include <functional>
+#include <string>
+#include <memory>
 
-#include "../Components.h"
+#include "../Node/NodeSprite.h"
 
 using namespace std;
 
-class Text : public IDestroyable, public ITransform, public IDrawable
+class Text : public NodeSprite
 {
 private:
-	inline static const int defaultDrawLayer = 100;
-
-	Game* game;
-
 	bool dirty = false;
 
 	shared_ptr<TTF_Font> font = nullptr;
 	int fontSize = 16;
 	string text;
-	//SDL_Color color{ 0, 0, 0, 255 };
-	Vector2 center;
 
 private:
 	void Render();
 
 public:
 	Text(Game* game);
-	void Init(const Vector2& center, int drawLayer = INT_MIN);
+	void Init();
 
-	void OnDestroy() override;
 	void Draw() override;
 
 	void SetPos(const Vector2& center);

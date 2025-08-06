@@ -151,7 +151,6 @@ copy /Y "$(ProjectDir)libraries/SDL2_ttf-2.24.0\lib\x64\SDL2_ttf.dll" "$(OutDir)
     <ClCompile Include="src\AudioManager.cpp" />
     <ClCompile Include="src\Background.cpp" />
     <ClCompile Include="src\Clip.cpp" />
-    <ClCompile Include="src\Components.cpp" />
     <ClCompile Include="src\Game.cpp" />
     <ClCompile Include="src\Gameplay\Ball.cpp" />
     <ClCompile Include="src\Gameplay\BallFx.cpp" />
@@ -169,6 +168,11 @@ copy /Y "$(ProjectDir)libraries/SDL2_ttf-2.24.0\lib\x64\SDL2_ttf.dll" "$(OutDir)
     <ClCompile Include="src\HighScore.cpp" />
     <ClCompile Include="src\LevelManager.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\Node\Node.cpp" />
+    <ClCompile Include="src\Node\NodeCircleCollider.cpp" />
+    <ClCompile Include="src\Node\NodeRectCollider.cpp" />
+    <ClCompile Include="src\Node\NodeSprite.cpp" />
+    <ClCompile Include="src\Node\Tree.cpp" />
     <ClCompile Include="src\Renderer.cpp" />
     <ClCompile Include="src\UI\Button.cpp" />
     <ClCompile Include="src\UI\LevelsMenu.cpp" />
@@ -183,7 +187,6 @@ copy /Y "$(ProjectDir)libraries/SDL2_ttf-2.24.0\lib\x64\SDL2_ttf.dll" "$(OutDir)
     <ClInclude Include="src\AudioManager.h" />
     <ClInclude Include="src\Background.h" />
     <ClInclude Include="src\Clip.h" />
-    <ClInclude Include="src\Components.h" />
     <ClInclude Include="src\Game.h" />
     <ClInclude Include="src\Gameplay\Ball.h" />
     <ClInclude Include="src\Gameplay\BallFx.h" />
@@ -200,6 +203,11 @@ copy /Y "$(ProjectDir)libraries/SDL2_ttf-2.24.0\lib\x64\SDL2_ttf.dll" "$(OutDir)
     <ClInclude Include="src\Gameplay\Wall.h" />
     <ClInclude Include="src\HighScore.h" />
     <ClInclude Include="src\LevelManager.h" />
+    <ClInclude Include="src\Node\Node.h" />
+    <ClInclude Include="src\Node\NodeCircleCollider.h" />
+    <ClInclude Include="src\Node\NodeRectCollider.h" />
+    <ClInclude Include="src\Node\NodeSprite.h" />
+    <ClInclude Include="src\Node\Tree.h" />
     <ClInclude Include="src\Renderer.h" />
     <ClInclude Include="src\UI\Button.h" />
     <ClInclude Include="src\UI\LevelsMenu.h" />

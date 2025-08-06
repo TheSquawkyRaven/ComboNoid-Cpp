@@ -1,17 +1,13 @@
 #include "Wall.h"
 #include "../Game.h"
-#include "Gameplay.h"
 
-Wall::Wall(Game* game, Gameplay* gameplay) : game(game), gameplay(gameplay)
+Wall::Wall(Game* game) : Node(game), NodeRectCollider(game)
 {
+	layer = Tree::WALL;
 }
 
 void Wall::Init(Side side)
 {
-	gameplay->RegisterWall(this);
-
-	Vector2 pos;
-
 	switch (side)
 	{
 		case TOP:
@@ -30,11 +26,4 @@ void Wall::Init(Side side)
 			printf("Unknown Wall Side %d\n", side);
 			return;
 	}
-
-	IRectCollidable::PlaceCol(pos.x, pos.y);
-}
-
-void Wall::OnDestroy()
-{
-	gameplay->UnregisterWall(this);
 }
