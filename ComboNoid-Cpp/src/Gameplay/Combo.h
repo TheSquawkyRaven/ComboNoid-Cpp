@@ -7,18 +7,18 @@
 
 #include <stdio.h>
 #include <memory>
+#include <string>
 
-#include "../Components.h"
+#include "../Node/Node.h"
 #include "../UI/Text.h"
 #include "../Clip.h"
 
 class Game;
 class Gameplay;
 
-class Combo : public IDestroyable, public IUpdatable
+class Combo : public Node
 {
 private:
-	inline static const int drawLayer = 50;
 	inline static const int fontSize = 16;
 	inline static SDL_Color textColor{ 255, 255, 255, 255 };
 
@@ -34,7 +34,6 @@ private:
 	inline static const float lossScale = 0.8f;
 	inline static const SDL_Color lossColor{ 255, 0, 0, 255 };
 
-	Game* game;
 	Gameplay* gameplay;
 
 	unique_ptr<Clip> comboIncreaseClip;
@@ -62,8 +61,6 @@ public:
 	Combo(Game* game, Gameplay* gameplay);
 	void Init();
 
-	void Destroy(Game* game) override;
-	void OnDestroy() override;
 	void Update() override;
 
 	// Paddle Flash and Hit

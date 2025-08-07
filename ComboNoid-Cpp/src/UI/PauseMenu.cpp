@@ -5,7 +5,7 @@
 #include <cmath>
 
 
-PauseMenu::PauseMenu(Game* game, Gameplay* gameplay) : game(game), gameplay(gameplay)
+PauseMenu::PauseMenu(Game* game, Gameplay* gameplay) : NodeSprite(game), Node(game), gameplay(gameplay)
 {
 	resumeButton = new Button(game);
 	quitButton = new Button(game);
@@ -19,20 +19,24 @@ PauseMenu::PauseMenu(Game* game, Gameplay* gameplay) : game(game), gameplay(game
 
 void PauseMenu::Init()
 {
-	IDrawable::Register(game, backgroundDrawLayer);
+	AddChild(resumeButton);
+	AddChild(quitButton);
 
 	shared_ptr<SDL_Texture> texture = game->renderer->LoadTexture("./assets/background/pause.png");
 	SetTexture(texture);
-	PlaceTexture(0, 0);
+	pos.x = game->renderX / 2.0f;
+	pos.y = game->renderY / 2.0f;
 
-	resumeButton->Init(centerPos, 4);
+	resumeButton->Init(4);
+	resumeButton->pos = centerPos;
 	resumeButton->SetText("Resume", fontSize, textColor);
 	resumeButton->pressed = [this]()
 	{
 		this->OnResumeButtonPressed();
 	};
 
-	quitButton->Init(centerPos, 4);
+	quitButton->Init(4);
+	quitButton->pos = centerPos;
 	quitButton->SetText("Quit", fontSize, textColor);
 	quitButton->pressed = [this]()
 	{
@@ -47,26 +51,6 @@ void PauseMenu::Init()
 		p.y += ySpacing;
 	}
 
-}
-
-void PauseMenu::Destroy(Game* game)
-{
-	if (winText != nullptr)
-	{
-		winText->Destroy(game);
-		scoreText->Destroy(game);
-		highScoreText->Destroy(game);
-		nextLevelbutton->Destroy(game);
-	}
-	resumeButton->Destroy(game);
-	quitButton->Destroy(game);
-
-	IDestroyable::Destroy(game);
-}
-
-void PauseMenu::OnDestroy()
-{
-	IDrawable::Unregister(game);
 }
 
 void PauseMenu::OnNextLevelButtonPressed()
@@ -89,15 +73,6 @@ void PauseMenu::OnQuitButtonPressed()
 	game->TriggerOpenMenu();
 }
 
-void PauseMenu::SetVisible(bool visible)
-{
-	IDrawable::SetVisible(visible);
-	for (Button* button : buttons)
-	{
-		button->SetVisible(visible);
-	}
-}
-
 void PauseMenu::GameOver(bool won, int score, int highScore)
 {
 	winText = new Text(game);
@@ -105,53 +80,54 @@ void PauseMenu::GameOver(bool won, int score, int highScore)
 	highScoreText = new Text(game);
 	nextLevelbutton = new Button(game);
 
-	winText->SetFontSize(titleFontSize);
-	winText->SetColor(titleColor);
-
-	scoreText->SetFontSize(scoreFontSize);
-	scoreText->SetColor(scoreColor);
-	highScoreText->SetFontSize(scoreFontSize);
-	highScoreText->SetColor(scoreColor);
+	AddChild(winText);
+	AddChild(scoreText);
+	AddChild(highScoreText);
+	AddChild(nextLevelbutton);
 
 	Vector2 p = centerPos;
 	p.x += titleOffset.x;
 	p.y += titleOffset.y;
 
-	winText->Init(p);
+	winText->Init();
+	winText->pos = p;
 	if (won)
 	{
-		winText->SetText("You Win!");
+		winText->SetText("You Win!", titleFontSize, titleColor);
 	}
 	else
 	{
-		winText->SetText("You Lose");
+		winText->SetText("You Lose", titleFontSize, titleColor);
 	}
 
 	p.y += scoreYOffset;
-	scoreText->Init(p);
+	scoreText->Init();
+	scoreText->pos = p;
 	if (won)
 	{
-		scoreText->SetText("Score: " + to_string(score));
+		scoreText->SetText("Score: " + to_string(score), scoreFontSize, scoreColor);
 	}
 	else
 	{
 		// Don't show score if the player lost
-		scoreText->SetText(" ");
+		scoreText->SetText(" ", scoreFontSize, scoreColor);
 	}
 
 	p.y += scoreYOffset;
-	highScoreText->Init(p);
+	highScoreText->Init();
+	highScoreText->pos = p;
 
 	if (won && score > highScore)
 	{
-		highScoreText->SetText("NEW HIGH SCORE!");
+		highScoreText->SetText("NEW HIGH SCORE!", scoreFontSize, scoreColor);
 	}
 	else
 	{
-		highScoreText->SetText("High Score: " + to_string(highScore));
+		highScoreText->SetText("High Score: " + to_string(highScore), scoreFontSize, scoreColor);
 	}
 
-	nextLevelbutton->Init(centerPos, 4);
+	nextLevelbutton->Init(4);
+	nextLevelbutton->pos = centerPos;
 	if (won)
 	{
 		nextLevelbutton->SetText("Next", fontSize, textColor);

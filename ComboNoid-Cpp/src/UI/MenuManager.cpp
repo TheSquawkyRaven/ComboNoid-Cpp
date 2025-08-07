@@ -4,17 +4,21 @@
 #include <cmath>
 
 
-MenuManager::MenuManager(Game* game) : game(game)
+MenuManager::MenuManager(Game* game) : Node(game)
 {
 	background = new Background(game);
 }
 
 void MenuManager::Init()
 {
-	background->Init();
-
 	mainMenu = new MainMenu(this, game);
 	levelsMenu = new LevelsMenu(this, game);
+
+	AddChild(background);
+	AddChild(mainMenu);
+	AddChild(levelsMenu);
+
+	background->Init();
 
 	mainMenu->Init();
 	levelsMenu->Init();
@@ -23,22 +27,6 @@ void MenuManager::Init()
 
 	backgroundMusic = game->audioManager->LoadMusic("./assets/audio/menu_music.wav");
 	game->audioManager->PlayMusic(backgroundMusic);
-}
-
-void MenuManager::Destroy(Game* game)
-{
-	background->Destroy(game);
-
-	if (mainMenu != nullptr)
-	{
-		mainMenu->Destroy(game);
-	}
-	if (levelsMenu != nullptr)
-	{
-		levelsMenu->Destroy(game);
-	}
-
-	IDestroyable::Destroy(game);
 }
 
 void MenuManager::OpenMainMenu()

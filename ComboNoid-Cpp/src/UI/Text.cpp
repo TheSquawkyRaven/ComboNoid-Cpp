@@ -4,65 +4,28 @@
 #include <cmath>
 
 
-Text::Text(Game* game) : game(game)
+Text::Text(Game* game) : NodeSprite(game), Node(game)
 {
 
 }
 
-void Text::Init(const Vector2& center, int drawLayer)
+void Text::Init()
 {
-	if (drawLayer == INT_MIN)
-	{
-		drawLayer = defaultDrawLayer;
-	}
-	IDrawable::Register(game, drawLayer);
-
-	this->center = center;
-
 	font = game->renderer->LoadFont("./assets/upheaval/upheavtt.ttf", fontSize);
-	dirty = true;
 }
 
-void Text::OnDestroy()
+void Text::SetText(const string& text, int fontSize, const SDL_Color& color)
 {
-	IDrawable::Unregister(game);
-}
-
-void Text::SetPos(const Vector2& center)
-{
-	this->center = center;
-
-	int x = center.x - static_cast<int>(srcRect.w / 2.0f);
-	int y = center.y - static_cast<int>(srcRect.h / 2.0f);
-
-	pos.x = x;
-	pos.y = y;
-	PlaceTexture(this);
-}
-
-void Text::Draw()
-{
-	if (dirty)
-	{
-		Render();
-		dirty = false;
-	}
-
-	PlaceTexture(this);
-
-	IDrawable::Draw();
+	this->text = text;
+	this->fontSize = fontSize;
+	this->color = color;
+	Render();
 }
 
 void Text::SetText(const string& text)
 {
 	this->text = text;
-	dirty = true;
-}
-
-void Text::SetFontSize(int fontSize)
-{
-	this->fontSize = fontSize;
-	dirty = true;
+	Render();
 }
 
 void Text::SetColor(const SDL_Color& color)
@@ -74,6 +37,4 @@ void Text::Render()
 {
 	shared_ptr<SDL_Texture> texture = game->renderer->LoadFontTexture(font.get(), fontSize, text.c_str());
 	SetTexture(texture);
-
-	SetPos(center);
 }

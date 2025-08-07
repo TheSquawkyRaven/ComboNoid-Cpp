@@ -1,13 +1,8 @@
 #include "Tutorial.h"
 #include "../Game.h"
 
-Tutorial::Tutorial(Game* game) : game(game)
+Tutorial::Tutorial(Game* game) : Node(game)
 {
-}
-
-void Tutorial::Init()
-{
-
 }
 
 void Tutorial::LevelLoaded(int levelIndex)
@@ -25,27 +20,22 @@ void Tutorial::LevelLoaded(int levelIndex)
 		Vector2& pos = pair.second;
 
 		Text* text = new Text(game);
-		text->Init(pos, drawLayer);
-		text->SetText(t);
-		text->SetFontSize(fontSize);
-		text->SetColor(textColor);
+		AddChild(text);
+
+		text->Init();
+		text->pos = pos;
+		text->SetText(t, fontSize, textColor);
 
 		texts.push_back(text);
 	}
 
 }
 
-void Tutorial::Destroy(Game* game)
-{
-	DestroyTexts();
-	IDestroyable::Destroy(game);
-}
-
 void Tutorial::DestroyTexts()
 {
 	for (auto& text : texts)
 	{
-		text->Destroy(game);
+		text->Destroy(this);
 	}
 	texts.clear();
 }

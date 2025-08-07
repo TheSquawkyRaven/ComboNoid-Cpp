@@ -18,6 +18,7 @@
 #include "Gameplay/Gameplay.h"
 #include "Gameplay/Block.h"
 #include "HighScore.h"
+#include "Node/Tree.h"
 
 using namespace std;
 
@@ -28,17 +29,11 @@ class Game
 {
 private:
 	SDL_Event event{};
-	LevelManager* levelManager;
+
 	MenuManager* menuManager;
 	Gameplay* gameplay = nullptr;
 
 	Uint64 lastUpdateTicks = 0;
-
-	vector<IUpdatable*> updatables;
-	map<int, vector<IDrawable*>> drawablesMap;
-	vector<IInput*> inputs;
-
-	queue<IDestroyable*> destructionQueue;
 
 	float deltaTime = 0.0f;
 	float totalTime = 0.0f;
@@ -48,10 +43,13 @@ private:
 	bool quitTriggered = false;
 
 public:
-	Renderer* renderer;
-	AudioManager* audioManager;
+	shared_ptr<Renderer> renderer;
+	shared_ptr<AudioManager> audioManager;
+	shared_ptr<LevelManager> levelManager;
 
-	HighScore* highScore = nullptr;
+	shared_ptr<Tree> tree = nullptr;
+
+	shared_ptr<HighScore> highScore = nullptr;
 
 	float timeScale = 1.0f;
 
@@ -60,17 +58,7 @@ public:
 	float renderY = 360;
 
 private:
-	template<typename ContainerType, typename ElementType>
-	inline void UnregisterVector(ContainerType& container, const ElementType& element)
-	{
-		auto it = remove(container.begin(), container.end(), element);
-		container.erase(it, container.end());
-	}
-
 	void UpdateTime();
-	void UpdateDraw();
-
-	void HandleDestructions();
 
 public:
 	// Returns -1 if loop is false and the animation exceeds the frame count
@@ -83,22 +71,6 @@ public:
 	inline float GetTotalTime() const { return totalTime; }
 	inline float GetRealDeltaTime() const { return realDeltaTime; }
 	inline float GetRealTotalTime() const { return realTotalTime; }
-
-	inline void Register(IUpdatable* updatable) { updatables.push_back(updatable); }
-	inline void Unregister(IUpdatable* updatable) { UnregisterVector(updatables, updatable); }
-	inline void Register(IDrawable* drawable, int layer)
-	{
-		drawablesMap[layer].push_back(drawable);
-	}
-	inline void Unregister(IDrawable* drawable, int layer)
-	{
-		vector<IDrawable*>& drawables = drawablesMap[layer];
-		UnregisterVector(drawables, drawable);
-	}
-	inline void Register(IInput* input) { inputs.push_back(input); }
-	inline void Unregister(IInput* input) { UnregisterVector(inputs, input); }
-
-	void RegisterDestruction(IDestroyable* obj);
 
 	Game(SDL_Window* window, SDL_Renderer* renderer);
 	void Init();

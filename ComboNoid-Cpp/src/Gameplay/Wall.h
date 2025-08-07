@@ -7,12 +7,12 @@
 
 #include <stdio.h>
 
-#include "../Components.h"
+#include "../Node/NodeRectCollider.h"
 
 class Game;
 class Gameplay;
 
-class Wall : public IDestroyable, public IRectCollidable
+class Wall : public NodeRectCollider
 {
 public:
 	enum Side
@@ -22,15 +22,9 @@ public:
 		RIGHT,
 	};
 
-private:
-	Game* game;
-	Gameplay* gameplay;
-
 public:
-	Wall(Game* game, Gameplay* gameplay);
+	Wall(Game* game);
 	void Init(Side side);
-
-	void OnDestroy() override;
 
 };
 

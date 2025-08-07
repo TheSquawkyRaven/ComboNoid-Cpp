@@ -5,7 +5,7 @@
 #include <cmath>
 
 
-MainMenu::MainMenu(MenuManager* menuManager, Game* game) : game(game), menuManager(menuManager)
+MainMenu::MainMenu(MenuManager* menuManager, Game* game) : Node(game), menuManager(menuManager)
 {
 	title = new Text(game);
 	playButton = new Button(game);
@@ -30,27 +30,34 @@ MainMenu::MainMenu(MenuManager* menuManager, Game* game) : game(game), menuManag
 
 void MainMenu::Init()
 {
-	Vector2 titlePos = Vector2(centerPos.x, centerPos.y + titleYOffset);
-	title->Init(titlePos);
-	title->SetText("Combonoid");
-	title->SetFontSize(titleFontSize);
-	title->SetColor(titleColor);
+	AddChild(title);
+	AddChild(playButton);
+	AddChild(levelsButton);
+	AddChild(quitButton);
+	AddChild(fullScreenButton);
+	AddChild(musicButton);
+	AddChild(soundButton);
 
-	playButton->Init(centerPos, 4);
+	Vector2 titlePos = Vector2(centerPos.x, centerPos.y + titleYOffset);
+	title->Init();
+	title->pos = titlePos;
+	title->SetText("Combonoid", titleFontSize, titleColor);
+
+	playButton->Init(4);
 	playButton->SetText("Start", fontSize, textColor);
 	playButton->pressed = [this]()
 	{
 		this->OnPlayButtonPressed();
 	};
 
-	levelsButton->Init(centerPos, 4);
+	levelsButton->Init(4);
 	levelsButton->SetText("Levels", fontSize, textColor);
 	levelsButton->pressed = [this]()
 	{
 		this->OnLevelsButtonPressed();
 	};
 
-	quitButton->Init(centerPos, 4);
+	quitButton->Init(4);
 	quitButton->SetText("Quit", fontSize, textColor);
 	quitButton->pressed = [this]()
 	{
@@ -64,21 +71,21 @@ void MainMenu::Init()
 		p.y += ySpacing;
 	}
 
-	fullScreenButton->Init(centerPos, 4);
+	fullScreenButton->Init(4);
 	fullScreenButton->SetText("Full OF", optionsFontSize, textColor);
 	fullScreenButton->pressed = [this]()
 	{
 		this->OnFullScreenButtonPressed();
 	};
 
-	musicButton->Init(centerPos, 4);
+	musicButton->Init(4);
 	musicButton->SetText("Music ON", optionsFontSize, textColor);
 	musicButton->pressed = [this]()
 	{
 		this->OnMusicButtonPressed();
 	};
 
-	soundButton->Init(centerPos, 4);
+	soundButton->Init(4);
 	soundButton->SetText("Sound ON", optionsFontSize, textColor);
 	soundButton->pressed = [this]()
 	{
@@ -92,24 +99,6 @@ void MainMenu::Init()
 		p.y += ySpacing;
 	}
 
-}
-
-void MainMenu::Destroy(Game* game)
-{
-	title->Destroy(game);
-	
-	playButton->Destroy(game);
-	levelsButton->Destroy(game);
-	quitButton->Destroy(game);
-	
-	fullScreenButton->Destroy(game);
-	musicButton->Destroy(game);
-	soundButton->Destroy(game);
-
-	mainButtons.clear();
-	optionButtons.clear();
-
-	IDestroyable::Destroy(game);
 }
 
 void MainMenu::OnPlayButtonPressed()
@@ -163,18 +152,5 @@ void MainMenu::OnSoundButtonPressed()
 	else
 	{
 		soundButton->SetText("Sound ON", optionsFontSize, textColor);
-	}
-}
-
-void MainMenu::SetVisible(bool visible)
-{
-	title->SetVisible(visible);
-	for (Button* button : mainButtons)
-	{
-		button->SetVisible(visible);
-	}
-	for (Button* button : optionButtons)
-	{
-		button->SetVisible(visible);
 	}
 }

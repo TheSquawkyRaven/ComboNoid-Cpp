@@ -87,7 +87,7 @@ int main(int argc, char* args[])
 	//Update the surface
 	SDL_UpdateWindowSurface(window);
 
-    SDL_Event e;
+	SDL_Event e{};
 	bool quit = false;
 
 	// Initialization

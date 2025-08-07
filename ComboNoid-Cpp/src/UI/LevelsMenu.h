@@ -8,7 +8,7 @@
 #include <stdio.h>
 #include <vector>
 
-#include "../Components.h"
+#include "../Node/Node.h"
 #include "../Background.h"
 #include "Button.h"
 
@@ -16,7 +16,7 @@ class MenuManager;
 
 using namespace std;
 
-class LevelsMenu : public IDestroyable
+class LevelsMenu : public Node
 {
 private:
 	inline static const int fontSize = 16;
@@ -34,7 +34,6 @@ private:
 
 	Vector2 highScoreTextPos;
 
-	Game* game;
 	MenuManager* menuManager;
 
 	Button* backButton = nullptr;
@@ -55,11 +54,9 @@ public:
 	LevelsMenu(MenuManager* menuManager, Game* game);
 	void Init();
 
-	void Destroy(Game* game) override;
-
-	void SetVisible(bool visible);
-
 	void OnLevelPressed(int levelIndex);
 	void LaunchFirstLevel();
+
+	void SetVisible(bool visible) override;
 
 };

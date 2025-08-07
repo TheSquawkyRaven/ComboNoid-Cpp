@@ -8,7 +8,7 @@
 #include <stdio.h>
 #include <vector>
 
-#include "../Components.h"
+#include "../Node/Node.h"
 #include "../Background.h"
 #include "Button.h"
 
@@ -16,7 +16,7 @@ class MenuManager;
 
 using namespace std;
 
-class MainMenu : public IDestroyable
+class MainMenu : public Node
 {
 private:
 	inline static const int fontSize = 16;
@@ -32,7 +32,6 @@ private:
 	inline static const SDL_Color optionsColor{ 200, 200, 200, 255 };
 	inline static const int optionsFontSize = 16;
 
-	Game* game;
 	MenuManager* menuManager;
 
 	Text* title = nullptr;
@@ -59,9 +58,5 @@ private:
 public:
 	MainMenu(MenuManager* menuManager, Game* game);
 	void Init();
-
-	void Destroy(Game* game) override;
-
-	void SetVisible(bool visible);
 
 };

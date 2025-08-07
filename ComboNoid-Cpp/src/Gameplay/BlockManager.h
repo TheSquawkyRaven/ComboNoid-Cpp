@@ -9,7 +9,7 @@
 #include <set>
 #include <memory>
 
-#include "../Components.h"
+#include "../Node/Node.h"
 #include "../LevelManager.h"
 #include "Block.h"
 #include "../Clip.h"
@@ -19,10 +19,11 @@ using namespace std;
 class Game;
 class Gameplay;
 
-class BlockManager : IDestroyable
+class BlockManager : public Node
 {
 private:
-	Game* game;
+	inline static const Vector2 offset{ 16, 8 };
+
 	Gameplay* gameplay;
 
 	unique_ptr<Clip> blockHitClip;
@@ -67,8 +68,6 @@ private:
 public:
 
 	BlockManager(Game* game, Gameplay* gameplay);
-	void Init();
-	void Destroy(Game* game) override;
 
 	void LoadLevel(Level* level);
 };

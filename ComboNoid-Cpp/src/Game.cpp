@@ -4,15 +4,20 @@
 Game::Game(SDL_Window* window, SDL_Renderer* renderer)
 {
 	srand(static_cast<unsigned int>(time(nullptr)));
-	this->renderer = new Renderer(window, renderer, renderX, renderY);
-	this->audioManager = new AudioManager();
+	this->renderer = make_shared<Renderer>(window, renderer, renderX, renderY);
+	this->audioManager = make_shared<AudioManager>();
 
-	levelManager = new LevelManager();
-	highScore = new HighScore();
+	tree = make_shared<Tree>(this);
+
+	levelManager = make_shared<LevelManager>();
+	highScore = make_shared<HighScore>();
 }
 
 void Game::Init()
 {
+	Node* node = new Node(this);
+	tree->SetRoot(node);
+
     levelManager->Init();
 	highScore->Init();
 	TriggerOpenMenu();
@@ -23,44 +28,17 @@ bool Game::Update()
 {
 	// Updating
 	UpdateTime();
+
 	UpdateInput();
 
-	HandleDestructions();
-
-	for (auto& updatable : updatables)
-	{
-		updatable->Update();
-	}
-
-	HandleDestructions();
-
-	if (gameplay)
-	{
-		gameplay->HandleCollisions();
-	}
-
-	HandleDestructions();
-
-	// Rendering
-	UpdateDraw();
+	tree->Run();
 
 	if (quitTriggered)
 	{
+		tree->GetRoot()->Destroy(nullptr);
 		return true;
 	}
 	return false;
-}
-
-void Game::HandleDestructions()
-{
-	while (!destructionQueue.empty())
-	{
-		IDestroyable* obj = destructionQueue.front();
-		destructionQueue.pop();
-
-		obj->OnDestroy();
-		delete obj;
-	}
 }
 
 bool Game::UpdateInput()
@@ -71,18 +49,10 @@ bool Game::UpdateInput()
 		{
 			return true;
 		}
-		// Pass input to the other classes that need them
-		// Use e.type == SDL_KEYDOWN or SDL_KEYUP
-		// Can be checked using event.key.keysym.sym
-		size_t size = inputs.size();
-		for (int i = 0; i < size; i++)
-		{
-			inputs[i]->Input(event);
-		}
+		tree->RunInput(event);
 	}
 	return false;
 }
-
 
 void Game::UpdateTime()
 {
@@ -101,40 +71,18 @@ void Game::UpdateTime()
 	lastUpdateTicks = currentTicks;
 }
 
-void Game::UpdateDraw()
-{
-	// Rendering
-	renderer->Clear();
-	for (auto& pair : drawablesMap)
-	{
-		vector<IDrawable*> drawables = pair.second;
-		for (auto& drawable : drawables)
-		{
-			
-			drawable->Draw();
-		}
-	}
-	renderer->Flush();
-}
-
-void Game::RegisterDestruction(IDestroyable* obj)
-{
-	obj->isDestroyed = true;
-	destructionQueue.push(obj);
-}
-
 void Game::TriggerLoadLevel(int levelIndex)
 {
 	if (menuManager)
 	{
-		menuManager->Destroy(this);
+		menuManager->Destroy(tree->GetRoot());
 		menuManager = nullptr;
 	}
 
 	if (gameplay)
 	{
 		// Unload previous gameplay
-		gameplay->Destroy(this);
+		gameplay->Destroy(tree->GetRoot());
 		gameplay = nullptr;
 	}
 
@@ -147,17 +95,19 @@ void Game::TriggerLoadLevel(int levelIndex)
 	}
 	// Load gameplay with the level
 	gameplay = new Gameplay(this);
+	tree->GetRoot()->AddChild(gameplay);
 	gameplay->Init(loadedLevel, levelIndex);
 }
 
 void Game::TriggerOpenMenu()
 {
 	menuManager = new MenuManager(this);
+	tree->GetRoot()->AddChild(menuManager);
 	menuManager->Init();
 
 	if (gameplay)
 	{
-		gameplay->Destroy(this);
+		gameplay->Destroy(tree->GetRoot());
 		gameplay = nullptr;
 	}
 

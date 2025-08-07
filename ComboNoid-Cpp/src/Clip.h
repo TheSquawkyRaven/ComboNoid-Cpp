@@ -13,14 +13,16 @@
 
 using namespace std;
 
+class Game;
+
 class Clip
 {
 private:
-	AudioManager* audioManager = nullptr;
+	shared_ptr<AudioManager> audioManager = nullptr;
 	shared_ptr<Mix_Chunk> mix;
 
 public:
-	Clip(AudioManager* audioManager, const string& path);
+	Clip(shared_ptr<AudioManager> audioManager, const string& path);
 
 	void Play() const;
 

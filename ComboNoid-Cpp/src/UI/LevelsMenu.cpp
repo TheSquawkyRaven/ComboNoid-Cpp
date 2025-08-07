@@ -5,7 +5,7 @@
 #include <cmath>
 
 
-LevelsMenu::LevelsMenu(MenuManager* menuManager, Game* game) : game(game), menuManager(menuManager)
+LevelsMenu::LevelsMenu(MenuManager* menuManager, Game* game) : Node(game), menuManager(menuManager)
 {
 	backButton = new Button(game);
 
@@ -21,22 +21,25 @@ LevelsMenu::LevelsMenu(MenuManager* menuManager, Game* game) : game(game), menuM
 
 void LevelsMenu::Init()
 {
+	AddChild(backButton);
+	AddChild(highScoreText);
+	AddChild(highScoreValue);
+
 	Vector2 hPos = highScoreTextPos;
-	highScoreText->Init(hPos);
-	highScoreText->SetFontSize(fontSize);
-	highScoreText->SetColor(highScoreTextColor);
-	highScoreText->SetText("High Score:");
+	highScoreText->Init();
+	highScoreText->pos = hPos;
+	highScoreText->SetText("High Score:", fontSize, highScoreTextColor);
 
 	hPos.y += highScoreValueYOffset;
-	highScoreValue->Init(hPos);
-	highScoreValue->SetFontSize(fontSize);
-	highScoreValue->SetColor(highScoreTextColor);
-	highScoreValue->SetText(" ");
+	highScoreValue->Init();
+	highScoreValue->pos = hPos;
+	highScoreValue->SetText(" ", fontSize, highScoreTextColor);
 
 	highScoreText->SetVisible(false);
 	highScoreValue->SetVisible(false);
 
-	backButton->Init(backButtonPos, 4);
+	backButton->Init(4);
+	backButton->pos = backButtonPos;
 	backButton->SetText("Back", fontSize, textColor);
 	backButton->pressed = [this]()
 	{
@@ -59,7 +62,9 @@ void LevelsMenu::Init()
 		p.y = firstLevelButton.y + levelButtonSpacing.y * y;
 
 		Button* button = new Button(game);
-		button->Init(p, 1);
+		AddChild(button);
+		button->Init(1);
+		button->pos = p;
 		button->SetText(to_string(c), fontSize, textColor);
 		button->pressed = [this, i]()
 		{
@@ -83,35 +88,9 @@ void LevelsMenu::Init()
 	}
 }
 
-void LevelsMenu::Destroy(Game* game)
-{
-	backButton->Destroy(game);
-	for (Button* button : levelButtons)
-	{
-		button->Destroy(game);
-	}
-	levelButtons.clear();
-
-	highScoreText->Destroy(game);
-	highScoreValue->Destroy(game);
-
-	IDestroyable::Destroy(game);
-}
-
 void LevelsMenu::OnBackButtonPressed()
 {
 	menuManager->OpenMainMenu();
-}
-
-void LevelsMenu::SetVisible(bool visible)
-{
-	backButton->SetVisible(visible);
-	for (Button* button : levelButtons)
-	{
-		button->SetVisible(visible);
-	}
-	highScoreText->SetVisible(false);
-	highScoreValue->SetVisible(false);
 }
 
 void LevelsMenu::OnLevelPressed(int levelIndex)
@@ -141,6 +120,13 @@ void LevelsMenu::OnLevelButtonHovered(int levelIndex)
 
 void LevelsMenu::OnLevelButtonExitHover()
 {
+	highScoreText->SetVisible(false);
+	highScoreValue->SetVisible(false);
+}
+
+void LevelsMenu::SetVisible(bool visible)
+{
+	Node::SetVisible(visible);
 	highScoreText->SetVisible(false);
 	highScoreValue->SetVisible(false);
 }

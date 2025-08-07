@@ -9,7 +9,7 @@
 #include <set>
 #include <memory>
 
-#include "../Components.h"
+#include "../Node/Node.h"
 #include "Ball.h"
 #include "../UI/Text.h"
 #include "../Clip.h"
@@ -19,14 +19,13 @@ using namespace std;
 class Game;
 class Gameplay;
 
-class BallManager : public IDestroyable
+class BallManager : public Node
 {
 private:
 	inline static const int ballCountDrawLayer = 50;
 	inline static const int fontSize = 16;
 	inline static SDL_Color textColor{ 255, 255, 255, 255 };
 
-	Game* game;
 	Gameplay* gameplay;
 
 	unique_ptr<Clip> ballDroppedClip;
@@ -55,8 +54,6 @@ public:
 
 	BallManager(Game* game, Gameplay* gameplay);
 	void Init();
-
-	void Destroy(Game* game) override;
 
 	void GainExtraBall();
 	void SplitBall();

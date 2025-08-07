@@ -3,25 +3,21 @@
 #include "Gameplay.h"
 #include "Combo.h"
 
-Score::Score(Game* game, Gameplay* gameplay) : game(game), gameplay(gameplay)
+Score::Score(Game* game, Gameplay* gameplay) : Node(game), gameplay(gameplay)
 {
 	text = new Text(game);
 }
 
 void Score::Init()
 {
+	AddChild(text);
+
 	Vector2 center(400, game->renderY - fontSize / 2);
-	text->Init(center);
-	text->SetFontSize(fontSize);
-	text->SetColor(textColor);
+	text->Init();
+	text->pos = center;
+	text->SetText(" ", fontSize, textColor);
 
 	UpdateScore();
-}
-
-void Score::Destroy(Game* game)
-{
-	text->Destroy(game);
-	IDestroyable::Destroy(game);
 }
 
 void Score::UpdateScore()

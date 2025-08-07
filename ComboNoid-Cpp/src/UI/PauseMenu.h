@@ -8,7 +8,7 @@
 #include <stdio.h>
 #include <vector>
 
-#include "../Components.h"
+#include "../Node/NodeSprite.h"
 #include "../Background.h"
 #include "Button.h"
 
@@ -16,11 +16,9 @@ using namespace std;
 
 class Gameplay;
 
-class PauseMenu : public IDestroyable, public IDrawable
+class PauseMenu : public NodeSprite
 {
 private:
-	inline static const int backgroundDrawLayer = 99;
-
 	inline static const int fontSize = 16;
 	inline static const SDL_Color textColor{ 0, 0, 0, 255 };
 	inline static const int ySpacing = 48;
@@ -34,7 +32,6 @@ private:
 	inline static const Vector2 titleOffset{ 0, -100 };
 	inline static const int scoreYOffset = 40;
 
-	Game* game;
 	Gameplay* gameplay;
 
 	Text* winText = nullptr;
@@ -58,11 +55,6 @@ private:
 public:
 	PauseMenu(Game* game, Gameplay* gameplay);
 	void Init();
-
-	void Destroy(Game* game) override;
-	void OnDestroy() override;
-
-	void SetVisible(bool visible);
 
 	void GameOver(bool won, int score, int highScore);
 

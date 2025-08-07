@@ -7,8 +7,9 @@
 
 #include <stdio.h>
 #include <vector>
+#include <memory>
 
-#include "../Components.h"
+#include "../Node/Node.h"
 
 class Game;
 
@@ -25,11 +26,9 @@ class Background;
 class PauseMenu;
 class Tutorial;
 
-class Gameplay : public IDestroyable, public IInput
+class Gameplay : public Node
 {
 private:
-	Game* game;
-
 	shared_ptr<Mix_Music> backgroundMusic = nullptr;
 
 	shared_ptr<Level> currentLevel = nullptr;
@@ -43,18 +42,10 @@ private:
 	Tutorial* tutorial;
 	PauseMenu* pauseMenu;
 
-	// Collision Layers (Hard coded for now)
-	vector<ICircleCollidable*> balls{}; // Collides with paddles, blocks, walls
-	vector<IRectCollidable*> paddles{};
-	vector<IRectCollidable*> blocks{};
-	vector<IRectCollidable*> walls{};
-	vector<IRectCollidable*> powerups{}; // Collides with paddles
-
 	bool isPaused = false;
 	bool gameOver = false;
 
 public:
-
 	Paddle* paddle;
 	BallManager* ballManager;
 	BlockManager* blockManager;
@@ -63,35 +54,13 @@ public:
 	Score* score;
 
 private:
-	template<typename ContainerType, typename ElementType>
-	inline void UnregisterVector(ContainerType& container, const ElementType& element)
-	{
-		auto it = remove(container.begin(), container.end(), element);
-		container.erase(it, container.end());
-	}
-
 	void OnBallManagerDoAttach(Ball* ball);
 
 public:
-	inline void RegisterBall(ICircleCollidable* ball) { balls.push_back(ball); }
-	inline void UnregisterBall(ICircleCollidable* ball) { UnregisterVector(balls, ball); }
-	inline void RegisterPaddle(IRectCollidable* paddle) { paddles.push_back(paddle); }
-	inline void UnregisterPaddle(IRectCollidable* paddle) { UnregisterVector(paddles, paddle); }
-	inline void RegisterBlock(IRectCollidable* block) { blocks.push_back(block); }
-	inline void UnregisterBlock(IRectCollidable* block) { UnregisterVector(blocks, block); }
-	inline void RegisterWall(IRectCollidable* wall) { walls.push_back(wall); }
-	inline void UnregisterWall(IRectCollidable* wall) { UnregisterVector(walls, wall); }
-	inline void RegisterPowerup(IRectCollidable* powerup) { powerups.push_back(powerup); }
-	inline void UnregisterPowerup(IRectCollidable* powerup) { UnregisterVector(powerups, powerup); }
-
 	Gameplay(Game* game);
 	void Init(shared_ptr<Level> level, int levelIndex);
 
-	void Destroy(Game* game) override;
-	void OnDestroy() override;
 	void Input(SDL_Event& event) override;
-
-	void HandleCollisions();
 
 	void Pause(bool paused);
 

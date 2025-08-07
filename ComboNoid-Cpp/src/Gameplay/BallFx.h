@@ -10,7 +10,7 @@
 #include <memory>
 #include <vector>
 
-#include "../Components.h"
+#include "../Node/NodeSprite.h"
 #include "../Vector2.h"
 #include "../Clip.h"
 
@@ -19,7 +19,7 @@ using namespace std;
 class Game;
 class Gameplay;
 
-class BallFx : public IDestroyable, public ITransform, public IDrawable
+class BallFx : public NodeSprite
 {
 private:
 	inline static const vector<int> comboTier = {
@@ -35,8 +35,6 @@ private:
 	inline static SDL_Rect wheelRect{ 0, 0, 16, 16 };
 	inline static const float wheelRotateSpeed = 180.0f;
 
-	Game* game;
-
 	int wheelX = -1;
 
 public:
@@ -45,7 +43,8 @@ public:
 	BallFx(Game* game);
 	void Init();
 
-	void OnDestroy() override;
+	inline void Draw() override { NodeSprite::Draw(); }
+
 	void BallUpdate(Vector2& pos);
 
 	void SetCombo(int combo);

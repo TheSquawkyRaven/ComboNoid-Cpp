@@ -8,17 +8,13 @@
 #include "BallManager.h"
 #include "Paddle.h"
 
-Powerup::Powerup(Game* game, Gameplay* gameplay) : game(game), gameplay(gameplay)
+Powerup::Powerup(Game* game, Gameplay* gameplay) : NodeSprite(game), NodeRectCollider(game), Node(game), gameplay(gameplay)
 {
+	layer = Tree::POWERUP;
 }
 
 void Powerup::Init(Type type, Vector2 pos)
 {
-	IUpdatable::Register(game);
-	IDrawable::Register(game);
-
-	gameplay->RegisterPowerup(this);
-
 	shared_ptr<SDL_Texture> texture = game->renderer->LoadTexture("./assets/powerups.png");
 	SetTexture(texture);
 
@@ -34,40 +30,29 @@ void Powerup::SetType(Type type)
 	switch (type)
 	{
 		case ENLARGE:
-			currentRect = &rectEnlarge;
+			cropRect = rectEnlarge;
 			break;
 		case SHRINK:
-			currentRect = &rectShrink;
+			cropRect = rectShrink;
 			break;
 		case SPLIT_BALL:
-			currentRect = &rectSplitBall;
+			cropRect = rectSplitBall;
 			break;
 		case EXTRA_BALL:
-			currentRect = &rectExtraBall;
+			cropRect = rectExtraBall;
 			break;
 		case ENLARGE_BALL:
-			currentRect = &rectEnlargeBall;
+			cropRect = rectEnlargeBall;
 			break;
 		case SLOW_BALL:
-			currentRect = &rectSlowBall;
+			cropRect = rectSlowBall;
 			break;
 		default:
 			printf("Unknown Powerup Type of %d\n", type);
 			return;
 	}
 
-	IRectCollidable::SetOffset(rectOffset.x, rectOffset.y);
-	IRectCollidable::SetSize(rectSize.x, rectSize.y);
-
-	CropTexture(*currentRect);
-}
-
-void Powerup::OnDestroy()
-{
-	IUpdatable::Unregister(game);
-	IDrawable::Unregister(game);
-
-	gameplay->UnregisterPowerup(this);
+	size = rectSize;
 }
 
 void Powerup::Update()
@@ -78,16 +63,9 @@ void Powerup::Update()
 		fellOff(this);
 		return;
 	}
-	PostUpdate();
 }
 
-void Powerup::PostUpdate()
-{
-	PlaceTexture(this);
-	PlaceCol(this);
-}
-
-void Powerup::OnCollision(IRectCollidable* rect, int _type)
+void Powerup::OnCollision(NodeRectCollider* rect, Tree::Layer _layer)
 {
 	// _type is always Paddle
 	Paddle* paddle = static_cast<Paddle*>(rect);

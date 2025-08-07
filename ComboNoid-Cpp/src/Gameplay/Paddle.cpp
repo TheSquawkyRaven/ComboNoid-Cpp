@@ -5,33 +5,19 @@
 #include "Powerup.h"
 #include "Combo.h"
 
-Paddle::Paddle(Game* game, Gameplay* gameplay) : game(game), gameplay(gameplay)
+Paddle::Paddle(Game* game, Gameplay* gameplay) : NodeSprite(game), NodeRectCollider(game), Node(game), gameplay(gameplay)
 {
 	rLimit = game->renderX;
 	paddleFlashClip = make_unique<Clip>(game->audioManager, "./assets/audio/paddle_flash.wav");
+	layer = Tree::PADDLE;
 }
 
 void Paddle::Init()
 {
-	IInput::Register(game);
-	IUpdatable::Register(game);
-	IDrawable::Register(game);
-
-	gameplay->RegisterPaddle(this);
-
 	shared_ptr<SDL_Texture> texture = game->renderer->LoadTexture("./assets/paddle.png");
 	SetTexture(texture);
 
 	SetSize(NORMAL);
-}
-
-void Paddle::OnDestroy()
-{
-	IInput::Unregister(game);
-	IUpdatable::Unregister(game);
-	IDrawable::Unregister(game);
-
-	gameplay->UnregisterPaddle(this);
 }
 
 void Paddle::Input(SDL_Event& event)
@@ -65,17 +51,16 @@ void Paddle::Update()
 
 	pos.x += game->GetDeltaTime() * xInput * speed;
 
-	if (pos.x < lLimit)
+	float w = currentRect->w / 2.0f;
+	if (pos.x - w < lLimit)
 	{
-		pos.x = lLimit;
+		pos.x = lLimit + w;
 	}
-	else if (pos.x + destRect.w > rLimit)
+	else if (pos.x + w > rLimit)
 	{
-		pos.x = rLimit - destRect.w;
+		pos.x = rLimit - w;
 	}
 	UpdateBall();
-
-	PostUpdate();
 }
 
 void Paddle::UpdateTimer()
@@ -158,12 +143,6 @@ void Paddle::UpdateFlash()
 	}
 }
 
-void Paddle::PostUpdate()
-{
-	PlaceTexture(this);
-	PlaceCol(this);
-}
-
 void Paddle::SetSize(PaddleSize size)
 {
 	SDL_Rect* lastRect = currentRect;
@@ -183,14 +162,15 @@ void Paddle::SetSize(PaddleSize size)
 			rectSize = rectSizeLong;
 			break;
 		default:
+			currentRect = &rectNormal;
 			printf("Unknown Paddle Size of %d\n", size);
 			break;
 	}
-	CropTexture(*currentRect);
+	cropRect = *currentRect;
 
 	// Collision size
-	IRectCollidable::SetOffset(rectOffset.x, rectOffset.y);
-	IRectCollidable::SetSize(rectSize.x, rectSize.y);
+	this->size.x = rectSize.x;
+	this->size.y = rectSize.y;
 
 	// Expand or contract from the center of the paddle
 	int w = 0;
@@ -202,11 +182,13 @@ void Paddle::SetSize(PaddleSize size)
 	}
 	else
 	{
-		xOffset = game->renderX / 2;
+		xOffset = static_cast<int>(game->renderX / 2.0f);
 		w = -currentRect->w / 2;
 	}
 	pos.x = pos.x + xOffset + w;
 	pos.y = game->renderY - currentRect->h - 32;
+
+	lastRect = currentRect;
 }
 
 void Paddle::AttachBall(Ball* ball)
@@ -223,10 +205,8 @@ void Paddle::UpdateBall()
 		return;
 	}
 
-	attachedBall->pos.x = pos.x + (destRect.w - attachedBall->destRect.w) / 2;
-	attachedBall->pos.y = pos.y + rectOffset.y -
-		attachedBall->destRect.h + // Offset the ball to its size so it aligns on top of the paddle
-		attachedBall->destRect.h - attachedBall->radius * 2; // Considers the size (NORMAL or LARGE) of the ball
+	attachedBall->pos.x = pos.x;
+	attachedBall->pos.y = pos.y + rectOffset.y - attachedBall->radius;
 
 	attachedBall->PostUpdate();
 
@@ -235,7 +215,7 @@ void Paddle::UpdateBall()
 		// Launch ball
 		attachedBall->isAttached = false;
 		// Add a tiny amount of random horizontal direction offset so the ball doesn't bounce up and down fully vertically forever
-		attachedBall->direction = Vector2(game->RandomFloatRange(-0.01, 0.01), -1);
+		attachedBall->direction = Vector2(game->RandomFloatRange(-0.01f, 0.01f), -1.0f);
 		attachedBall->direction.Normalize();
 		attachedBall->SetComboDamage(0);
 		attachedBall = nullptr;
@@ -244,22 +224,20 @@ void Paddle::UpdateBall()
 
 void Paddle::Draw()
 {
-	IDrawable::Draw();
-	if (!GetVisible())
-	{
-		return;
-	}
+	NodeSprite::Draw();
 	if (isFlashing)
 	{
 		float percentage = flashTimer / flashTime;
 		int alpha = static_cast<int>(255 * percentage);
+
+		SDL_Rect& dest = destRect; // Copy
+		dest.x -= static_cast<int>(flashSizeIncrease.x * percentage / 2);
+		dest.y -= static_cast<int>(flashSizeIncrease.y * percentage / 2);
+		dest.w += static_cast<int>(flashSizeIncrease.x * percentage);
+		dest.h += static_cast<int>(flashSizeIncrease.y * percentage);
+
 		SDL_SetRenderDrawColor(game->renderer->renderer, 255, 255, 255, alpha);
-		SDL_Rect dest = destRect; // Copy
-		dest.x -= flashSizeIncrease.x * percentage / 2;
-		dest.y -= flashSizeIncrease.y * percentage / 2;
-		dest.w += flashSizeIncrease.x * percentage;
-		dest.h += flashSizeIncrease.y * percentage;
-		SDL_RenderCopy(game->renderer->renderer, texture.get(), &srcRect, &dest);
+		SDL_RenderCopy(game->renderer->renderer, GetTexture().get(), &cropRect, &dest);
 		SDL_RenderFillRect(game->renderer->renderer, &destRect);
 		SDL_SetRenderDrawColor(game->renderer->renderer, 255, 255, 255, 255);
 	}
@@ -282,7 +260,7 @@ void Paddle::FlashHitBall(Ball* ball)
 {
 	gameplay->combo->PaddleHit();
 	flashHit = true;
-	ball->SetComboDamage(gameplay->combo->GetCombo());
+	ball->SetComboDamage(gameplay->combo->GetCombo(), true);
 }
 
 void Paddle::FlashMissBall()
@@ -297,8 +275,7 @@ void Paddle::FlashMiss()
 
 float Paddle::GetHorizontalHitOffset(Vector2 hit)
 {
-	float centerX = pos.x + size.x / 2;
-	float offset = (hit.x - centerX) / (size.x / 2);
+	float offset = (hit.x - pos.x) / (currentRect->w / 2.0f);
 	return clamp(offset, -1.0f, 1.0f);
 }
 
