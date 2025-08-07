@@ -7,6 +7,7 @@ AudioManager::AudioManager()
 	SetMixVolume(defaultMixVolume);
 }
 
+// https://github.com/TheSquawkyRaven/PerchEngine-Cpp/blob/995e2bb38b3ea0d55731916b19215d2a740ca4a7/PerchEngine-Cpp/src/Structs/Clip.cpp#L31
 shared_ptr<Mix_Music> AudioManager::LoadMusic(const string& path)
 {
     if (musicMap.contains(path))
@@ -32,6 +33,7 @@ shared_ptr<Mix_Music> AudioManager::LoadMusic(const string& path)
     return music;
 }
 
+// https://github.com/TheSquawkyRaven/PerchEngine-Cpp/blob/995e2bb38b3ea0d55731916b19215d2a740ca4a7/PerchEngine-Cpp/src/Structs/Clip.cpp#L31
 shared_ptr<Mix_Chunk> AudioManager::LoadMix(const string& path)
 {
     if (mixMap.contains(path))

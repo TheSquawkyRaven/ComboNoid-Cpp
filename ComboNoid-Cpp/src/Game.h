@@ -51,6 +51,8 @@ public:
 
 	shared_ptr<HighScore> highScore = nullptr;
 
+	shared_ptr<Clip> clickClip = nullptr;
+
 	float timeScale = 1.0f;
 
 	// Rendered screen dimensions
@@ -78,6 +80,8 @@ public:
 	bool Update();
 	// Returns true if quit is requested
 	bool UpdateInput();
+
+	void PlayClicked() const;
 
 	void TriggerLoadLevel(int levelIndex);
 	void TriggerOpenMenu();

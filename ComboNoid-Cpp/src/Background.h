@@ -19,13 +19,15 @@ private:
 	float fogValue = 0;
 
 public:
-	inline static const float fogSpeed = 0.25f;
+	inline static const float fogSpeed = 0.5f;
 	inline static const Vector2 fogRange{ 0.4f, 0.8f };
-	inline static const SDL_Color fogColor{ 68, 84, 226, 255 };
+	inline static const SDL_Color fogColorInitial{ 68, 84, 226, 255 };
+
+	SDL_Color fogColor{};
 
 public:
 	Background(Game* game);
-	void Init(string backgroundPath = "./assets/background/background.png");
+	void Init(bool randomize = false, string backgroundPath = "./assets/background/background.png");
 
 	void Update() override;
 	void Draw() override;

@@ -1,0 +1,29 @@
+SubspaceAudio, "512 Sound Effects (8-bit style)"
+https://opengameart.org/content/512-sound-effects-8-bit-style
+
+Matthew Pablo, "Space Dimensions (8bit/Retro Version)"
+https://opengameart.org/content/space-dimensions-8bitretro-version
+
+Matthew Pablo, "Space Dimensions (Techno Version)"
+https://opengameart.org/content/space-dimensions-techno-version
+
+MouthlessGames, "8-bit Retro Sfx"
+https://opengameart.org/content/8-bit-retro-sfx
+
+Holizna, "Retro Wave (Collection)"
+https://opengameart.org/content/retro-wave-collection
+
+Ænigma, "Upheaval"
+https://www.dafont.com/upheaval.font
+
+Petraheim, "Breakout styled Pixelart Pack"
+https://petraheim.itch.io/breakout-pixelart
+
+tinyxml2 - Refer to library license
+https://github.com/leethomason/tinyxml2
+
+SDL - Refer to library license
+https://github.com/libsdl-org/SDL
+
+Lazy Foo' Productions - Referenced for common code
+https://lazyfoo.net/tutorials/SDL/index.php

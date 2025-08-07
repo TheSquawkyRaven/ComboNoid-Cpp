@@ -3,12 +3,16 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "Level2.tmx",
+    "activeFile": "Level1.tmx",
     "expandedProjectPaths": [
         "."
     ],
     "fileStates": {
         "Block.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "Block_Small.tsx": {
             "scaleInDock": 1,
             "scaleInEditor": 1
         },
@@ -25,7 +29,7 @@
             "selectedLayer": 0,
             "viewCenter": {
                 "x": 240,
-                "y": 135.5
+                "y": 135
             }
         },
         "Level2 - Copy (2).tmx": {
@@ -48,8 +52,8 @@
             "scale": 1.5,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 319.33333333333326,
-                "y": 142
+                "x": 240,
+                "y": 135.66666666666669
             }
         },
         "Level4.tmx": {
@@ -80,8 +84,8 @@
             "scale": 2,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 258,
-                "y": 153
+                "x": 240,
+                "y": 135.75
             }
         },
         "Level8.tmx": {
@@ -98,6 +102,14 @@
             "viewCenter": {
                 "x": 240,
                 "y": 135.5
+            }
+        },
+        "LevelA.tmx": {
+            "scale": 2,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 240,
+                "y": 102.5
             }
         }
     },
@@ -123,7 +135,6 @@
     "property.type": "bool",
     "recentFiles": [
         "Block.tsx",
-        "Level1.tmx",
         "Level10.tmx",
         "Level9.tmx",
         "Level8.tmx",
@@ -133,11 +144,12 @@
         "Level4.tmx",
         "Level3.tmx",
         "Level2.tmx",
-        "Level2 - Copy (2).tmx"
+        "Level1.tmx",
+        "Block_Small.tsx"
     ],
     "tileset.lastUsedFormat": "tsx",
     "tileset.tileSize": {
         "height": 16,
-        "width": 32
+        "width": 16
     }
 }

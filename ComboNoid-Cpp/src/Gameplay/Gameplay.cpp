@@ -55,8 +55,7 @@ void Gameplay::Init(shared_ptr<Level> level, int levelIndex)
 	AddChild(rightWall);
 	AddChild(pauseMenu);
 
-
-	background->Init();
+	background->Init(true);
 	paddle->Init();
 	ballManager->Init();
 
@@ -75,7 +74,14 @@ void Gameplay::Init(shared_ptr<Level> level, int levelIndex)
 
 	tutorial->LevelLoaded(levelIndex);
 
-	backgroundMusic = game->audioManager->LoadMusic("./assets/audio/game_music.wav");
+	if (levelIndex < 5)
+	{
+		backgroundMusic = game->audioManager->LoadMusic("./assets/audio/game_music.wav");
+	}
+	else
+	{
+		backgroundMusic = game->audioManager->LoadMusic("./assets/audio/game_music2.wav");
+	}
 	game->audioManager->PlayMusic(backgroundMusic);
 }
 

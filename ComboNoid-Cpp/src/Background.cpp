@@ -6,12 +6,20 @@
 
 Background::Background(Game* game) : NodeSprite(game), Node(game)
 {
+	fogColor = fogColorInitial;
 }
 
-void Background::Init(string backgroundPath)
+void Background::Init(bool randomize, string backgroundPath)
 {
 	shared_ptr<SDL_Texture> texture = game->renderer->LoadTexture(backgroundPath);
 	SetTexture(texture);
+
+	if (randomize)
+	{
+		fogColor.r += game->RandomIntRange(0, 64);
+		fogColor.g += game->RandomIntRange(0, 64);
+		fogColor.b += game->RandomIntRange(0, 64);
+	}
 
 	pos.x = game->renderX / 2.0f;
 	pos.y = game->renderY / 2.0f;

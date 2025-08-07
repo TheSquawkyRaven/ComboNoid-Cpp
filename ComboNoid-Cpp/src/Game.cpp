@@ -18,6 +18,8 @@ void Game::Init()
 	Node* node = new Node(this);
 	tree->SetRoot(node);
 
+	clickClip = make_shared<Clip>(audioManager, "./assets/audio/click.wav");
+
     levelManager->Init();
 	highScore->Init();
 	TriggerOpenMenu();
@@ -141,4 +143,9 @@ float Game::RandomFloatRange(float min, float max)
 {
 	float f = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
 	return min + (max - min) * f;
+}
+
+void Game::PlayClicked() const
+{
+	clickClip->Play();
 }
