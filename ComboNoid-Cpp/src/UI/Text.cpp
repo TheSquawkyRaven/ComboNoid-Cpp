@@ -12,30 +12,20 @@ Text::Text(Game* game) : NodeSprite(game), Node(game)
 void Text::Init()
 {
 	font = game->renderer->LoadFont("./assets/upheaval/upheavtt.ttf", fontSize);
-	dirty = true;
 }
 
-void Text::Draw()
+void Text::SetText(const string& text, int fontSize, const SDL_Color& color)
 {
-	if (dirty)
-	{
-		Render();
-		dirty = false;
-	}
-
-	NodeSprite::Draw();
+	this->text = text;
+	this->fontSize = fontSize;
+	this->color = color;
+	Render();
 }
 
 void Text::SetText(const string& text)
 {
 	this->text = text;
-	dirty = true;
-}
-
-void Text::SetFontSize(int fontSize)
-{
-	this->fontSize = fontSize;
-	dirty = true;
+	Render();
 }
 
 void Text::SetColor(const SDL_Color& color)

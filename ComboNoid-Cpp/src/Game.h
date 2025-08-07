@@ -59,7 +59,6 @@ public:
 
 private:
 	void UpdateTime();
-	void UpdateDraw();
 
 public:
 	// Returns -1 if loop is false and the animation exceeds the frame count

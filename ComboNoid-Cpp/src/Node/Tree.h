@@ -34,7 +34,7 @@ public:
 	};
 private:
 	inline static const map<Layer, vector<Layer>> collisionDefinition = {
-		{ BALL, { PADDLE, BLOCK } }, // Ball - Collide with Paddle, Block and Wall
+		{ BALL, { PADDLE, BLOCK, WALL } }, // Ball - Collide with Paddle, Block and Wall
 		{ PADDLE, {} }, // Paddle
 		{ BLOCK, {} }, // Block
 		{ WALL, {} }, // Wall

@@ -38,9 +38,10 @@ private:
 
 	// Too low, the ball will be too vertical, too high, the ball will be too horizontal
 	inline static const float paddleHitOffsetFactor = 0.75f;
-	inline static const float paddleCollisionCooldownTime = 0.01f;
+	inline static const float paddleCollisionCooldownTime = 0.05f;
 
 	inline static const float minVerticalDirection = 0.2f;
+	inline static const float minHorizontalDirection = 0.01f;
 
 	inline static const float slowTime = 10.0f;
 	inline static const float slowFactor = 0.5f;
@@ -48,6 +49,10 @@ private:
 	inline static const float slowBlinkSpeed = 25.0f;
 	inline static const float slowBlinkAlpha = 32;
 	inline static const float bigTime = 10.0f;
+
+	inline static const float normalSpeed = 200.0f;
+	inline static const float paddleHitSpeed = 200.0f;
+	inline static const float comboSpeedIncrease = 10.0f;
 
 	Gameplay* gameplay;
 
@@ -64,10 +69,11 @@ private:
 
 	float paddleCollisionCooldown = 0;
 
-	float speed = 200;
+	float speed = normalSpeed;
 	float timeFactor = 1.0f;
 
 	int damage = 1;
+	int combo = 0;
 
 	bool isBig = false;
 	float bigTimer = 0.0f;
@@ -83,7 +89,7 @@ public:
 	function<void(Ball*)> fellOff;
 
 private:
-	Vector2 GetBallRectNormal(NodeRectCollider* rect);
+	void HandleBallReflection(const SDL_Rect& block);
 
 private:
 	void UpdatePowerup();
@@ -93,10 +99,14 @@ public:
 	inline float GetBigTimer() const { return bigTimer; }
 	inline bool IsSlow() const { return isSlow; }
 	inline float GetSlowTimer() const { return slowTimer; }
-	inline int GetComboDamage() const { return damage; }
+	inline int GetComboDamage() const { return combo; }
 
 	Ball(Game* game, Gameplay* gameplay);
 	void Init();
+
+	inline void AddedAsChild(Node* parent) override { NodeCircleCollider::AddedAsChild(parent); }
+	inline void RemovedAsChild(Node* parent) override { NodeCircleCollider::RemovedAsChild(parent); }
+	inline void Draw() override { NodeSprite::Draw(); }
 
 	void Update() override;
 	void PostUpdate();
@@ -106,7 +116,7 @@ public:
 	void Slow(float time = slowTime);
 	void Big(float time = bigTime);
 
-	void SetComboDamage(int damage);
+	void SetComboDamage(int combo, bool paddleHit = false);
 
 };
 

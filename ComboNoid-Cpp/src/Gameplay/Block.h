@@ -67,6 +67,10 @@ public:
 
 	Block(Game* game, Gameplay* gameplay);
 
+	inline void AddedAsChild(Node* parent) override { NodeRectCollider::AddedAsChild(parent); }
+	inline void RemovedAsChild(Node* parent) override { NodeRectCollider::RemovedAsChild(parent); }
+	inline void Draw() override { NodeSprite::Draw(); }
+
 	// Pos is only set at this Init function
 	void Init(Color color, Vector2& pos);
 	void Update() override;

@@ -41,6 +41,7 @@ void Gameplay::Init(shared_ptr<Level> level, int levelIndex)
 	this->levelIndex = levelIndex;
 
 	AddChild(background);
+	AddChild(tutorial);
 	AddChild(paddle);
 	AddChild(ballManager);
 	AddChild(blockManager);
@@ -53,7 +54,6 @@ void Gameplay::Init(shared_ptr<Level> level, int levelIndex)
 	AddChild(leftWall);
 	AddChild(rightWall);
 	AddChild(pauseMenu);
-	AddChild(tutorial);
 
 
 	background->Init();

@@ -16,8 +16,6 @@ using namespace std;
 class Text : public NodeSprite
 {
 private:
-	bool dirty = false;
-
 	shared_ptr<TTF_Font> font = nullptr;
 	int fontSize = 16;
 	string text;
@@ -29,12 +27,12 @@ public:
 	Text(Game* game);
 	void Init();
 
-	void Draw() override;
+	inline void Draw() override { NodeSprite::Draw(); }
 
 	void SetPos(const Vector2& center);
 
+	void SetText(const string& text, int fontSize, const SDL_Color& color);
 	void SetText(const string& text);
-	void SetFontSize(int fontSize);
 	void SetColor(const SDL_Color& color);
 
 };

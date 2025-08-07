@@ -11,15 +11,16 @@ MenuManager::MenuManager(Game* game) : Node(game)
 
 void MenuManager::Init()
 {
-	AddChild(background);
-	background->Init();
-
 	mainMenu = new MainMenu(this, game);
 	levelsMenu = new LevelsMenu(this, game);
 
+	AddChild(background);
 	AddChild(mainMenu);
-	mainMenu->Init();
 	AddChild(levelsMenu);
+
+	background->Init();
+
+	mainMenu->Init();
 	levelsMenu->Init();
 
 	OpenMainMenu();

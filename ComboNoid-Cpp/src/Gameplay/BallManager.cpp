@@ -22,8 +22,7 @@ void BallManager::Init()
 
 	text->Init();
 	text->pos = ballCountPos;
-	text->SetFontSize(fontSize);
-	text->SetColor(textColor);
+	text->SetText(" ", fontSize, textColor);
 
 	CreateBall(true);
 }

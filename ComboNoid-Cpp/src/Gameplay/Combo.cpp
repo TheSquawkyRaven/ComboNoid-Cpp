@@ -12,12 +12,12 @@ Combo::Combo(Game* game, Gameplay* gameplay) : Node(game), gameplay(gameplay)
 
 void Combo::Init()
 {
-	Vector2 center = Vector2(game->renderX / 2 + offset.x, game->renderY + offset.y);
 	AddChild(text);
+
+	Vector2 center = Vector2(game->renderX / 2 + offset.x, game->renderY + offset.y);
 	text->Init();
 	text->pos = center;
-	text->SetFontSize(fontSize);
-	text->SetColor(textColor);
+	text->SetText(" ", fontSize, textColor);
 
 	UpdateCombo();
 }

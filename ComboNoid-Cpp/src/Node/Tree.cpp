@@ -24,6 +24,8 @@ void Tree::Run()
 	RunDestructions();
 	root->_Update();
 	RunDestructions();
+	RunCollisions();
+	RunDestructions();
 	RunDraw();
 }
 

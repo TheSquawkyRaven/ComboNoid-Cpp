@@ -17,13 +17,14 @@ public:
 	Vector2() {}
 	Vector2(float x, float y) : x(x), y(y) {}
 
-	float Magnitude();
+	float Magnitude() const;
+	float MagnitudeSqr() const;
 	void Normalize();
 	Vector2 Normalized();
 
-	float Dot(const Vector2& rhs);
+	float Dot(const Vector2& rhs) const;
 
-	Vector2 Reflect(const Vector2& normal);
+	Vector2 Reflect(const Vector2& normal) const;
 
 	Vector2 operator+(Vector2 const& other) const;
 	Vector2 operator-(Vector2 const& other) const;

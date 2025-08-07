@@ -10,12 +10,12 @@ Score::Score(Game* game, Gameplay* gameplay) : Node(game), gameplay(gameplay)
 
 void Score::Init()
 {
-	Vector2 center(400, game->renderY - fontSize / 2);
 	AddChild(text);
+
+	Vector2 center(400, game->renderY - fontSize / 2);
 	text->Init();
 	text->pos = center;
-	text->SetFontSize(fontSize);
-	text->SetColor(textColor);
+	text->SetText(" ", fontSize, textColor);
 
 	UpdateScore();
 }

@@ -20,6 +20,8 @@ private:
 	vector<Node*> children;
 
 	bool visible = true;
+	
+	bool markedForDestruction = false;
 
 public:
 	Game* game;
@@ -31,9 +33,10 @@ public:
 public:
 	inline const vector<Node*>& GetChildren() const { return children; }
 	inline bool GetVisible() const { return visible; }
-	inline virtual void SetVisible(bool visible) { this->visible = visible; }
+	virtual void SetVisible(bool visible);
 
 	Node(Game* game);
+	virtual ~Node() {};
 
 	void _Input(SDL_Event& event);
 	void _Update();

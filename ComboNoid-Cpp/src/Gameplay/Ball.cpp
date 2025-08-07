@@ -17,15 +17,14 @@ Ball::Ball(Game* game, Gameplay* gameplay) : NodeSprite(game), NodeCircleCollide
 
 void Ball::Init()
 {
-	ballFx->Init();
 	AddChild(ballFx);
+
+	ballFx->Init();
 
 	shared_ptr<SDL_Texture> texture = game->renderer->LoadTexture("./assets/ball.png");
 	SetTexture(texture);
 
 	SetSize(NORMAL);
-
-	centered = true;
 }
 
 void Ball::Update()
@@ -42,19 +41,18 @@ void Ball::Update()
 	Vector2 velocity = direction * speed * game->GetDeltaTime() * timeFactor;
 	pos = pos + velocity;
 
-	float r = radius + 1.0f;
-	if (pos.x - r < lLimit)
+	if (pos.x < lLimit)
 	{
-		pos.x = lLimit + r;
+		pos.x = lLimit + radius;
 	}
-	else if (pos.x + r > rLimit)
+	else if (pos.x > rLimit)
 	{
-		pos.x = rLimit - r;
+		pos.x = rLimit - radius;
 	}
-
-	if (pos.y - r < tLimit)
+	
+	if (pos.y < tLimit)
 	{
-		pos.y = tLimit + r;
+		pos.y = tLimit + radius;
 	}
 	if (pos.y > bLimit)
 	{
@@ -79,6 +77,7 @@ void Ball::UpdatePowerup()
 		if (slowTimer < 0)
 		{
 			color.a = 255;
+			ballFx->color.a = color.a;
 			isSlow = false;
 			timeFactor = 1.0f;
 			ballFx->timeFactor = timeFactor;
@@ -89,6 +88,7 @@ void Ball::UpdatePowerup()
 			float speed = (1.0f - slowTimer / slowBlinkTime) * slowBlinkSpeed;
 			float aFactor = sinf(f * speed) * 0.5f + 0.5f;
 			color.a = static_cast<Uint8>(slowBlinkAlpha + ((255 - slowBlinkAlpha) * aFactor));
+			ballFx->color.a = color.a;
 		}
 	}
 
@@ -136,6 +136,8 @@ void Ball::OnCollision(NodeRectCollider* rect, Tree::Layer layer)
 		return;
 	}
 
+	speed = normalSpeed;
+
 	if (layer == Tree::BLOCK)
 	{
 		Block* block = static_cast<Block*>(rect);
@@ -159,28 +161,7 @@ void Ball::OnCollision(NodeRectCollider* rect, Tree::Layer layer)
 
 	hitClip->Play();
 
-	Vector2 thisPos = pos;
-	SDL_Rect to = rect->GetDestRect();
-	float closestX = clamp(pos.x, static_cast<float>(to.x), static_cast<float>(to.x + to.w));
-	float closestY = clamp(pos.y, static_cast<float>(to.y), static_cast<float>(to.y + to.h));
-
-	Vector2 closestPoint{ closestX, closestY };
-
-	// Vector from closest point to ball center
-	Vector2 difference = thisPos - closestPoint;
-	float distance = difference.Magnitude();
-
-	if (distance < radius)
-	{
-		Vector2 normal = GetBallRectNormal(rect);
-
-		// Reflect velocity using normal
-		direction = direction.Reflect(normal);
-
-		// Push the ball out of the rect
-		float penetration = radius - distance;
-		pos = pos + normal * penetration;
-	}
+	HandleBallReflection(rect->GetDestRect());
 
 	if (layer == Tree::PADDLE)
 	{
@@ -189,17 +170,20 @@ void Ball::OnCollision(NodeRectCollider* rect, Tree::Layer layer)
 		{
 			Paddle* paddle = static_cast<Paddle*>(rect);
 			paddleCollisionCooldown = paddleCollisionCooldownTime;
-			float hitOffset = paddle->GetHorizontalHitOffset(thisPos);
+			float hitOffset = paddle->GetHorizontalHitOffset(pos);
 
 			// Modify the direction.x based on offset (e.g., curve ball more the farther from center)
 			direction.x += hitOffset * paddleHitOffsetFactor;
 			direction.Normalize();
+
+			speed = paddleHitSpeed;
 
 			paddle->BallHitPaddle(this);
 		}
 	}
 
 	// Too horizontal check (checks if the ball is too horizontal)
+	// Prevents boring gameplay where the ball just bounces left and right with little to no vertical movement
 	float y = abs(direction.y);
 	if (y < minVerticalDirection)
 	{
@@ -207,37 +191,79 @@ void Ball::OnCollision(NodeRectCollider* rect, Tree::Layer layer)
 		direction.Normalize();
 	}
 
+	// Also check for too vertical movement otherwise can get stuck in a loop of bouncing up and down
+	float x = abs(direction.x);
+	if (x < minHorizontalDirection)
+	{
+		direction.x += (direction.x < 0 ? -1 : 1) * minHorizontalDirection;
+		direction.Normalize();
+	}
+
 	PostUpdate();
 }
 
-Vector2 Ball::GetBallRectNormal(NodeRectCollider* rect)
+// https://claude.ai/public/artifacts/9c251ff5-1f95-4970-8273-5ee462ec654e (Method 2)
+void Ball::HandleBallReflection(const SDL_Rect& block)
 {
-	Vector2 thisPos = pos;
-	SDL_Rect to = rect->GetDestRect();
-	float dx = thisPos.x - to.x;
-	float dy = thisPos.y - to.y;
+	float expandedLeft = block.x - radius;
+	float expandedRight = block.x + block.w + radius;
+	float expandedTop = block.y - radius;
+	float expandedBottom = block.y + block.h + radius;
 
-	float overlapX = (to.w / 2.0f + radius) - abs(dx);
-	float overlapY = (to.h / 2.0f + radius) - abs(dy);
+	// Check if ball center is inside the expanded rectangle
+	if (pos.x >= expandedLeft && pos.x <= expandedRight &&
+		pos.y >= expandedTop && pos.y <= expandedBottom)
+	{
 
-	if (overlapX < overlapY)
-	{
-		return { dx < 0 ? -1.0f : 1.0f, 0.0f }; // Horizontal bounce
-	}
-	else
-	{
-		return { 0.0f, dy < 0 ? -1.0f : 1.0f }; // Vertical bounce
+		Vector2 normal;
+
+		// Determine collision normal based on which expanded edge is closest
+		float distToLeft = pos.x - expandedLeft;
+		float distToRight = expandedRight - pos.x;
+		float distToTop = pos.y - expandedTop;
+		float distToBottom = expandedBottom - pos.y;
+
+		float minDist = min({ distToLeft, distToRight, distToTop, distToBottom });
+
+		if (minDist == distToLeft)
+		{
+			normal = Vector2(-1, 0);
+			pos.x = expandedLeft;
+		}
+		else if (minDist == distToRight)
+		{
+			normal = Vector2(1, 0);
+			pos.x = expandedRight;
+		}
+		else if (minDist == distToTop)
+		{
+			normal = Vector2(0, -1);
+			pos.y = expandedTop;
+		}
+		else
+		{
+			normal = Vector2(0, 1);
+			pos.y = expandedBottom;
+		}
+
+		direction = direction.Reflect(normal);
 	}
 }
 
-void Ball::SetComboDamage(int combo)
+void Ball::SetComboDamage(int combo, bool paddleHit)
 {
 	this->damage = combo;
+	this->combo = combo;
 	if (damage < 1)
 	{
 		damage = 1;
 	}
 	ballFx->SetCombo(combo);
+
+	if (combo > 0)
+	{
+		speed = normalSpeed + comboSpeedIncrease * combo;
+	}
 }
 
 void Ball::Slow(float time)

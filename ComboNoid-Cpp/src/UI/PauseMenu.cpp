@@ -24,6 +24,8 @@ void PauseMenu::Init()
 
 	shared_ptr<SDL_Texture> texture = game->renderer->LoadTexture("./assets/background/pause.png");
 	SetTexture(texture);
+	pos.x = game->renderX / 2.0f;
+	pos.y = game->renderY / 2.0f;
 
 	resumeButton->Init(4);
 	resumeButton->pos = centerPos;
@@ -83,14 +85,6 @@ void PauseMenu::GameOver(bool won, int score, int highScore)
 	AddChild(highScoreText);
 	AddChild(nextLevelbutton);
 
-	winText->SetFontSize(titleFontSize);
-	winText->SetColor(titleColor);
-
-	scoreText->SetFontSize(scoreFontSize);
-	scoreText->SetColor(scoreColor);
-	highScoreText->SetFontSize(scoreFontSize);
-	highScoreText->SetColor(scoreColor);
-
 	Vector2 p = centerPos;
 	p.x += titleOffset.x;
 	p.y += titleOffset.y;
@@ -99,11 +93,11 @@ void PauseMenu::GameOver(bool won, int score, int highScore)
 	winText->pos = p;
 	if (won)
 	{
-		winText->SetText("You Win!");
+		winText->SetText("You Win!", titleFontSize, titleColor);
 	}
 	else
 	{
-		winText->SetText("You Lose");
+		winText->SetText("You Lose", titleFontSize, titleColor);
 	}
 
 	p.y += scoreYOffset;
@@ -111,12 +105,12 @@ void PauseMenu::GameOver(bool won, int score, int highScore)
 	scoreText->pos = p;
 	if (won)
 	{
-		scoreText->SetText("Score: " + to_string(score));
+		scoreText->SetText("Score: " + to_string(score), scoreFontSize, scoreColor);
 	}
 	else
 	{
 		// Don't show score if the player lost
-		scoreText->SetText(" ");
+		scoreText->SetText(" ", scoreFontSize, scoreColor);
 	}
 
 	p.y += scoreYOffset;
@@ -125,11 +119,11 @@ void PauseMenu::GameOver(bool won, int score, int highScore)
 
 	if (won && score > highScore)
 	{
-		highScoreText->SetText("NEW HIGH SCORE!");
+		highScoreText->SetText("NEW HIGH SCORE!", scoreFontSize, scoreColor);
 	}
 	else
 	{
-		highScoreText->SetText("High Score: " + to_string(highScore));
+		highScoreText->SetText("High Score: " + to_string(highScore), scoreFontSize, scoreColor);
 	}
 
 	nextLevelbutton->Init(4);

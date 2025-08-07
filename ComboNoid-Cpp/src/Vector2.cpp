@@ -1,8 +1,13 @@
 #include "Vector2.h"
 
-float Vector2::Magnitude()
+float Vector2::Magnitude() const
 {
 	return sqrtf(x * x + y * y);
+}
+
+float Vector2::MagnitudeSqr() const
+{
+	return x * x + y * y;
 }
 
 void Vector2::Normalize()
@@ -14,18 +19,17 @@ void Vector2::Normalize()
 
 Vector2 Vector2::Normalized()
 {
-	// Create a copy of the current vector, normalize it, and return
-	Vector2 current = *this;
+	Vector2 current{ x, y };
 	current.Normalize();
 	return current;
 }
 
-float Vector2::Dot(const Vector2& rhs)
+float Vector2::Dot(const Vector2& rhs) const
 {
 	return x * rhs.x + y * rhs.y;
 }
 
-Vector2 Vector2::Reflect(const Vector2& normal)
+Vector2 Vector2::Reflect(const Vector2& normal) const
 {
 	return *this - normal * (2.0f * this->Dot(normal));
 }

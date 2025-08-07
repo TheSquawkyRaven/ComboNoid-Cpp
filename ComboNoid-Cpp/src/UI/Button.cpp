@@ -19,16 +19,14 @@ void Button::Init(int size)
 
 void Button::SetText(const string& textStr, int fontSize, SDL_Color color)
 {
-	if (this->text == nullptr)
+	if (text == nullptr)
 	{
-		this->text = new Text(game);
-		AddChild(this->text);
-		this->text->Init();
-		this->text->pos = pos;
+		text = new Text(game);
+		AddChild(text);
+		text->Init();
+		text->pos = pos;
 	}
-	this->text->SetText(textStr);
-	this->text->SetFontSize(fontSize);
-	this->text->SetColor(color);
+	text->SetText(textStr, fontSize, color);
 }
 
 void Button::SetPos(Vector2& center)
@@ -155,6 +153,7 @@ void Button::SetState(State state)
 
 void Button::SetVisible(bool visible)
 {
+	Node::SetVisible(visible);
 	SetState(NORMAL);
 	leftClickInput = false;
 	wasJustVisible = true;

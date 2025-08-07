@@ -93,6 +93,9 @@ public:
 	Paddle(Game* game, Gameplay* gameplay);
 	void Init();
 
+	inline void AddedAsChild(Node* parent) override { NodeRectCollider::AddedAsChild(parent); }
+	inline void RemovedAsChild(Node* parent) override { NodeRectCollider::RemovedAsChild(parent); }
+
 	void Input(SDL_Event& event) override;
 	void Update() override;
 	void Draw() override;

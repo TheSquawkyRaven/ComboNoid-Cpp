@@ -62,6 +62,8 @@ public:
 	// Sizes are only 1 to 4
 	void Init(int size);
 
+	inline void Draw() override { NodeSprite::Draw(); }
+
 	void Input(SDL_Event& event) override;
 
 	void SetText(const string& textStr, int fontSize = 16, SDL_Color color = { 0, 0, 0, 255 });

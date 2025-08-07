@@ -31,15 +31,6 @@ public:
 	SDL_Rect GetDestRect() const;
 
 	/// <summary>
-	/// Returns the centered position
-	/// </summary>
-	Vector2 GetActualPos() const;
-	/// <summary>
-	/// Returns the scaled size
-	/// </summary>
-	Vector2 GetActualSize() const;
-
-	/// <summary>
 	/// AABB collision check with another NodeRectCollider
 	/// </summary>
 	/// <param name="rect">Other rect</param>

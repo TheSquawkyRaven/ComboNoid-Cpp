@@ -18,8 +18,6 @@ void Paddle::Init()
 	SetTexture(texture);
 
 	SetSize(NORMAL);
-
-	NodeSprite::centered = true;
 }
 
 void Paddle::Input(SDL_Event& event)
@@ -164,6 +162,7 @@ void Paddle::SetSize(PaddleSize size)
 			rectSize = rectSizeLong;
 			break;
 		default:
+			currentRect = &rectNormal;
 			printf("Unknown Paddle Size of %d\n", size);
 			break;
 	}
@@ -183,11 +182,13 @@ void Paddle::SetSize(PaddleSize size)
 	}
 	else
 	{
-		xOffset = game->renderX / 2;
+		xOffset = static_cast<int>(game->renderX / 2.0f);
 		w = -currentRect->w / 2;
 	}
 	pos.x = pos.x + xOffset + w;
 	pos.y = game->renderY - currentRect->h - 32;
+
+	lastRect = currentRect;
 }
 
 void Paddle::AttachBall(Ball* ball)
@@ -205,7 +206,7 @@ void Paddle::UpdateBall()
 	}
 
 	attachedBall->pos.x = pos.x;
-	attachedBall->pos.y = pos.y + rectOffset.y - attachedBall->radius * 2;
+	attachedBall->pos.y = pos.y + rectOffset.y - attachedBall->radius;
 
 	attachedBall->PostUpdate();
 
@@ -214,7 +215,7 @@ void Paddle::UpdateBall()
 		// Launch ball
 		attachedBall->isAttached = false;
 		// Add a tiny amount of random horizontal direction offset so the ball doesn't bounce up and down fully vertically forever
-		attachedBall->direction = Vector2(game->RandomFloatRange(-0.01, 0.01), -1);
+		attachedBall->direction = Vector2(game->RandomFloatRange(-0.01f, 0.01f), -1.0f);
 		attachedBall->direction.Normalize();
 		attachedBall->SetComboDamage(0);
 		attachedBall = nullptr;
@@ -230,10 +231,10 @@ void Paddle::Draw()
 		int alpha = static_cast<int>(255 * percentage);
 
 		SDL_Rect& dest = destRect; // Copy
-		dest.x -= flashSizeIncrease.x * percentage / 2;
-		dest.y -= flashSizeIncrease.y * percentage / 2;
-		dest.w += flashSizeIncrease.x * percentage;
-		dest.h += flashSizeIncrease.y * percentage;
+		dest.x -= static_cast<int>(flashSizeIncrease.x * percentage / 2);
+		dest.y -= static_cast<int>(flashSizeIncrease.y * percentage / 2);
+		dest.w += static_cast<int>(flashSizeIncrease.x * percentage);
+		dest.h += static_cast<int>(flashSizeIncrease.y * percentage);
 
 		SDL_SetRenderDrawColor(game->renderer->renderer, 255, 255, 255, alpha);
 		SDL_RenderCopy(game->renderer->renderer, GetTexture().get(), &cropRect, &dest);
@@ -259,7 +260,7 @@ void Paddle::FlashHitBall(Ball* ball)
 {
 	gameplay->combo->PaddleHit();
 	flashHit = true;
-	ball->SetComboDamage(gameplay->combo->GetCombo());
+	ball->SetComboDamage(gameplay->combo->GetCombo(), true);
 }
 
 void Paddle::FlashMissBall()

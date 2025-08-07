@@ -14,7 +14,7 @@ void BallFx::Init()
 	shared_ptr<SDL_Texture> texture = game->renderer->LoadTexture("./assets/ballfx.png");
 	SetTexture(texture);
 	SetVisible(false);
-	centered = true;
+	cropRect = wheelRect;
 }
 
 void BallFx::BallUpdate(Vector2& pos)
@@ -48,5 +48,5 @@ void BallFx::SetCombo(int combo)
 		wheelX = i;
 	}
 
-	cropRect = wheelRect;
+	cropRect.x = wheelX * wheelRect.w;
 }

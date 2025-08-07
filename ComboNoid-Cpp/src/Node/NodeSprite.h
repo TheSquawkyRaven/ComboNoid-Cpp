@@ -26,15 +26,11 @@ public:
 	/// Draw destination. All values are updated in the Draw() call
 	/// </summary>
 	SDL_Rect destRect{};
-	/// <summary>
-	/// Whether the sprite is centered around pos
-	/// </summary>
-	bool centered = false;
 
 	SDL_Color color{ 255, 255, 255, 255 };
 
 public:
-	inline shared_ptr<SDL_Texture> GetTexture() const const { return texture; }
+	inline shared_ptr<SDL_Texture> GetTexture() const { return texture; }
 	inline SDL_Rect& GetDestRect() { return destRect; }
 
 	NodeSprite(Game* game);

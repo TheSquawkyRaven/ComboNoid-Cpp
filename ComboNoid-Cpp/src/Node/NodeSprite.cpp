@@ -17,16 +17,8 @@ void NodeSprite::Draw()
 	int y = static_cast<int>(pos.y);
 	int w = static_cast<int>(cropRect.w * scale.x);
 	int h = static_cast<int>(cropRect.h * scale.y);
-	if (centered)
-	{
-		destRect.x = x + w / 2;
-		destRect.y = y + h / 2;
-	}
-	else
-	{
-		destRect.x = x;
-		destRect.y = y;
-	}
+	destRect.x = x - w / 2;
+	destRect.y = y - h / 2;
 	destRect.w = w;
 	destRect.h = h;
 
@@ -39,6 +31,7 @@ void NodeSprite::SetTexture(shared_ptr<SDL_Texture> texture)
 {
 	if (!texture)
 	{
+		this->texture = nullptr;
 		printf("NodeSprite: SetTexture called with null texture!\n");
 		return;
 	}

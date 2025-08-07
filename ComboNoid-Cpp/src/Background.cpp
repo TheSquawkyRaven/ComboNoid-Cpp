@@ -13,6 +13,8 @@ void Background::Init(string backgroundPath)
 	shared_ptr<SDL_Texture> texture = game->renderer->LoadTexture(backgroundPath);
 	SetTexture(texture);
 
+	pos.x = game->renderX / 2.0f;
+	pos.y = game->renderY / 2.0f;
 	destRect = { 0, 0, static_cast<int>(game->renderX), static_cast<int>(game->renderY) };
 }
 
@@ -24,8 +26,7 @@ void Background::Update()
 
 void Background::Draw()
 {
-	shared_ptr<SDL_Texture> texture = GetTexture();
-	game->renderer->Draw(texture.get(), &cropRect, &destRect);
+	NodeSprite::Draw();
 
 	SDL_SetRenderDrawColor(game->renderer->renderer, fogColor.r, fogColor.g, fogColor.b, fogValue * fogColor.a);
 	SDL_RenderFillRect(game->renderer->renderer, &destRect);

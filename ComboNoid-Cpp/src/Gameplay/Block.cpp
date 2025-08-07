@@ -15,7 +15,6 @@ void Block::Init(Color color, Vector2& pos)
 	SetColor(color);
 
 	this->pos = pos;
-	centered = true;
 
 	cropRect.w = blockSize.x;
 	cropRect.h = blockSize.y;

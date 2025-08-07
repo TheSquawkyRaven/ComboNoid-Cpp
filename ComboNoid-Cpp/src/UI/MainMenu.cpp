@@ -41,9 +41,7 @@ void MainMenu::Init()
 	Vector2 titlePos = Vector2(centerPos.x, centerPos.y + titleYOffset);
 	title->Init();
 	title->pos = titlePos;
-	title->SetText("Combonoid");
-	title->SetFontSize(titleFontSize);
-	title->SetColor(titleColor);
+	title->SetText("Combonoid", titleFontSize, titleColor);
 
 	playButton->Init(4);
 	playButton->SetText("Start", fontSize, textColor);

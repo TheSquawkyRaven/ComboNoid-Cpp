@@ -29,22 +29,6 @@ SDL_Rect NodeRectCollider::GetDestRect() const
 	return move(rect);
 }
 
-Vector2 NodeRectCollider::GetActualPos() const
-{
-	int x = pos.x;
-	int y = pos.y;
-	int w = size.x * scale.x;
-	int h = size.y * scale.y;
-	x += w / 2;
-	y += h / 2;
-	return Vector2(x, y);
-}
-
-Vector2 NodeRectCollider::GetActualSize() const
-{
-	return Vector2(size.x * scale.x, size.y * scale.y);
-}
-
 bool NodeRectCollider::CheckCollision(NodeRectCollider* rect) const
 {
 	SDL_Rect from = GetDestRect();

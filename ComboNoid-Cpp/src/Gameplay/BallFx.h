@@ -43,6 +43,8 @@ public:
 	BallFx(Game* game);
 	void Init();
 
+	inline void Draw() override { NodeSprite::Draw(); }
+
 	void BallUpdate(Vector2& pos);
 
 	void SetCombo(int combo);

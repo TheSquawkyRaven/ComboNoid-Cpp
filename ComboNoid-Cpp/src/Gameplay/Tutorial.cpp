@@ -22,10 +22,9 @@ void Tutorial::LevelLoaded(int levelIndex)
 		Text* text = new Text(game);
 		AddChild(text);
 
+		text->Init();
 		text->pos = pos;
-		text->SetText(t);
-		text->SetFontSize(fontSize);
-		text->SetColor(textColor);
+		text->SetText(t, fontSize, textColor);
 
 		texts.push_back(text);
 	}

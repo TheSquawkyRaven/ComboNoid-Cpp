@@ -54,6 +54,10 @@ public:
 	Powerup(Game* game, Gameplay* gameplay);
 	void Init(Type type, Vector2 pos);
 
+	inline void AddedAsChild(Node* parent) override { NodeRectCollider::AddedAsChild(parent); }
+	inline void RemovedAsChild(Node* parent) override { NodeRectCollider::RemovedAsChild(parent); }
+	inline void Draw() override { NodeSprite::Draw(); }
+
 	void Update() override;
 	void OnCollision(NodeRectCollider* rect, Tree::Layer layer) override;
 

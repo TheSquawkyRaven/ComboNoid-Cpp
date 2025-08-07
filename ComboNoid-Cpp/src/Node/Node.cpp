@@ -6,6 +6,15 @@ Node::Node(Game* game) : game(game)
 
 }
 
+void Node::SetVisible(bool visible)
+{
+	this->visible = visible;
+	for (int i = 0; i < children.size(); i++)
+	{
+		children.at(i)->SetVisible(visible);
+	}
+}
+
 void Node::_Input(SDL_Event& event)
 {
 	Input(event);
@@ -40,11 +49,17 @@ void Node::_Draw()
 
 void Node::Destroy(Node* parent)
 {
+	if (markedForDestruction)
+	{
+		return;
+	}
+	markedForDestruction = true;
+
 	if (parent)
 	{
 		parent->RemoveChild(this);
 	}
-	for (int i = 0; i < children.size(); i++)
+	for (int i = children.size() - 1; i >= 0; i--)
 	{
 		children.at(i)->Destroy(this);
 	}

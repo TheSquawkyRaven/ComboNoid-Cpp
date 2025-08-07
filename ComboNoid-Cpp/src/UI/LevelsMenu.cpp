@@ -28,16 +28,12 @@ void LevelsMenu::Init()
 	Vector2 hPos = highScoreTextPos;
 	highScoreText->Init();
 	highScoreText->pos = hPos;
-	highScoreText->SetFontSize(fontSize);
-	highScoreText->SetColor(highScoreTextColor);
-	highScoreText->SetText("High Score:");
+	highScoreText->SetText("High Score:", fontSize, highScoreTextColor);
 
 	hPos.y += highScoreValueYOffset;
 	highScoreValue->Init();
 	highScoreValue->pos = hPos;
-	highScoreValue->SetFontSize(fontSize);
-	highScoreValue->SetColor(highScoreTextColor);
-	highScoreValue->SetText(" ");
+	highScoreValue->SetText(" ", fontSize, highScoreTextColor);
 
 	highScoreText->SetVisible(false);
 	highScoreValue->SetVisible(false);
@@ -124,6 +120,13 @@ void LevelsMenu::OnLevelButtonHovered(int levelIndex)
 
 void LevelsMenu::OnLevelButtonExitHover()
 {
+	highScoreText->SetVisible(false);
+	highScoreValue->SetVisible(false);
+}
+
+void LevelsMenu::SetVisible(bool visible)
+{
+	Node::SetVisible(visible);
 	highScoreText->SetVisible(false);
 	highScoreValue->SetVisible(false);
 }

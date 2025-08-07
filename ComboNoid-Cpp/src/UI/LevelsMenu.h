@@ -57,4 +57,6 @@ public:
 	void OnLevelPressed(int levelIndex);
 	void LaunchFirstLevel();
 
+	void SetVisible(bool visible) override;
+
 };
