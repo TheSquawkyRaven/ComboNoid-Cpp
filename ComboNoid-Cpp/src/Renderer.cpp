@@ -77,6 +77,7 @@ void Renderer::ResetColor() const
 	SDL_SetRenderDrawColor(renderer, defaultColor.r, defaultColor.g, defaultColor.b, defaultColor.a);
 }
 
+// https://github.com/TheSquawkyRaven/PerchEngine-Cpp/blob/995e2bb38b3ea0d55731916b19215d2a740ca4a7/PerchEngine-Cpp/src/Renderer/SDLRenderer.cpp#L256
 shared_ptr<SDL_Texture> Renderer::LoadTexture(string path)
 {
     if (textureMap.contains(path))
@@ -103,6 +104,7 @@ shared_ptr<SDL_Texture> Renderer::LoadTexture(string path)
 	return texture;
 }
 
+// https://github.com/TheSquawkyRaven/PerchEngine-Cpp/blob/995e2bb38b3ea0d55731916b19215d2a740ca4a7/PerchEngine-Cpp/src/Structs/Font.cpp#L34
 shared_ptr<TTF_Font> Renderer::LoadFont(string path, int fontSize)
 {
     if (fontMap.contains(path))
@@ -127,6 +129,7 @@ shared_ptr<TTF_Font> Renderer::LoadFont(string path, int fontSize)
 	return font_ptr;
 }
 
+// https://github.com/TheSquawkyRaven/PerchEngine-Cpp/blob/995e2bb38b3ea0d55731916b19215d2a740ca4a7/PerchEngine-Cpp/src/Renderer/SDLRenderer.cpp#L272
 shared_ptr<SDL_Texture> Renderer::LoadFontTexture(TTF_Font* font, int fontSize, const char* text) const
 {
     TTF_SetFontSize(font, fontSize);
