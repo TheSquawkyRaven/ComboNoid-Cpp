@@ -78,6 +78,7 @@ void Button::Input(SDL_Event& event)
 				SetState(PRESSED);
 				if (pressed)
 				{
+					game->PlayClicked();
 					pressed();
 				}
 			}
