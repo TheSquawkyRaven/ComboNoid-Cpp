@@ -19,6 +19,9 @@ https://www.dafont.com/upheaval.font
 Petraheim, "Breakout styled Pixelart Pack"
 https://petraheim.itch.io/breakout-pixelart
 
+Freepik, "Linear retro gradient background"
+https://www.freepik.com/free-vector/linear-retro-gradient-background_13405371.htm
+
 tinyxml2 - Refer to library license
 https://github.com/leethomason/tinyxml2
 
